@@ -28,7 +28,6 @@ use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Entity\Filter\EmptyFilter;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
 

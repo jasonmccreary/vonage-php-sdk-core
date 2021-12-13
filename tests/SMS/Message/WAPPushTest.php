@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\WAPPush;
 
-uses(VonageTestCase::class);
 
 test('can create w a p message', function () {
     $data = (new WAPPush(

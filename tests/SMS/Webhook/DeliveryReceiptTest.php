@@ -15,7 +15,6 @@ use VonageTest\VonageTestCase;
 use Vonage\SMS\Webhook\DeliveryReceipt;
 use Vonage\SMS\Webhook\Factory;
 
-uses(VonageTestCase::class);
 
 
 test('can create from get server request', function () {

@@ -19,7 +19,6 @@ use Vonage\Call\Event;
 use Vonage\Client;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
 

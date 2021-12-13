@@ -14,7 +14,6 @@ use Vonage\Account\Secret;
 use Vonage\Account\SecretCollection;
 use Vonage\InvalidResponseException;
 
-uses(VonageTestCase::class);
 
 
 /**

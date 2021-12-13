@@ -13,7 +13,6 @@ use Helmich\JsonAssert\JsonAssertions;
 use VonageTest\VonageTestCase;
 use Vonage\Call\Earmuff;
 
-uses(VonageTestCase::class);
 uses(JsonAssertions::class);
 
 

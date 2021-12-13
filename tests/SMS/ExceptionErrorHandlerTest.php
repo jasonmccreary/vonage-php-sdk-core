@@ -18,7 +18,6 @@ use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\SMS\ExceptionErrorHandler;
 
-uses(VonageTestCase::class);
 
 /**
  * @throws RequestException

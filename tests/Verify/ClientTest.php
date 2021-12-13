@@ -22,7 +22,6 @@ use Vonage\Verify\RequestPSD2;
 use Vonage\Verify\Verification;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
 

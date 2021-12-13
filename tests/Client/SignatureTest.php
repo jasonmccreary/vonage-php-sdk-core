@@ -13,7 +13,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Signature;
 
-uses(VonageTestCase::class);
 
 test('invalid signature method', function () {
     $fakeAlgo = 'fake_algo';

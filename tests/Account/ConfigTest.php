@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Account\Config;
 
-uses(VonageTestCase::class);
 
 beforeEach(function () {
     $this->config = new Config(

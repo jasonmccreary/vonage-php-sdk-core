@@ -1,5 +1,9 @@
 <?php
 
+uses(\VonageTest\VonageTestCase::class)->in('tests', 'Account', 'Application', 'Call', 'Client', 'Conversation', 'Conversion', 'Fixture', 'Insights', 'Logger', 'Message', 'Network', 'Numbers', 'Redact', 'Response', 'SMS', 'Secrets', 'Traits', 'User', 'Verify', 'Voice', 'responses');
+uses(\VonageTest\Psr7AssertionTrait::class)->in('Conversation', 'Conversion', 'Redact', 'User');
+uses(\VonageTest\HTTPTestTrait::class)->in('Secrets');
+
 /*
 |--------------------------------------------------------------------------
 | Test Case

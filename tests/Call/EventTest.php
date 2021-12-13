@@ -13,7 +13,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Call\Event;
 use VonageTest\Fixture\ResponseTrait;
 
-uses(VonageTestCase::class);
 uses(ResponseTrait::class);
 
 test('expects message', function () {

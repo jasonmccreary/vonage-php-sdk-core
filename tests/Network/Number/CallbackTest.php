@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Network\Number\Callback;
 
-uses(VonageTestCase::class);
 
 
 test('methods match data', function () {

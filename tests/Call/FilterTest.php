@@ -13,7 +13,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Call\Filter;
 use Vonage\Conversations\Conversation;
 
-uses(VonageTestCase::class);
 
 beforeEach(function () {
     $this->filter = @new Filter();

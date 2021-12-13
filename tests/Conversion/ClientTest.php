@@ -22,8 +22,6 @@ use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Conversion\Client as ConversionClient;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
-uses(Psr7AssertionTrait::class);
 
 
 beforeEach(function () {

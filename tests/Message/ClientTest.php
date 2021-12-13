@@ -27,7 +27,6 @@ use Vonage\Message\Text;
 use VonageTest\MessageAssertionTrait;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 uses(MessageAssertionTrait::class);
 

@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 use VonageTest\VonageTestCase;
 
-uses(VonageTestCase::class);
 
 /**
  *

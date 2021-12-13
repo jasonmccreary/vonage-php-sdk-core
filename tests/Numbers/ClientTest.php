@@ -22,7 +22,6 @@ use Vonage\Numbers\Filter\AvailableNumbers;
 use Vonage\Numbers\Number;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
 

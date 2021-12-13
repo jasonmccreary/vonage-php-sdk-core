@@ -26,7 +26,6 @@ use Vonage\Insights\Standard;
 use Vonage\Insights\StandardCnam;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
 

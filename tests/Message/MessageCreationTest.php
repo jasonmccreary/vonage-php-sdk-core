@@ -15,7 +15,6 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Message;
 use Vonage\Message\Text;
 
-uses(VonageTestCase::class);
 
 
 beforeEach(function () {

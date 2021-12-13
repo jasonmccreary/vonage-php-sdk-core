@@ -26,7 +26,6 @@ use Vonage\InvalidResponseException;
 use Vonage\Network;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
 

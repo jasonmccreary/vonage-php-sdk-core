@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Network\Number\Request;
 
-uses(VonageTestCase::class);
 
 
 test('null values not present', function () {

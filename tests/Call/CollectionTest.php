@@ -22,7 +22,6 @@ use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
 

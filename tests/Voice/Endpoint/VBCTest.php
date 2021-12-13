@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\VBC;
 
-uses(VonageTestCase::class);
 
 test('sets extension at creation', function () {
     expect((new VBC('123'))->getId())->toBe('123');

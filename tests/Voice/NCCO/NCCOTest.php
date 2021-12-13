@@ -13,7 +13,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Record;
 use Vonage\Voice\NCCO\NCCO;
 
-uses(VonageTestCase::class);
 
 
 test('can create n c c o from array', function () {

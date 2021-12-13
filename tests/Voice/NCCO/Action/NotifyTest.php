@@ -13,7 +13,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Notify;
 use Vonage\Voice\Webhook;
 
-uses(VonageTestCase::class);
 
 test('can set additional information', function () {
     $webhook = new Webhook('https://test.domain/events');

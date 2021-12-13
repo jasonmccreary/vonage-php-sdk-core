@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Message\EncodingDetector;
 
-uses(VonageTestCase::class);
 
 /**
  *

@@ -10,7 +10,6 @@
 use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Keypair;
 
-uses(VonageTestCase::class);
 
 
 beforeEach(function () {

@@ -16,7 +16,6 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\InboundMessage;
 use Vonage\Message\Message;
 
-uses(VonageTestCase::class);
 
 
 test('construction with id', function () {

@@ -14,7 +14,6 @@ use Vonage\Application\Application;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Numbers\Number;
 
-uses(VonageTestCase::class);
 
 
 beforeEach(function () {

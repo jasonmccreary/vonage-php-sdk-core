@@ -17,7 +17,6 @@ use Vonage\Voice\Endpoint\SIP;
 use Vonage\Voice\Endpoint\VBC;
 use Vonage\Voice\Endpoint\Websocket;
 
-uses(VonageTestCase::class);
 
 test('can create app endpoint', function () {
     $this->assertInstanceOf(App::class, (new EndpointFactory())->create([

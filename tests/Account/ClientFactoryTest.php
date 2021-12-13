@@ -15,7 +15,6 @@ use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Factory\MapFactory;
 
-uses(VonageTestCase::class);
 
 beforeEach(function () {
     $this->vonageClient = $this->prophesize(Client::class);

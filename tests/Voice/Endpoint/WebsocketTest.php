@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\Websocket;
 
-uses(VonageTestCase::class);
 
 test('sets u r l at creation', function () {
     expect((new Websocket($this->uri))->getId())->toBe($this->uri);

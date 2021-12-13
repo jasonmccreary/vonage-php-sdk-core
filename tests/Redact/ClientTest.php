@@ -21,8 +21,6 @@ use Vonage\Client\Exception as ClientException;
 use Vonage\Redact\Client as RedactClient;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
-uses(Psr7AssertionTrait::class);
 
 
 beforeEach(function () {

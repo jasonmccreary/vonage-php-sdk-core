@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\SIP;
 
-uses(VonageTestCase::class);
 
 test('default endpoint is created properly', function () {
     $endpoint = new SIP($this->uri);

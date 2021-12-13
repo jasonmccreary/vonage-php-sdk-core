@@ -15,7 +15,6 @@ use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\SignatureSecret;
 
-uses(VonageTestCase::class);
 
 beforeEach(function () {
     $this->basic = new Basic('key', 'secret');
