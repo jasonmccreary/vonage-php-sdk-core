@@ -9,163 +9,148 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\SMS\Message;
-
 use InvalidArgumentException;
 use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\SMS;
 
-class SMSTest extends VonageTestCase
-{
-    public function testCanSetUnicodeType(): void
-    {
-        $sms = (new SMS('447700900000', '16105551212', 'Test Message'));
-        $this->assertSame('unicode', $sms->getType());
-        $sms->setType('text');
-        $this->assertSame('text', $sms->getType());
-    }
+uses(VonageTestCase::class);
 
-    public function testCanSetUnicodeTypeInConstructor(): void
-    {
-        $sms = (new SMS('447700900000', '16105551212', 'Test Message', 'text'));
-        $this->assertSame('text', $sms->getType());
-    }
+test('can set unicode type', function () {
+    $sms = (new SMS('447700900000', '16105551212', 'Test Message'));
+    $this->assertSame('unicode', $sms->getType());
+    $sms->setType('text');
+    $this->assertSame('text', $sms->getType());
+});
 
-    public function testDeliveryCallbackCanBeSet(): void
-    {
-        $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
-            ->setDeliveryReceiptCallback('https://test.domain/webhooks/dlr');
+test('can set unicode type in constructor', function () {
+    $sms = (new SMS('447700900000', '16105551212', 'Test Message', 'text'));
+    $this->assertSame('text', $sms->getType());
+});
 
-        $this->assertSame('https://test.domain/webhooks/dlr', $sms->getDeliveryReceiptCallback());
-        $this->assertTrue($sms->getRequestDeliveryReceipt());
+test('delivery callback can be set', function () {
+    $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
+        ->setDeliveryReceiptCallback('https://test.domain/webhooks/dlr');
 
-        $data = $sms->toArray();
+    $this->assertSame('https://test.domain/webhooks/dlr', $sms->getDeliveryReceiptCallback());
+    $this->assertTrue($sms->getRequestDeliveryReceipt());
 
-        $this->assertSame('https://test.domain/webhooks/dlr', $data['callback']);
-        $this->assertSame(1, $data['status-report-req']);
-    }
+    $data = $sms->toArray();
 
-    public function testMessageClassCanBeSet(): void
-    {
-        $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
-            ->setMessageClass(0);
+    $this->assertSame('https://test.domain/webhooks/dlr', $data['callback']);
+    $this->assertSame(1, $data['status-report-req']);
+});
 
-        $this->assertSame(0, $sms->getMessageClass());
+test('message class can be set', function () {
+    $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
+        ->setMessageClass(0);
 
-        $data = $sms->toArray();
+    $this->assertSame(0, $sms->getMessageClass());
 
-        $this->assertSame(0, $data['message-class']);
-    }
+    $data = $sms->toArray();
 
-    public function testInvalidMessageClassCannotBeSet(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Message Class must be 0-3');
+    $this->assertSame(0, $data['message-class']);
+});
 
-        (new SMS('447700900000', '16105551212', 'Test Message'))
-            ->setMessageClass(10);
-    }
+test('invalid message class cannot be set', function () {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('Message Class must be 0-3');
 
-    public function testTTLCanBeSet(): void
-    {
-        $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
-            ->setTtl(40000);
+    (new SMS('447700900000', '16105551212', 'Test Message'))
+        ->setMessageClass(10);
+});
 
-        $this->assertSame(40000, $sms->getTtl());
+test('t t l can be set', function () {
+    $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
+        ->setTtl(40000);
 
-        $data = $sms->toArray();
+    $this->assertSame(40000, $sms->getTtl());
 
-        $this->assertSame(40000, $data['ttl']);
-    }
+    $data = $sms->toArray();
 
-    public function testCannotSetInvalidTTL(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('SMS TTL must be in the range of 20000-604800000 milliseconds');
+    $this->assertSame(40000, $data['ttl']);
+});
 
-        (new SMS('447700900000', '16105551212', 'Test Message'))
-            ->setTtl(2);
-    }
+test('cannot set invalid t t l', function () {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('SMS TTL must be in the range of 20000-604800000 milliseconds');
 
-    public function testCannotSetTooLongOfaClientRef(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Client Ref can be no more than 40 characters');
+    (new SMS('447700900000', '16105551212', 'Test Message'))
+        ->setTtl(2);
+});
 
-        (new SMS('447700900000', '16105551212', 'Test Message'))
-            ->setClientRef('This is a really long client ref and should throw an exception');
-    }
+test('cannot set too long ofa client ref', function () {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('Client Ref can be no more than 40 characters');
 
-    public function testCanSetEntityId()
-    {
-        $sms = new SMS('447700900000', '16105551212', 'Test Message');
-        $sms->setEntityId('abcd');
+    (new SMS('447700900000', '16105551212', 'Test Message'))
+        ->setClientRef('This is a really long client ref and should throw an exception');
+});
 
-        $expected = [
-            'text' => 'Test Message',
-            'entity-id' => 'abcd',
-            'to' => '447700900000',
-            'from' => '16105551212',
-            'type' => 'unicode',
-            'ttl' => 259200000,
-            'status-report-req' => 1,
-        ];
+test('can set entity id', function () {
+    $sms = new SMS('447700900000', '16105551212', 'Test Message');
+    $sms->setEntityId('abcd');
 
-        $this->assertSame($expected, $sms->toArray());
-        $this->assertSame($expected['entity-id'], $sms->getEntityId());
-    }
+    $expected = [
+        'text' => 'Test Message',
+        'entity-id' => 'abcd',
+        'to' => '447700900000',
+        'from' => '16105551212',
+        'type' => 'unicode',
+        'ttl' => 259200000,
+        'status-report-req' => 1,
+    ];
 
-    public function testCanSetContentId()
-    {
-        $sms = new SMS('447700900000', '16105551212', 'Test Message');
-        $sms->setContentId('1234');
+    $this->assertSame($expected, $sms->toArray());
+    $this->assertSame($expected['entity-id'], $sms->getEntityId());
+});
 
-        $expected = [
-            'text' => 'Test Message',
-            'content-id' => '1234',
-            'to' => '447700900000',
-            'from' => '16105551212',
-            'type' => 'unicode',
-            'ttl' => 259200000,
-            'status-report-req' => 1,
-        ];
+test('can set content id', function () {
+    $sms = new SMS('447700900000', '16105551212', 'Test Message');
+    $sms->setContentId('1234');
 
-        $this->assertSame($expected, $sms->toArray());
-        $this->assertSame($expected['content-id'], $sms->getContentId());
-    }
+    $expected = [
+        'text' => 'Test Message',
+        'content-id' => '1234',
+        'to' => '447700900000',
+        'from' => '16105551212',
+        'type' => 'unicode',
+        'ttl' => 259200000,
+        'status-report-req' => 1,
+    ];
 
-    public function testDLTInfoAppearsInRequest()
-    {
-        $sms = new SMS('447700900000', '16105551212', 'Test Message');
-        $sms->enableDLT('abcd', '1234');
+    $this->assertSame($expected, $sms->toArray());
+    $this->assertSame($expected['content-id'], $sms->getContentId());
+});
 
-        $expected = [
-            'text' => 'Test Message',
-            'entity-id' => 'abcd',
-            'content-id' => '1234',
-            'to' => '447700900000',
-            'from' => '16105551212',
-            'type' => 'unicode',
-            'ttl' => 259200000,
-            'status-report-req' => 1,
-        ];
+test('d l t info appears in request', function () {
+    $sms = new SMS('447700900000', '16105551212', 'Test Message');
+    $sms->enableDLT('abcd', '1234');
 
-        $this->assertSame($expected, $sms->toArray());
-    }
+    $expected = [
+        'text' => 'Test Message',
+        'entity-id' => 'abcd',
+        'content-id' => '1234',
+        'to' => '447700900000',
+        'from' => '16105551212',
+        'type' => 'unicode',
+        'ttl' => 259200000,
+        'status-report-req' => 1,
+    ];
 
-    public function testDLTInfoDoesNotAppearsWhenNotSet()
-    {
-        $sms = new SMS('447700900000', '16105551212', 'Test Message');
+    $this->assertSame($expected, $sms->toArray());
+});
 
-        $expected = [
-            'text' => 'Test Message',
-            'to' => '447700900000',
-            'from' => '16105551212',
-            'type' => 'unicode',
-            'ttl' => 259200000,
-            'status-report-req' => 1,
-        ];
+test('d l t info does not appears when not set', function () {
+    $sms = new SMS('447700900000', '16105551212', 'Test Message');
 
-        $this->assertSame($expected, $sms->toArray());
-    }
-}
+    $expected = [
+        'text' => 'Test Message',
+        'to' => '447700900000',
+        'from' => '16105551212',
+        'type' => 'unicode',
+        'ttl' => 259200000,
+        'status-report-req' => 1,
+    ];
+
+    $this->assertSame($expected, $sms->toArray());
+});

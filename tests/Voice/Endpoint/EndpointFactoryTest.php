@@ -9,8 +9,6 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Voice\Endpoint;
-
 use VonageTest\VonageTestCase;
 use RuntimeException;
 use Vonage\Voice\Endpoint\App;
@@ -20,80 +18,73 @@ use Vonage\Voice\Endpoint\SIP;
 use Vonage\Voice\Endpoint\VBC;
 use Vonage\Voice\Endpoint\Websocket;
 
-class EndpointFactoryTest extends VonageTestCase
-{
-    public function testCanCreateAppEndpoint(): void
-    {
-        $this->assertInstanceOf(App::class, (new EndpointFactory())->create([
-            'type' => 'app',
+uses(VonageTestCase::class);
+
+test('can create app endpoint', function () {
+    $this->assertInstanceOf(App::class, (new EndpointFactory())->create([
+        'type' => 'app',
+        'user' => 'username',
+    ]));
+});
+
+test('can create phone endpoint', function () {
+    $data = [
+        'type' => 'phone',
+        'number' => '15551231234',
+        'onAnswer' => [
+            'url' => 'https://test.domain/answerNCCO.json',
+            'ringbackTone' => 'https://test.domain/ringback.mp3'
+        ]
+    ];
+    $factory = new EndpointFactory();
+    $endpoint = $factory->create($data);
+
+    $this->assertInstanceOf(Phone::class, $endpoint);
+    $this->assertSame($data, $endpoint->toArray());
+});
+
+test('can create s i p endpoint', function () {
+    $data = [
+        'type' => 'sip',
+        'uri' => 'sip:rebekka@sip.example.com',
+    ];
+    $endpoint = (new EndpointFactory())->create($data);
+
+    $this->assertInstanceOf(SIP::class, $endpoint);
+    $this->assertSame($data['uri'], $endpoint->getId());
+});
+
+test('can create v b c endpoint', function () {
+    $data = [
+        'type' => 'vbc',
+        'extension' => '123',
+    ];
+    $endpoint = (new EndpointFactory())->create($data);
+
+    $this->assertInstanceOf(VBC::class, $endpoint);
+    $this->assertSame($data, $endpoint->toArray());
+});
+
+test('can create websocket endpoint', function () {
+    $data = [
+        'type' => 'websocket',
+        'uri' => 'https://testdomain.com/websocket',
+        'content-type' => 'audio/116;rate=8000',
+        'headers' => ['key' => 'value'],
+    ];
+    $endpoint = (new EndpointFactory())->create($data);
+
+    $this->assertInstanceOf(Websocket::class, $endpoint);
+    $this->assertSame($data, $endpoint->toArray());
+});
+
+test('throws exception on unknown endpoint', function () {
+    $this->expectException(RuntimeException::class);
+    $this->expectExceptionMessage('Unknown endpoint type');
+
+    (new EndpointFactory())
+        ->create([
+            'type' => 'foo',
             'user' => 'username',
-        ]));
-    }
-
-    public function testCanCreatePhoneEndpoint(): void
-    {
-        $data = [
-            'type' => 'phone',
-            'number' => '15551231234',
-            'onAnswer' => [
-                'url' => 'https://test.domain/answerNCCO.json',
-                'ringbackTone' => 'https://test.domain/ringback.mp3'
-            ]
-        ];
-        $factory = new EndpointFactory();
-        $endpoint = $factory->create($data);
-
-        $this->assertInstanceOf(Phone::class, $endpoint);
-        $this->assertSame($data, $endpoint->toArray());
-    }
-
-    public function testCanCreateSIPEndpoint(): void
-    {
-        $data = [
-            'type' => 'sip',
-            'uri' => 'sip:rebekka@sip.example.com',
-        ];
-        $endpoint = (new EndpointFactory())->create($data);
-
-        $this->assertInstanceOf(SIP::class, $endpoint);
-        $this->assertSame($data['uri'], $endpoint->getId());
-    }
-
-    public function testCanCreateVBCEndpoint(): void
-    {
-        $data = [
-            'type' => 'vbc',
-            'extension' => '123',
-        ];
-        $endpoint = (new EndpointFactory())->create($data);
-
-        $this->assertInstanceOf(VBC::class, $endpoint);
-        $this->assertSame($data, $endpoint->toArray());
-    }
-
-    public function testCanCreateWebsocketEndpoint(): void
-    {
-        $data = [
-            'type' => 'websocket',
-            'uri' => 'https://testdomain.com/websocket',
-            'content-type' => 'audio/116;rate=8000',
-            'headers' => ['key' => 'value'],
-        ];
-        $endpoint = (new EndpointFactory())->create($data);
-
-        $this->assertInstanceOf(Websocket::class, $endpoint);
-        $this->assertSame($data, $endpoint->toArray());
-    }
-
-    public function testThrowsExceptionOnUnknownEndpoint(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Unknown endpoint type');
-
-        (new EndpointFactory())
-            ->create([
-                'type' => 'foo',
-                'user' => 'username',
-            ]);
-    }
-}
+        ]);
+});

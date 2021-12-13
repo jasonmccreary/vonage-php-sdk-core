@@ -9,41 +9,35 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Call;
-
 use Helmich\JsonAssert\JsonAssertions;
 use VonageTest\VonageTestCase;
 use Vonage\Call\Transfer;
+
+uses(VonageTestCase::class);
+uses(JsonAssertions::class);
 
 use function file_get_contents;
 use function json_decode;
 use function json_encode;
 
-class TransferTest extends VonageTestCase
-{
-    use JsonAssertions;
+test('structure with array', function () {
+    $urls = ['http://example.com', 'http://alternate.example.com'];
+    $schema = file_get_contents(__DIR__ . '/schema/transfer.json');
+    $json = json_decode(json_encode(@new Transfer($urls)), true);
 
-    public function testStructureWithArray(): void
-    {
-        $urls = ['http://example.com', 'http://alternate.example.com'];
-        $schema = file_get_contents(__DIR__ . '/schema/transfer.json');
-        $json = json_decode(json_encode(@new Transfer($urls)), true);
+    $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+    $this->assertJsonValueEquals($json, '$.action', 'transfer');
+    $this->assertJsonValueEquals($json, '$.destination.type', 'ncco');
+    $this->assertJsonValueEquals($json, '$.destination.url', $urls);
+});
 
-        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
-        $this->assertJsonValueEquals($json, '$.action', 'transfer');
-        $this->assertJsonValueEquals($json, '$.destination.type', 'ncco');
-        $this->assertJsonValueEquals($json, '$.destination.url', $urls);
-    }
+test('structure with string', function () {
+    $urls = 'http://example.com';
+    $schema = file_get_contents(__DIR__ . '/schema/transfer.json');
+    $json = json_decode(json_encode(@new Transfer($urls)), true);
 
-    public function testStructureWithString(): void
-    {
-        $urls = 'http://example.com';
-        $schema = file_get_contents(__DIR__ . '/schema/transfer.json');
-        $json = json_decode(json_encode(@new Transfer($urls)), true);
-
-        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
-        $this->assertJsonValueEquals($json, '$.action', 'transfer');
-        $this->assertJsonValueEquals($json, '$.destination.type', 'ncco');
-        $this->assertJsonValueEquals($json, '$.destination.url', [$urls]);
-    }
-}
+    $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+    $this->assertJsonValueEquals($json, '$.action', 'transfer');
+    $this->assertJsonValueEquals($json, '$.destination.type', 'ncco');
+    $this->assertJsonValueEquals($json, '$.destination.url', [$urls]);
+});

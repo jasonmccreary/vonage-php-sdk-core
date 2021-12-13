@@ -9,41 +9,29 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Account;
-
 use VonageTest\VonageTestCase;
 use Vonage\Account\ClientFactory;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Factory\MapFactory;
 
-class ClientFactoryTest extends VonageTestCase
-{
-    /**
-     * @var MapFactory
-     */
-    protected $mapFactory;
+uses(VonageTestCase::class);
 
-    protected $vonageClient;
+beforeEach(function () {
+    $this->vonageClient = $this->prophesize(Client::class);
+    $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
+    $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-    public function setUp(): void
-    {
-        $this->vonageClient = $this->prophesize(Client::class);
-        $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
-        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+    /** @noinspection PhpParamsInspection */
+    $this->mapFactory = new MapFactory([APIResource::class => APIResource::class], $this->vonageClient->reveal());
+});
 
-        /** @noinspection PhpParamsInspection */
-        $this->mapFactory = new MapFactory([APIResource::class => APIResource::class], $this->vonageClient->reveal());
-    }
+test('u r is are correct', function () {
+    $factory = new ClientFactory();
+    $client = $factory($this->mapFactory);
 
-    public function testURIsAreCorrect(): void
-    {
-        $factory = new ClientFactory();
-        $client = $factory($this->mapFactory);
-
-        $this->assertSame('/accounts', $client->getSecretsAPI()->getBaseUri());
-        $this->assertSame('https://api.nexmo.com', $client->getSecretsAPI()->getBaseUrl());
-        $this->assertSame('/account', $client->getAccountAPI()->getBaseUri());
-        $this->assertSame('https://rest.nexmo.com', $client->getAccountAPI()->getBaseUrl());
-    }
-}
+    $this->assertSame('/accounts', $client->getSecretsAPI()->getBaseUri());
+    $this->assertSame('https://api.nexmo.com', $client->getSecretsAPI()->getBaseUrl());
+    $this->assertSame('/account', $client->getAccountAPI()->getBaseUri());
+    $this->assertSame('https://rest.nexmo.com', $client->getAccountAPI()->getBaseUrl());
+});

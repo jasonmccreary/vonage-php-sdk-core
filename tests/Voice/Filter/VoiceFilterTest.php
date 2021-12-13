@@ -9,8 +9,6 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Voice\Filter;
-
 use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
@@ -18,91 +16,81 @@ use InvalidArgumentException;
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Filter\VoiceFilter;
 
-class VoiceFilterTest extends VonageTestCase
-{
-    /**
-     * @throws Exception
-     */
-    public function testQueryHasStartDate(): void
-    {
-        $filter = new VoiceFilter();
-        $filter->setDateStart(new DateTimeImmutable('2020-01-01', new DateTimeZone('Z')));
-        $query = $filter->getQuery();
+uses(VonageTestCase::class);
 
-        $this->assertSame('2020-01-01T00:00:00Z', $query['date_start']);
-    }
+/**
+ * @throws Exception
+ */
+test('query has start date', function () {
+    $filter = new VoiceFilter();
+    $filter->setDateStart(new DateTimeImmutable('2020-01-01', new DateTimeZone('Z')));
+    $query = $filter->getQuery();
 
-    /**
-     * @throws Exception
-     */
-    public function testQueryHasEndDate(): void
-    {
-        $query = (new VoiceFilter())
-            ->setDateEnd(new DateTimeImmutable('2020-01-01', new DateTimeZone('Z')))
-            ->getQuery();
+    $this->assertSame('2020-01-01T00:00:00Z', $query['date_start']);
+});
 
-        $this->assertSame('2020-01-01T00:00:00Z', $query['date_end']);
-    }
+/**
+ * @throws Exception
+ */
+test('query has end date', function () {
+    $query = (new VoiceFilter())
+        ->setDateEnd(new DateTimeImmutable('2020-01-01', new DateTimeZone('Z')))
+        ->getQuery();
 
-    public function testQueryHasConversationUUID(): void
-    {
-        $query = (new VoiceFilter())
-            ->setConversationUUID('CON-c39bc0bb-7ebc-405f-801b-f6b9a0d92860')
-            ->getQuery();
+    $this->assertSame('2020-01-01T00:00:00Z', $query['date_end']);
+});
 
-        $this->assertSame('CON-c39bc0bb-7ebc-405f-801b-f6b9a0d92860', $query['conversation_uuid']);
-    }
+test('query has conversation u u i d', function () {
+    $query = (new VoiceFilter())
+        ->setConversationUUID('CON-c39bc0bb-7ebc-405f-801b-f6b9a0d92860')
+        ->getQuery();
 
-    public function testCanSetRecordIndex(): void
-    {
-        $query = (new VoiceFilter())
-            ->setRecordIndex(100)
-            ->getQuery();
+    $this->assertSame('CON-c39bc0bb-7ebc-405f-801b-f6b9a0d92860', $query['conversation_uuid']);
+});
 
-        $this->assertSame(100, $query['record_index']);
-    }
+test('can set record index', function () {
+    $query = (new VoiceFilter())
+        ->setRecordIndex(100)
+        ->getQuery();
 
-    public function testCanSetPageSize(): void
-    {
-        $query = (new VoiceFilter())
-            ->setPageSize(100)
-            ->getQuery();
+    $this->assertSame(100, $query['record_index']);
+});
 
-        $this->assertSame(100, $query['page_size']);
-    }
+test('can set page size', function () {
+    $query = (new VoiceFilter())
+        ->setPageSize(100)
+        ->getQuery();
 
-    public function testCanSetOrder(): void
-    {
-        $query = (new VoiceFilter())
-            ->setOrder(VoiceFilter::ORDER_ASC)
-            ->getQuery();
+    $this->assertSame(100, $query['page_size']);
+});
 
-        $this->assertSame(VoiceFilter::ORDER_ASC, $query['order']);
-    }
+test('can set order', function () {
+    $query = (new VoiceFilter())
+        ->setOrder(VoiceFilter::ORDER_ASC)
+        ->getQuery();
 
-    public function testFilterThrowExceptionOnBadOrder(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Order must be `asc` or `desc`');
+    $this->assertSame(VoiceFilter::ORDER_ASC, $query['order']);
+});
 
-        (new VoiceFilter())->setOrder('foo');
-    }
+test('filter throw exception on bad order', function () {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('Order must be `asc` or `desc`');
 
-    public function testStartDateTimezoneIsSwitchedToUTC()
-    {
-        $filter = new VoiceFilter();
-        $filter->setDateStart(new DateTimeImmutable('2020-01-01', new DateTimeZone('America/New_York')));
+    (new VoiceFilter())->setOrder('foo');
+});
 
-        $startDate = $filter->getDateStart();
-        $this->assertSame('Z', $startDate->getTimezone()->getName());
-    }
+test('start date timezone is switched to u t c', function () {
+    $filter = new VoiceFilter();
+    $filter->setDateStart(new DateTimeImmutable('2020-01-01', new DateTimeZone('America/New_York')));
 
-    public function testEndDateTimezoneIsSwitchedToUTC()
-    {
-        $filter = new VoiceFilter();
-        $filter->setDateEnd(new DateTimeImmutable('2020-01-01', new DateTimeZone('America/New_York')));
+    $startDate = $filter->getDateStart();
+    $this->assertSame('Z', $startDate->getTimezone()->getName());
+});
 
-        $startDate = $filter->getDateEnd();
-        $this->assertSame('Z', $startDate->getTimezone()->getName());
-    }
-}
+test('end date timezone is switched to u t c', function () {
+    $filter = new VoiceFilter();
+    $filter->setDateEnd(new DateTimeImmutable('2020-01-01', new DateTimeZone('America/New_York')));
+
+    $startDate = $filter->getDateEnd();
+    $this->assertSame('Z', $startDate->getTimezone()->getName());
+});

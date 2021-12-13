@@ -9,55 +9,48 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Insights;
-
 use VonageTest\VonageTestCase;
 
-class CnamTraitTest extends VonageTestCase
-{
-    /**
-     * @dataProvider cnamProvider
-     *
-     * @param $cnam
-     * @param $inputData
-     */
-    public function testArrayAccess($cnam, $inputData): void
-    {
-        $this->assertEquals($inputData['first_name'], @$cnam['first_name']);
-        $this->assertEquals($inputData['last_name'], @$cnam['last_name']);
-        $this->assertEquals($inputData['caller_name'], @$cnam['caller_name']);
-        $this->assertEquals($inputData['caller_type'], @$cnam['caller_type']);
-    }
+uses(VonageTestCase::class);
 
-    /**
-     * @dataProvider cnamProvider
-     *
-     * @param $cnam
-     * @param $inputData
-     */
-    public function testObjectAccess($cnam, $inputData): void
-    {
-        $this->assertEquals($inputData['first_name'], $cnam->getFirstName());
-        $this->assertEquals($inputData['last_name'], $cnam->getLastName());
-        $this->assertEquals($inputData['caller_name'], $cnam->getCallerName());
-        $this->assertEquals($inputData['caller_type'], $cnam->getCallerType());
-    }
+/**
+ *
+ * @param $cnam
+ * @param $inputData
+ */
+test('array access', function ($cnam, $inputData) {
+    $this->assertEquals($inputData['first_name'], @$cnam['first_name']);
+    $this->assertEquals($inputData['last_name'], @$cnam['last_name']);
+    $this->assertEquals($inputData['caller_name'], @$cnam['caller_name']);
+    $this->assertEquals($inputData['caller_type'], @$cnam['caller_type']);
+})->with('cnamProvider');
 
-    public function cnamProvider(): array
-    {
-        $r = [];
+/**
+ *
+ * @param $cnam
+ * @param $inputData
+ */
+test('object access', function ($cnam, $inputData) {
+    $this->assertEquals($inputData['first_name'], $cnam->getFirstName());
+    $this->assertEquals($inputData['last_name'], $cnam->getLastName());
+    $this->assertEquals($inputData['caller_name'], $cnam->getCallerName());
+    $this->assertEquals($inputData['caller_type'], $cnam->getCallerType());
+})->with('cnamProvider');
 
-        $input1 = [
-            'first_name' => 'Tony',
-            'last_name' => 'Tiger',
-            'caller_name' => 'Tony Tiger Esq',
-            'caller_type' => 'consumer'
-        ];
+// Datasets
+dataset('cnamProvider', function () {
+    $r = [];
 
-        $cnam1 = new Cnam('14155550100');
-        $cnam1->fromArray($input1);
-        $r['cnam-1'] = [$cnam1, $input1];
+    $input1 = [
+        'first_name' => 'Tony',
+        'last_name' => 'Tiger',
+        'caller_name' => 'Tony Tiger Esq',
+        'caller_type' => 'consumer'
+    ];
 
-        return $r;
-    }
-}
+    $cnam1 = new Cnam('14155550100');
+    $cnam1->fromArray($input1);
+    $r['cnam-1'] = [$cnam1, $input1];
+
+    return $r;
+});

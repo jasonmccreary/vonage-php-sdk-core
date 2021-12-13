@@ -9,117 +9,84 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Voice\Call;
-
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Call\Call;
 
-class CallTest extends VonageTestCase
-{
-    /**
-     * @var Call
-     */
-    protected $call;
+uses(VonageTestCase::class);
 
-    /**
-     * @var string
-     */
-    protected $to = '15554443232';
+beforeEach(function () {
+    $this->call = new Call($this->url, $this->to, $this->from);
+});
 
-    /**
-     * @var string
-     */
-    protected $from = '15551112323';
+test('construct params', function () {
+    $params = $this->call->getParams();
 
-    /**
-     * @var string
-     */
-    protected $url = 'http://example.com';
+    $this->assertArrayHasKey('to', $params);
+    $this->assertArrayHasKey('from', $params);
+    $this->assertArrayHasKey('answer_url', $params);
+    $this->assertEquals($this->to, $params['to']);
+    $this->assertEquals($this->from, $params['from']);
+    $this->assertEquals($this->url, $params['answer_url']);
+});
 
-    public function setUp(): void
-    {
-        $this->call = new Call($this->url, $this->to, $this->from);
-    }
+test('from optional', function () {
+    $this->assertArrayNotHasKey('from', (new Call($this->url, $this->to))->getParams());
+});
 
-    public function testConstructParams(): void
-    {
-        $params = $this->call->getParams();
+test('machine', function () {
+    $this->call->setMachineDetection();
+    $params = $this->call->getParams();
 
-        $this->assertArrayHasKey('to', $params);
-        $this->assertArrayHasKey('from', $params);
-        $this->assertArrayHasKey('answer_url', $params);
-        $this->assertEquals($this->to, $params['to']);
-        $this->assertEquals($this->from, $params['from']);
-        $this->assertEquals($this->url, $params['answer_url']);
-    }
+    $this->assertArrayHasKey('machine_detection', $params);
+    $this->assertArrayNotHasKey('machine_timeout', $params);
+    $this->assertEquals('hangup', $params['machine_detection']);
 
-    public function testFromOptional(): void
-    {
-        $this->assertArrayNotHasKey('from', (new Call($this->url, $this->to))->getParams());
-    }
+    $this->call->setMachineDetection(true, 100);
+    $params = $this->call->getParams();
 
-    public function testMachine(): void
-    {
-        $this->call->setMachineDetection();
-        $params = $this->call->getParams();
+    $this->assertArrayHasKey('machine_detection', $params);
+    $this->assertArrayHasKey('machine_timeout', $params);
+    $this->assertEquals('hangup', $params['machine_detection']);
+    $this->assertEquals(100, $params['machine_timeout']);
 
-        $this->assertArrayHasKey('machine_detection', $params);
-        $this->assertArrayNotHasKey('machine_timeout', $params);
-        $this->assertEquals('hangup', $params['machine_detection']);
+    $this->call->setMachineDetection(false);
+    $params = $this->call->getParams();
 
-        $this->call->setMachineDetection(true, 100);
-        $params = $this->call->getParams();
+    $this->assertArrayHasKey('machine_detection', $params);
+    $this->assertArrayNotHasKey('machine_timeout', $params);
+    $this->assertEquals('true', $params['machine_detection']);
+});
 
-        $this->assertArrayHasKey('machine_detection', $params);
-        $this->assertArrayHasKey('machine_timeout', $params);
-        $this->assertEquals('hangup', $params['machine_detection']);
-        $this->assertEquals(100, $params['machine_timeout']);
+test('callback', function (string $method, string $param, string $param_method) {
+    $this->call->$method('http://example.com');
+    $params = $this->call->getParams();
 
-        $this->call->setMachineDetection(false);
-        $params = $this->call->getParams();
+    $this->assertArrayHasKey($param, $params);
+    $this->assertEquals('http://example.com', $params[$param]);
+    $this->assertArrayNotHasKey($param_method, $params);
 
-        $this->assertArrayHasKey('machine_detection', $params);
-        $this->assertArrayNotHasKey('machine_timeout', $params);
-        $this->assertEquals('true', $params['machine_detection']);
-    }
+    $this->call->$method('http://example.com', 'POST');
+    $params = $this->call->getParams();
 
-    /**
-     * @dataProvider getCallbacks
-     */
-    public function testCallback(string $method, string $param, string $param_method): void
-    {
-        $this->call->$method('http://example.com');
-        $params = $this->call->getParams();
+    $this->assertArrayHasKey($param, $params);
+    $this->assertEquals('http://example.com', $params[$param]);
+    $this->assertArrayHasKey($param_method, $params);
+    $this->assertEquals('POST', $params[$param_method]);
 
-        $this->assertArrayHasKey($param, $params);
-        $this->assertEquals('http://example.com', $params[$param]);
-        $this->assertArrayNotHasKey($param_method, $params);
+    $this->call->$method('http://example.com');
+    $params = $this->call->getParams();
 
-        $this->call->$method('http://example.com', 'POST');
-        $params = $this->call->getParams();
+    $this->assertArrayHasKey($param, $params);
+    $this->assertEquals('http://example.com', $params[$param]);
+    $this->assertArrayNotHasKey($param_method, $params);
+})->with('getCallbacks');
 
-        $this->assertArrayHasKey($param, $params);
-        $this->assertEquals('http://example.com', $params[$param]);
-        $this->assertArrayHasKey($param_method, $params);
-        $this->assertEquals('POST', $params[$param_method]);
-
-        $this->call->$method('http://example.com');
-        $params = $this->call->getParams();
-
-        $this->assertArrayHasKey($param, $params);
-        $this->assertEquals('http://example.com', $params[$param]);
-        $this->assertArrayNotHasKey($param_method, $params);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getCallbacks(): array
-    {
-        return [
-            ['setAnswer', 'answer_url', 'answer_method'],
-            ['setError', 'error_url', 'error_method'],
-            ['setStatus', 'status_url', 'status_method']
-        ];
-    }
-}
+// Datasets
+/**
+ * @return string[]
+ */
+dataset('getCallbacks', [
+    ['setAnswer', 'answer_url', 'answer_method'],
+    ['setError', 'error_url', 'error_method'],
+    ['setStatus', 'status_url', 'status_method']
+]);
