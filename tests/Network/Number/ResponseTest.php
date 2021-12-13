@@ -9,135 +9,104 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Network\Number;
-
-use BadMethodCallException;
-use VonageTest\VonageTestCase;
 use Vonage\Network\Number\Callback;
 use Vonage\Network\Number\Response;
 
-class ResponseTest extends VonageTestCase
-{
-    protected $data = [
-        'request_id' => '12345',
-        'number' => '14443332121',
-        'remaining_balance' => 123.45,
-        'request_price' => 0.05,
-        'callback_total_parts' => 2,
-        'status' => 0,
-    ];
+beforeEach(function () {
+    $this->response = new Response($this->data);
+});
 
-    /**
-     * @var Response;
-     */
-    protected $response;
+test('methods match data', function () {
+    expect($this->response->getId())->toEqual($this->data['request_id']);
+    expect($this->response->getNumber())->toEqual($this->data['number']);
+    expect($this->response->getPrice())->toEqual($this->data['request_price']);
+    expect($this->response->getBalance())->toEqual($this->data['remaining_balance']);
+    expect($this->response->getCallbackTotal())->toEqual($this->data['callback_total_parts']);
+    expect($this->response->getStatus())->toEqual($this->data['status']);
+});
 
-    public function setUp(): void
-    {
-        $this->response = new Response($this->data);
-    }
+/**
+ *
+ * @param $property
+ */
+test('cant get optional data before callback', function ($property) {
+    $this->expectException(BadMethodCallException::class);
 
-    public function testMethodsMatchData(): void
-    {
-        $this->assertEquals($this->data['request_id'], $this->response->getId());
-        $this->assertEquals($this->data['number'], $this->response->getNumber());
-        $this->assertEquals($this->data['request_price'], $this->response->getPrice());
-        $this->assertEquals($this->data['remaining_balance'], $this->response->getBalance());
-        $this->assertEquals($this->data['callback_total_parts'], $this->response->getCallbackTotal());
-        $this->assertEquals($this->data['status'], $this->response->getStatus());
-    }
+    $get = 'get' . $property;
+    $this->response->$get();
+})->with('getOptionalProperties');
 
-    /**
-     * @dataProvider getOptionalProperties
-     *
-     * @param $property
-     */
-    public function testCantGetOptionalDataBeforeCallback($property): void
-    {
-        $this->expectException(BadMethodCallException::class);
+/**
+ *
+ * @param $property
+ */
+test('cant has optional data before callback', function ($property) {
+    $this->expectException(BadMethodCallException::class);
 
-        $get = 'get' . $property;
-        $this->response->$get();
-    }
+    $has = 'has' . $property;
+    $this->response->$has();
+})->with('getOptionalProperties');
 
-    /**
-     * @dataProvider getOptionalProperties
-     *
-     * @param $property
-     */
-    public function testCantHasOptionalDataBeforeCallback($property): void
-    {
-        $this->expectException(BadMethodCallException::class);
+/**
+ * Test that any optional parameters are simply passed to the callback stack (when there is at least one), until the
+ * value is found (or return the last callback's data).
+ *
+ *
+ * @param $property
+ */
+test('optional data proxies callback', function ($property) {
+    $has = 'has' . $property;
+    $get = 'get' . $property;
 
-        $has = 'has' . $property;
-        $this->response->$has();
-    }
+    $callback = $this->getMockBuilder(Callback::class)
+        ->disableOriginalConstructor()
+        ->setMethods(['getId', $has, $get])
+        ->getMock();
 
-    /**
-     * Test that any optional parameters are simply passed to the callback stack (when there is at least one), until the
-     * value is found (or return the last callback's data).
-     *
-     * @dataProvider getOptionalProperties
-     *
-     * @param $property
-     */
-    public function testOptionalDataProxiesCallback($property): void
-    {
-        $has = 'has' . $property;
-        $get = 'get' . $property;
+    //setup so the request will accept the callback
+    $callback
+        ->method('getId')
+        ->willReturn($this->data['request_id']);
 
-        $callback = $this->getMockBuilder(Callback::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getId', $has, $get])
-            ->getMock();
+    $callback->expects(self::atLeastOnce())
+        ->method($has)
+        ->willReturnCallback(function () {
+            static $called = false;
+            if (!$called) {
+                $called = true;
+                return false;
+            }
 
-        //setup so the request will accept the callback
-        $callback
-            ->method('getId')
-            ->willReturn($this->data['request_id']);
+            return true;
+        });
 
-        $callback->expects(self::atLeastOnce())
-            ->method($has)
-            ->willReturnCallback(function () {
-                static $called = false;
-                if (!$called) {
-                    $called = true;
-                    return false;
-                }
+    $callback->expects(self::atLeastOnce())
+        ->method($get)
+        ->willReturnCallback(function () {
+            static $called = false;
+            if (!$called) {
+                $called = true;
+                return null;
+            }
 
-                return true;
-            });
+            return 'data';
+        });
 
-        $callback->expects(self::atLeastOnce())
-            ->method($get)
-            ->willReturnCallback(function () {
-                static $called = false;
-                if (!$called) {
-                    $called = true;
-                    return null;
-                }
+    $response = new Response($this->data, [$callback, $callback]);
 
-                return 'data';
-            });
+    $this->assertTrue($response->$has());
+    $this->assertEquals('data', $response->$get());
+})->with('getOptionalProperties');
 
-        $response = new Response($this->data, [$callback, $callback]);
-
-        $this->assertTrue($response->$has());
-        $this->assertEquals('data', $response->$get());
-    }
-
-    public function getOptionalProperties(): array
-    {
-        return [
-            ['Type'],
-            ['Network'],
-            ['NetworkName'],
-            ['Valid'],
-            ['Ported'],
-            ['Reachable'],
-            ['Roaming'],
-            ['RoamingCountry'],
-            ['RoamingNetwork'],
-        ];
-    }
-}
+// Datasets
+dataset('getOptionalProperties', [
+    ['Type'],
+    ['Network'],
+    ['NetworkName'],
+    ['Valid'],
+    ['Ported'],
+    ['Reachable'],
+    ['Roaming'],
+    ['RoamingCountry'],
+    ['RoamingNetwork'],
+]);

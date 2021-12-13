@@ -9,172 +9,149 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Application;
-
-use Exception;
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Vonage\Application\Application;
 use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
+
 use Vonage\Client\Exception\Exception as ClientException;
 
-use function fopen;
+beforeEach(function () {
+    app() = (new Application())->setName('test');
+});
 
-class ApplicationTest extends VonageTestCase
-{
-    /**
-     * @var Application
-     */
-    protected $app;
+test('construct with id', function () {
+    $app = new Application('1a20a124-1775-412b-b623-e6985f4aace0');
 
-    public function setUp(): void
-    {
-        $this->app = (new Application())->setName('test');
-    }
+    expect($app->getId())->toEqual('1a20a124-1775-412b-b623-e6985f4aace0');
+});
 
-    public function testConstructWithId(): void
-    {
-        $app = new Application('1a20a124-1775-412b-b623-e6985f4aace0');
+/**
+ * @throws ClientException
+ */
+test('name is set', function () {
+    expect(@app()->getRequestData()['name'])->toEqual('test');
+});
 
-        $this->assertEquals('1a20a124-1775-412b-b623-e6985f4aace0', $app->getId());
-    }
+/**
+ * @throws Exception
+ */
+test('voice webhook params', function () {
+    @app()->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
+    @app()->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com/answer');
 
-    /**
-     * @throws ClientException
-     */
-    public function testNameIsSet(): void
-    {
-        $this->assertEquals('test', @$this->app->getRequestData()['name']);
-    }
+    $params = @app()->getRequestData();
+    $capabilities = $params['capabilities'];
 
-    /**
-     * @throws Exception
-     */
-    public function testVoiceWebhookParams(): void
-    {
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::EVENT, 'http://example.com/event');
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com/answer');
+    $this->assertArrayHasKey('event_url', $capabilities['voice']['webhooks']);
+    $this->assertArrayHasKey('answer_url', $capabilities['voice']['webhooks']);
+    expect($capabilities['voice']['webhooks']['event_url']['address'])->toEqual('http://example.com/event');
+    expect($capabilities['voice']['webhooks']['answer_url']['address'])->toEqual('http://example.com/answer');
+});
 
-        $params = @$this->app->getRequestData();
-        $capabilities = $params['capabilities'];
+test('response sets properties', function () {
+    @app()->setResponse(getResponse());
 
-        $this->assertArrayHasKey('event_url', $capabilities['voice']['webhooks']);
-        $this->assertArrayHasKey('answer_url', $capabilities['voice']['webhooks']);
-        $this->assertEquals('http://example.com/event', $capabilities['voice']['webhooks']['event_url']['address']);
-        $this->assertEquals('http://example.com/answer', $capabilities['voice']['webhooks']['answer_url']['address']);
-    }
+    expect(app()->getName())->toEqual('My Application');
+    $this->assertEquals(
+        "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi" .
+        "+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851" .
+        "Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n",
+        app()->getPublicKey()
+    );
+    expect(app()->getPrivateKey())->toEqual('private_key');
+});
 
-    public function testResponseSetsProperties(): void
-    {
-        @$this->app->setResponse($this->getResponse());
+/**
+ * @throws Exception
+ */
+test('response sets voice configs', function () {
+    @app()->setResponse(getResponse());
 
-        $this->assertEquals('My Application', $this->app->getName());
-        $this->assertEquals(
-            "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi" .
-            "+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851" .
-            "Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n",
-            $this->app->getPublicKey()
-        );
-        $this->assertEquals('private_key', $this->app->getPrivateKey());
-    }
+    $webhook = app()->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
+    $method = app()->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getMethod();
+    expect($webhook)->toEqual('https://example.com/webhooks/answer');
+    expect($method)->toEqual('GET');
 
-    /**
-     * @throws Exception
-     */
-    public function testResponseSetsVoiceConfigs(): void
-    {
-        @$this->app->setResponse($this->getResponse());
+    $webhook = app()->getVoiceConfig()->getWebhook(VoiceConfig::EVENT);
+    $method = app()->getVoiceConfig()->getWebhook(VoiceConfig::EVENT)->getMethod();
+    expect($webhook)->toEqual('https://example.com/webhooks/event');
+    expect($method)->toEqual('POST');
+});
 
-        $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-        $method = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getMethod();
-        $this->assertEquals('https://example.com/webhooks/answer', $webhook);
-        $this->assertEquals('GET', $method);
+/**
+ * @throws Exception
+ */
+test('response sets messages configs', function () {
+    @app()->setResponse(getResponse());
 
-        $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::EVENT);
-        $method = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::EVENT)->getMethod();
-        $this->assertEquals('https://example.com/webhooks/event', $webhook);
-        $this->assertEquals('POST', $method);
-    }
+    $webhook = app()->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND);
+    $method = app()->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getMethod();
+    expect($webhook)->toEqual('https://example.com/webhooks/inbound');
+    expect($method)->toEqual('POST');
 
-    /**
-     * @throws Exception
-     */
-    public function testResponseSetsMessagesConfigs(): void
-    {
-        @$this->app->setResponse($this->getResponse());
+    $webhook = app()->getMessagesConfig()->getWebhook(MessagesConfig::STATUS);
+    $method = app()->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getMethod();
+    expect($webhook)->toEqual('https://example.com/webhooks/status');
+    expect($method)->toEqual('POST');
+});
 
-        $webhook = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND);
-        $method = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getMethod();
-        $this->assertEquals('https://example.com/webhooks/inbound', $webhook);
-        $this->assertEquals('POST', $method);
+/**
+ * @throws Exception
+ */
+test('response sets rtc configs', function () {
+    @app()->setResponse(getResponse());
 
-        $webhook = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::STATUS);
-        $method = $this->app->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getMethod();
-        $this->assertEquals('https://example.com/webhooks/status', $webhook);
-        $this->assertEquals('POST', $method);
-    }
+    $webhook = app()->getRtcConfig()->getWebhook(RtcConfig::EVENT);
+    $method = app()->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod();
+    expect($webhook)->toEqual('https://example.com/webhooks/event');
+    expect($method)->toEqual('POST');
+});
 
-    /**
-     * @throws Exception
-     */
-    public function testResponseSetsRtcConfigs(): void
-    {
-        @$this->app->setResponse($this->getResponse());
+test('response sets vbc configs', function () {
+    @app()->setResponse(getResponse());
+    expect(app()->getVbcConfig()->isEnabled())->toEqual(true);
+});
 
-        $webhook = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT);
-        $method = $this->app->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod();
-        $this->assertEquals('https://example.com/webhooks/event', $webhook);
-        $this->assertEquals('POST', $method);
-    }
+/**
+ * @throws Exception
+ */
+test('can get dirty values', function () {
+    @app()->setResponse(getResponse());
+    expect(app()->getName())->toEqual('My Application');
 
-    public function testResponseSetsVbcConfigs(): void
-    {
-        @$this->app->setResponse($this->getResponse());
-        $this->assertEquals(true, $this->app->getVbcConfig()->isEnabled());
-    }
+    app()->setName('new');
+    expect(app()->getName())->toEqual('new');
 
-    /**
-     * @throws Exception
-     */
-    public function testCanGetDirtyValues(): void
-    {
-        @$this->app->setResponse($this->getResponse());
-        $this->assertEquals('My Application', $this->app->getName());
+    $webhook = app()->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
+    expect($webhook)->toEqual('https://example.com/webhooks/answer');
 
-        $this->app->setName('new');
-        $this->assertEquals('new', $this->app->getName());
+    @app()->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
+    $webhook = app()->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
+    $this->assertEquals('http://example.com', (string)$webhook);
+});
 
-        $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-        $this->assertEquals('https://example.com/webhooks/answer', $webhook);
+/**
+ * @throws Exception
+ */
+test('config can be copied', function () {
+    @app()->setResponse(getResponse());
 
-        @$this->app->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
-        $webhook = $this->app->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-        $this->assertEquals('http://example.com', (string)$webhook);
-    }
+    $otherapp = new Application();
+    $otherapp->setName('new app');
 
-    /**
-     * @throws Exception
-     */
-    public function testConfigCanBeCopied(): void
-    {
-        @$this->app->setResponse($this->getResponse());
+    $otherapp->setVoiceConfig(app()->getVoiceConfig());
 
-        $otherapp = new Application();
-        $otherapp->setName('new app');
+    $webhook = $otherapp->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
+    expect($webhook)->toEqual('https://example.com/webhooks/answer');
+});
 
-        $otherapp->setVoiceConfig($this->app->getVoiceConfig());
-
-        $webhook = $otherapp->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-        $this->assertEquals('https://example.com/webhooks/answer', $webhook);
-    }
-
-    /**
+// Helpers
+/**
      * Get the API response we'd expect for a call to the API.
      */
-    protected function getResponse(string $type = 'success'): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
-    }
+function getResponse(string $type = 'success'): Response
+{
+    return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
 }

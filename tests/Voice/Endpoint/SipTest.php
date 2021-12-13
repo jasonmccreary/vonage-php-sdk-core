@@ -9,78 +9,56 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Voice\Endpoint;
-
-use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\SIP;
 
-class SipTest extends VonageTestCase
-{
-    /**
-     * @var string
-     */
-    protected $uri = 'sip:rebekka@sip.example.com';
+test('default endpoint is created properly', function () {
+    $endpoint = new SIP($this->uri);
 
-    /**
-     * @var string
-     */
-    protected $type = 'sip';
+    expect($endpoint->getId())->toBe($this->uri);
+    expect($endpoint->getHeaders())->toBeEmpty();
+});
 
-    public function testDefaultEndpointIsCreatedProperly(): void
-    {
-        $endpoint = new SIP($this->uri);
+test('factory creates app endpoint', function () {
+    $headers = [
+        'location' => 'New York City',
+        'occupation' => 'Developer'
+    ];
 
-        $this->assertSame($this->uri, $endpoint->getId());
-        $this->assertEmpty($endpoint->getHeaders());
-    }
+    $endpoint = SIP::factory($this->uri, $headers);
 
-    public function testFactoryCreatesAppEndpoint(): void
-    {
-        $headers = [
-            'location' => 'New York City',
-            'occupation' => 'Developer'
-        ];
+    expect($endpoint->getId())->toBe($this->uri);
+    expect($endpoint->getHeaders())->toBe($headers);
+});
 
-        $endpoint = SIP::factory($this->uri, $headers);
+test('to array has correct structure', function () {
+    $this->assertSame([
+        'type' => $this->type,
+        'uri' => $this->uri
+    ], (new SIP($this->uri))->toArray());
+});
 
-        $this->assertSame($this->uri, $endpoint->getId());
-        $this->assertSame($headers, $endpoint->getHeaders());
-    }
+test('headers are returned as array', function () {
+    $headers = [
+        'location' => 'New York City',
+        'occupation' => 'Developer'
+    ];
 
-    public function testToArrayHasCorrectStructure(): void
-    {
-        $this->assertSame([
-            'type' => $this->type,
-            'uri' => $this->uri
-        ], (new SIP($this->uri))->toArray());
-    }
+    $expected = [
+        'type' => $this->type,
+        'uri' => $this->uri,
+        'headers' => $headers
+    ];
 
-    public function testHeadersAreReturnedAsArray(): void
-    {
-        $headers = [
-            'location' => 'New York City',
-            'occupation' => 'Developer'
-        ];
+    $this->assertSame($expected, ((new SIP($this->uri))->setHeaders($headers))->toArray());
+});
 
-        $expected = [
-            'type' => $this->type,
-            'uri' => $this->uri,
-            'headers' => $headers
-        ];
+test('serializes to j s o n correctly', function () {
+    $this->assertSame([
+        'type' => $this->type,
+        'uri' => $this->uri
+    ], (new SIP($this->uri))->jsonSerialize());
+});
 
-        $this->assertSame($expected, ((new SIP($this->uri))->setHeaders($headers))->toArray());
-    }
-
-    public function testSerializesToJSONCorrectly(): void
-    {
-        $this->assertSame([
-            'type' => $this->type,
-            'uri' => $this->uri
-        ], (new SIP($this->uri))->jsonSerialize());
-    }
-
-    public function testHeaderCanBeIndividuallyAdded(): void
-    {
-        $this->assertSame(['key' => 'value'], (new SIP($this->uri))->addHeader('key', 'value')->getHeaders());
-    }
-}
+test('header can be individually added', function () {
+    expect((new SIP($this->uri))->addHeader('key', 'value')->getHeaders())->toBe(['key' => 'value']);
+});

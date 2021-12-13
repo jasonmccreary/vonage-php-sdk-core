@@ -9,37 +9,28 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Client;
-
-use VonageTest\VonageTestCase;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 
-class APIResourceTest extends VonageTestCase
-{
-    public function testOverridingBaseUrlUsesClientApiUrl(): void
-    {
-        /** @var mixed $mockClient */
-        $mockClient = $this->prophesize(Client::class);
-        $mockClient->getApiUrl()->willReturn('https://test.domain');
+test('overriding base url uses client api url', function () {
+    /** @var mixed $mockClient */
+    $mockClient = $this->prophesize(Client::class);
+    $mockClient->getApiUrl()->willReturn('https://test.domain');
 
-        $resource = new APIResource();
-        $resource->setClient($mockClient->reveal());
+    $resource = new APIResource();
+    $resource->setClient($mockClient->reveal());
 
-        $this->assertSame('https://test.domain', $resource->getBaseUrl());
-    }
+    expect($resource->getBaseUrl())->toBe('https://test.domain');
+});
 
-    public function testOverridingBaseUrlManuallyWorks(): void
-    {
-        $resource = new APIResource();
-        $resource->setBaseUrl('https://test.domain');
+test('overriding base url manually works', function () {
+    $resource = new APIResource();
+    $resource->setBaseUrl('https://test.domain');
 
-        $this->assertSame('https://test.domain', $resource->getBaseUrl());
-    }
+    expect($resource->getBaseUrl())->toBe('https://test.domain');
+});
 
-    public function testNotOverridingBaseURLReturnsBlank(): void
-    {
-        $resource = new APIResource();
-        $this->assertSame('', $resource->getBaseUrl());
-    }
-}
+test('not overriding base u r l returns blank', function () {
+    $resource = new APIResource();
+    expect($resource->getBaseUrl())->toBe('');
+});

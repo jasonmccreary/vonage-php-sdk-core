@@ -9,26 +9,19 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\SMS\Message;
-
-use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\Vcard;
 
-class VcardTest extends VonageTestCase
-{
-    public function testCanCreateVcardMessage(): void
-    {
-        $card = 'BEGIN%3aVCARD%0d%0aVERSION%3a2.1%0d%0aFN%3aFull+Name%0d%0aTEL%3a%2b12345678%0d%0aEMAIL%3ainfo%40acm ' .
-            'e.com%0d%0aURL%3awww.acme.com%0d%0aEND%3aVCARD';
+test('can create vcard message', function () {
+    $card = 'BEGIN%3aVCARD%0d%0aVERSION%3a2.1%0d%0aFN%3aFull+Name%0d%0aTEL%3a%2b12345678%0d%0aEMAIL%3ainfo%40acm ' .
+        'e.com%0d%0aURL%3awww.acme.com%0d%0aEND%3aVCARD';
 
-        $data = (new Vcard(
-            '447700900000',
-            '16105551212',
-            $card
-        ))->toArray();
+    $data = (new Vcard(
+        '447700900000',
+        '16105551212',
+        $card
+    ))->toArray();
 
-        $this->assertSame('447700900000', $data['to']);
-        $this->assertSame('16105551212', $data['from']);
-        $this->assertSame($card, $data['vcard']);
-    }
-}
+    expect($data['to'])->toBe('447700900000');
+    expect($data['from'])->toBe('16105551212');
+    expect($data['vcard'])->toBe($card);
+});

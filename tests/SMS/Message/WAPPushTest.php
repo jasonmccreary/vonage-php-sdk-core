@@ -9,27 +9,20 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\SMS\Message;
-
-use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\WAPPush;
 
-class WAPPushTest extends VonageTestCase
-{
-    public function testCanCreateWAPMessage(): void
-    {
-        $data = (new WAPPush(
-            '447700900000',
-            '16105551212',
-            'Check In Now!',
-            'https://test.domain/check-in',
-            300000
-        ))->toArray();
+test('can create w a p message', function () {
+    $data = (new WAPPush(
+        '447700900000',
+        '16105551212',
+        'Check In Now!',
+        'https://test.domain/check-in',
+        300000
+    ))->toArray();
 
-        $this->assertSame('447700900000', $data['to']);
-        $this->assertSame('16105551212', $data['from']);
-        $this->assertSame('Check In Now!', $data['title']);
-        $this->assertSame('https://test.domain/check-in', $data['url']);
-        $this->assertSame(300000, $data['validity']);
-    }
-}
+    expect($data['to'])->toBe('447700900000');
+    expect($data['from'])->toBe('16105551212');
+    expect($data['title'])->toBe('Check In Now!');
+    expect($data['url'])->toBe('https://test.domain/check-in');
+    expect($data['validity'])->toBe(300000);
+});

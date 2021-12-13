@@ -9,67 +9,36 @@
 
 declare(strict_types=1);
 
-namespace VonageTest;
-
-use InvalidArgumentException;
 use VonageTest\VonageTestCase;
 use Vonage\Response;
 use Vonage\Response\Message;
 
-use function json_decode;
+uses(VonageTestCase::class);
 
-class ResponseTest extends VonageTestCase
-{
-    /**
-     * @var Response
-     */
-    protected $response;
 
-    protected $json = '{
-       "message-count":"1",
-       "messages":[
-          {
-             "status":"returnCode",
-             "message-id":"messageId",
-             "to":"to",
-             "client-ref":"client-ref",
-             "remaining-balance":"remaining-balance",
-             "message-price":"message-price",
-             "network":"network",
-             "error-text":"error-message"
-          }
-       ]
-    }';
+beforeEach(function () {
+    $this->response = new Response($this->json);
+    $this->array = json_decode($this->json, true);
+});
 
-    protected $array;
+test('message count', function () {
+    expect($this->response->count())->toEqual($this->array['message-count']);
+    expect($this->response)->toHaveCount(->count(), $this->response);
+    expect($this->response->getMessages())->toHaveCount($this->response->count());
 
-    public function setUp(): void
-    {
-        $this->response = new Response($this->json);
-        $this->array = json_decode($this->json, true);
+    $count = 0;
+
+    foreach ($this->response as $message) {
+        expect($message)->toBeInstanceOf(Message::class);
+        $count++;
     }
 
-    public function testMessageCount(): void
-    {
-        $this->assertEquals($this->array['message-count'], $this->response->count());
-        $this->assertCount($this->response->count(), $this->response);
-        $this->assertCount($this->response->count(), $this->response->getMessages());
+    expect($count)->toEqual($this->response->count());
+});
 
-        $count = 0;
+test('throw exception when non string passed', function () {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('expected response data to be a string');
 
-        foreach ($this->response as $message) {
-            $this->assertInstanceOf(Message::class, $message);
-            $count++;
-        }
-
-        $this->assertEquals($this->response->count(), $count);
-    }
-
-    public function testThrowExceptionWhenNonStringPassed()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('expected response data to be a string');
-
-        new Response(4);
-    }
-}
+    new Response(4);
+});

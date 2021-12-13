@@ -9,143 +9,112 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Message;
-
-use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Message;
 use Vonage\Message\Text;
 
-use function fopen;
-use function http_build_query;
-use function json_encode;
+beforeEach(function () {
+    $this->message = new Message($this->to, $this->from, [
+        'text' => $this->text
+    ]);
+});
 
-class MessageTest extends VonageTestCase
-{
-    protected $to = '14845551212';
-    protected $from = '16105551212';
-    protected $text = 'this is test text';
-    protected $set = ['to', 'from', 'text'];
+afterEach(function () {
+    $this->message = null;
+});
 
-    /**
-     * @var Message
-     */
-    protected $message;
+/**
+ * @throws ClientException
+ */
+test('request sets data', function () {
+    $data = ['test' => 'test'];
+    $request = new Request('http://example.com?' . http_build_query($data));
+    @$this->message->setRequest($request);
 
-    public function setUp(): void
-    {
-        $this->message = new Message($this->to, $this->from, [
-            'text' => $this->text
-        ]);
-    }
+    expect(@$this->message->getRequest())->toBe($request);
 
-    public function tearDown(): void
-    {
-        $this->message = null;
-    }
+    $requestData = @$this->message->getRequestData();
 
-    /**
-     * @throws ClientException
-     */
-    public function testRequestSetsData(): void
-    {
-        $data = ['test' => 'test'];
-        $request = new Request('http://example.com?' . http_build_query($data));
-        @$this->message->setRequest($request);
+    expect($requestData)->toEqual($data);
+});
 
-        $this->assertSame($request, @$this->message->getRequest());
+/**
+ * @throws Exception
+ */
+test('response sets data', function () {
+    $data = ['test' => 'test'];
+    $response = new Response();
+    $response->getBody()->write(json_encode($data));
+    $response->getBody()->rewind();
 
-        $requestData = @$this->message->getRequestData();
+    @$this->message->setResponse($response);
 
-        $this->assertEquals($data, $requestData);
-    }
+    expect(@$this->message->getResponse())->toBe($response);
+    expect(@$this->message->getResponseData())->toEqual($data);
+});
 
-    /**
-     * @throws Exception
-     */
-    public function testResponseSetsData(): void
-    {
-        $data = ['test' => 'test'];
-        $response = new Response();
-        $response->getBody()->write(json_encode($data));
-        $response->getBody()->rewind();
+/**
+ * For getting message data from API, can create a simple object with just an ID.
+ *
+ * @throws Exception
+ */
+test('can create with id', function () {
+    expect((new Message('00000123'))->getMessageId())->toEqual('00000123');
+});
 
-        @$this->message->setResponse($response);
+/**
+ * When creating a message, it should not auto-detect encoding by default
+ *
+ *
+ * @param $msg
+ *
+ * @throws ClientException
+ */
+test('does not autodetect by default', function ($msg) {
+    $message = new Text('to', 'from', $msg);
 
-        $this->assertSame($response, @$this->message->getResponse());
-        $this->assertEquals($data, @$this->message->getResponseData());
-    }
+    expect($message->isEncodingDetectionEnabled())->toBeFalse();
 
-    /**
-     * For getting message data from API, can create a simple object with just an ID.
-     *
-     * @throws Exception
-     */
-    public function testCanCreateWithId(): void
-    {
-        $this->assertEquals('00000123', (new Message('00000123'))->getMessageId());
-    }
+    $d = $message->getRequestData(false);
 
-    /**
-     * When creating a message, it should not auto-detect encoding by default
-     *
-     * @dataProvider messageEncodingProvider
-     *
-     * @param $msg
-     *
-     * @throws ClientException
-     */
-    public function testDoesNotAutodetectByDefault($msg): void
-    {
-        $message = new Text('to', 'from', $msg);
+    expect($d['type'])->toEqual('text');
+})->with('messageEncodingProvider');
 
-        $this->assertFalse($message->isEncodingDetectionEnabled());
+/**
+ * When creating a message, it should not auto-detect encoding by default
+ *
+ *
+ * @param $msg
+ * @param $encoding
+ *
+ * @throws ClientException
+ */
+test('does autodetect when enabled', function ($msg, $encoding) {
+    $message = new Text('to', 'from', $msg);
+    $message->enableEncodingDetection();
 
-        $d = $message->getRequestData(false);
+    expect($message->isEncodingDetectionEnabled())->toBeTrue();
 
-        $this->assertEquals('text', $d['type']);
-    }
+    $d = $message->getRequestData(false);
 
-    /**
-     * When creating a message, it should not auto-detect encoding by default
-     *
-     * @dataProvider messageEncodingProvider
-     *
-     * @param $msg
-     * @param $encoding
-     *
-     * @throws ClientException
-     */
-    public function testDoesAutodetectWhenEnabled($msg, $encoding): void
-    {
-        $message = new Text('to', 'from', $msg);
-        $message->enableEncodingDetection();
+    expect($encoding)->toEqual($d['type']);
+})->with('messageEncodingProvider');
 
-        $this->assertTrue($message->isEncodingDetectionEnabled());
+// Datasets
+dataset('messageEncodingProvider', [
+    'text' => ['Hello World', 'text'],
+    'emoji' => ['Testing 💪', 'unicode'],
+    'kanji' => ['漢字', 'unicode']
+]);
 
-        $d = $message->getRequestData(false);
-
-        $this->assertEquals($d['type'], $encoding);
-    }
-
-    public function messageEncodingProvider(): array
-    {
-        return [
-            'text' => ['Hello World', 'text'],
-            'emoji' => ['Testing 💪', 'unicode'],
-            'kanji' => ['漢字', 'unicode']
-        ];
-    }
-
-    /**
+// Helpers
+/**
      * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
      */
-    protected function getResponse(string $type = 'success'): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
-    }
+function getResponse(string $type = 'success'): Response
+{
+    return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'));
 }

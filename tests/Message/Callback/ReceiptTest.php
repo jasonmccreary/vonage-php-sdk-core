@@ -9,74 +9,41 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Message\Callback;
-
-use DateTime;
-use VonageTest\VonageTestCase;
 use Vonage\Message\Callback\Receipt;
 
-use function array_merge;
+beforeEach(function () {
+    $this->receipt = new Receipt($this->data);
+});
 
-class ReceiptTest extends VonageTestCase
-{
-    protected $data = [
-        'err-code' => '0',
-        'message-timestamp' => '2014-07-23 03:41:03',
-        'messageId' => '0300000049CE26E1',
-        'msisdn' => '15553217878',
-        'network-code' => '310260',
-        'price' => '0.00480000',
-        'scts' => '1412301225',
-        'status' => 'accepted',
-        'to' => '15673332121',
-        //'timestamp' => '1406086863'
-    ];
+test('service center timestamp', function () {
+    $date = $this->receipt->getTimestamp();
 
-    /**
-     * @var Receipt
-     */
-    protected $receipt;
+    expect($date)->toEqual(new DateTime('12/30/2014 12:25'));
+});
 
-    public function setUp(): void
-    {
-        $this->receipt = new Receipt($this->data);
-    }
+test('sent timestamp', function () {
+    $date = $this->receipt->getSent();
 
-    public function testServiceCenterTimestamp(): void
-    {
-        $date = $this->receipt->getTimestamp();
+    expect($date)->toEqual(new DateTime('7/23/2014 03:41:03'));
+});
 
-        $this->assertEquals(new DateTime('12/30/2014 12:25'), $date);
-    }
+test('simple values', function () {
+    expect($this->receipt->getErrorCode())->toEqual($this->data['err-code']);
+    expect($this->receipt->getId())->toEqual($this->data['messageId']);
+    expect($this->receipt->getNetwork())->toEqual($this->data['network-code']);
+    expect($this->receipt->getPrice())->toEqual($this->data['price']);
+    expect($this->receipt->getStatus())->toEqual($this->data['status']);
+    expect($this->receipt->getReceiptFrom())->toEqual($this->data['msisdn']);
+    expect($this->receipt->getTo())->toEqual($this->data['msisdn']);
+    expect($this->receipt->getReceiptTo())->toEqual($this->data['to']);
+    expect($this->receipt->getFrom())->toEqual($this->data['to']);
+});
 
-    public function testSentTimestamp(): void
-    {
-        $date = $this->receipt->getSent();
+test('client ref default', function () {
+    expect($this->receipt->getClientRef())->toBeNull();
+});
 
-        $this->assertEquals(new DateTime('7/23/2014 03:41:03'), $date);
-    }
-
-    public function testSimpleValues(): void
-    {
-        $this->assertEquals($this->data['err-code'], $this->receipt->getErrorCode());
-        $this->assertEquals($this->data['messageId'], $this->receipt->getId());
-        $this->assertEquals($this->data['network-code'], $this->receipt->getNetwork());
-        $this->assertEquals($this->data['price'], $this->receipt->getPrice());
-        $this->assertEquals($this->data['status'], $this->receipt->getStatus());
-        $this->assertEquals($this->data['msisdn'], $this->receipt->getReceiptFrom());
-        $this->assertEquals($this->data['msisdn'], $this->receipt->getTo());
-        $this->assertEquals($this->data['to'], $this->receipt->getReceiptTo());
-        $this->assertEquals($this->data['to'], $this->receipt->getFrom());
-    }
-
-    public function testClientRefDefault(): void
-    {
-        $this->assertNull($this->receipt->getClientRef());
-    }
-
-    public function testClientRef(): void
-    {
-        $receipt = new Receipt(array_merge(['client-ref' => 'test'], $this->data));
-        $this->assertEquals('test', $receipt->getClientRef());
-    }
-}
+test('client ref', function () {
+    $receipt = new Receipt(array_merge(['client-ref' => 'test'], $this->data));
+    expect($receipt->getClientRef())->toEqual('test');
+});

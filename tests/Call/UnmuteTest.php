@@ -9,26 +9,16 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Call;
-
 use Helmich\JsonAssert\JsonAssertions;
-use VonageTest\VonageTestCase;
 use Vonage\Call\Unmute;
 
-use function file_get_contents;
-use function json_decode;
-use function json_encode;
+uses(JsonAssertions::class);
 
-class UnmuteTest extends VonageTestCase
-{
-    use JsonAssertions;
 
-    public function testStructure(): void
-    {
-        $schema = file_get_contents(__DIR__ . '/schema/unmute.json');
-        $json = json_decode(json_encode(@new Unmute()), true);
+test('structure', function () {
+    $schema = file_get_contents(__DIR__ . '/schema/unmute.json');
+    $json = json_decode(json_encode(@new Unmute()), true);
 
-        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
-        $this->assertJsonValueEquals($json, '$.action', 'unmute');
-    }
-}
+    $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+    $this->assertJsonValueEquals($json, '$.action', 'unmute');
+});

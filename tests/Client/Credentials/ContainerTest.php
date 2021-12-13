@@ -9,85 +9,61 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Client\Credentials;
-
-use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\SignatureSecret;
 
-class ContainerTest extends VonageTestCase
-{
-    protected $types = [
-        Basic::class,
-        SignatureSecret::class,
-        Keypair::class
-    ];
+beforeEach(function () {
+    $this->basic = new Basic('key', 'secret');
+    $this->secret = new SignatureSecret('key', 'secret');
+    $this->keypair = new Keypair('key', 'app');
+});
 
-    protected $basic;
-    protected $secret;
-    protected $keypair;
+/**
+ *
+ * @param $credential
+ * @param $type
+ */
+test('basic', function ($credential, $type) {
+    $container = new Container($credential);
 
-    public function setUp(): void
-    {
-        $this->basic = new Basic('key', 'secret');
-        $this->secret = new SignatureSecret('key', 'secret');
-        $this->keypair = new Keypair('key', 'app');
-    }
+    expect($container->get($type))->toBe($credential);
+    expect($container[$type])->toBe($credential);
 
-    /**
-     * @dataProvider credentials
-     *
-     * @param $credential
-     * @param $type
-     */
-    public function testBasic($credential, $type): void
-    {
-        $container = new Container($credential);
-
-        $this->assertSame($credential, $container->get($type));
-        $this->assertSame($credential, $container[$type]);
-
-        foreach ($this->types as $class) {
-            if ($type === $class) {
-                $this->assertTrue($container->has($class));
-            } else {
-                $this->assertFalse($container->has($class));
-            }
+    foreach ($this->types as $class) {
+        if ($type === $class) {
+            expect($container->has($class))->toBeTrue();
+        } else {
+            expect($container->has($class))->toBeFalse();
         }
     }
+})->with('credentials');
 
-    /**
-     * @dataProvider credentials
-     *
-     * @param $credential
-     */
-    public function testOnlyOneType($credential): void
-    {
-        $this->expectException('RuntimeException');
+/**
+ *
+ * @param $credential
+ */
+test('only one type', function ($credential) {
+    $this->expectException('RuntimeException');
 
-        new Container($credential, clone $credential);
+    new Container($credential, clone $credential);
+})->with('credentials');
+
+test('multiple', function () {
+    $container = new Container($this->basic, $this->secret, $this->keypair);
+
+    foreach ($this->types as $class) {
+        expect($container->has($class))->toBeTrue();
     }
+});
 
-    public function testMultiple(): void
-    {
-        $container = new Container($this->basic, $this->secret, $this->keypair);
-
-        foreach ($this->types as $class) {
-            $this->assertTrue($container->has($class));
-        }
-    }
-
-    /**
-     * @return array[]
-     */
-    public function credentials(): array
-    {
-        return [
-            [new Basic('key', 'secret'), Basic::class],
-            [new SignatureSecret('key', 'secret'), SignatureSecret::class],
-            [new Keypair('key', 'app'), Keypair::class]
-        ];
-    }
-}
+// Datasets
+/**
+ * @return array[]
+ */
+dataset('credentials', [
+    [new Basic('key', 'secret'), Basic::class],
+    [new SignatureSecret('key', 'secret'), SignatureSecret::class],
+    [new Keypair('key', 'app'), Keypair::class]
+]);

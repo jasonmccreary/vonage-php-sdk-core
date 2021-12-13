@@ -7,141 +7,121 @@
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
-namespace VonageTest\Client\Credentials;
-
-use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Keypair;
 
-use function base64_decode;
-use function explode;
-use function file_get_contents;
-use function json_decode;
+beforeEach(function () {
+    $this->key = file_get_contents(__DIR__ . '/test.key');
+});
 
-class KeypairTest extends VonageTestCase
-{
-    protected $key;
-    protected $application = 'c90ddd99-9a5d-455f-8ade-dde4859e590e';
+test('as array', function () {
+    $credentials = new Keypair($this->key, $this->application);
 
-    public function setUp(): void
-    {
-        $this->key = file_get_contents(__DIR__ . '/test.key');
-    }
+    $array = $credentials->asArray();
+    expect($array['key'])->toEqual($this->key);
+    expect($array['application'])->toEqual($this->application);
+});
 
-    public function testAsArray(): void
-    {
-        $credentials = new Keypair($this->key, $this->application);
+test('array access', function () {
+    $credentials = new Keypair($this->key, $this->application);
 
-        $array = $credentials->asArray();
-        $this->assertEquals($this->key, $array['key']);
-        $this->assertEquals($this->application, $array['application']);
-    }
+    expect($credentials['key'])->toEqual($this->key);
+    expect($credentials['application'])->toEqual($this->application);
+});
 
-    public function testArrayAccess(): void
-    {
-        $credentials = new Keypair($this->key, $this->application);
+test('properties', function () {
+    $credentials = new Keypair($this->key, $this->application);
 
-        $this->assertEquals($this->key, $credentials['key']);
-        $this->assertEquals($this->application, $credentials['application']);
-    }
+    expect($credentials->__get('key'))->toEqual($this->key);
+    expect($credentials->application)->toEqual($this->application);
+});
 
-    public function testProperties(): void
-    {
-        $credentials = new Keypair($this->key, $this->application);
+test('default j w t', function () {
+    $credentials = new Keypair($this->key, $this->application);
 
-        $this->assertEquals($this->key, $credentials->__get('key'));
-        $this->assertEquals($this->application, $credentials->application);
-    }
+    //could use the JWT object, but hope to remove as a dependency
+    $jwt = (string)$credentials->generateJwt()->toString();
 
-    public function testDefaultJWT(): void
-    {
-        $credentials = new Keypair($this->key, $this->application);
+    [$header, $payload] = decodeJWT($jwt);
 
-        //could use the JWT object, but hope to remove as a dependency
-        $jwt = (string)$credentials->generateJwt()->toString();
+    $this->assertArrayHasKey('typ', $header);
+    $this->assertArrayHasKey('alg', $header);
+    expect($header['typ'])->toEqual('JWT');
+    expect($header['alg'])->toEqual('RS256');
+    $this->assertArrayHasKey('application_id', $payload);
+    $this->assertArrayHasKey('jti', $payload);
+    expect($payload['application_id'])->toEqual($this->application);
+});
 
-        [$header, $payload] = $this->decodeJWT($jwt);
+test('additional claims', function () {
+    $credentials = new Keypair($this->key, $this->application);
 
-        $this->assertArrayHasKey('typ', $header);
-        $this->assertArrayHasKey('alg', $header);
-        $this->assertEquals('JWT', $header['typ']);
-        $this->assertEquals('RS256', $header['alg']);
-        $this->assertArrayHasKey('application_id', $payload);
-        $this->assertArrayHasKey('jti', $payload);
-        $this->assertEquals($this->application, $payload['application_id']);
-    }
+    $claims = [
+        'arbitrary' => [
+            'nested' => [
+                'data' => "something"
+            ]
+        ],
+        'nbf' => 900
+    ];
 
-    public function testAdditionalClaims(): void
-    {
-        $credentials = new Keypair($this->key, $this->application);
+    $jwt = $credentials->generateJwt($claims);
+    [, $payload] = decodeJWT($jwt->toString());
 
-        $claims = [
-            'arbitrary' => [
-                'nested' => [
-                    'data' => "something"
-                ]
-            ],
-            'nbf' => 900
-        ];
+    $this->assertArrayHasKey('arbitrary', $payload);
+    expect($payload['arbitrary'])->toEqual($claims['arbitrary']);
+    $this->assertArrayHasKey('nbf', $payload);
+    expect($payload['nbf'])->toEqual(900);
+});
 
-        $jwt = $credentials->generateJwt($claims);
-        [, $payload] = $this->decodeJWT($jwt->toString());
+/**
+ * @link https://github.com/Vonage/vonage-php-sdk-core/issues/276
+ */
+test('example conversation j w t works', function () {
+    $credentials = new Keypair($this->key, $this->application);
+    $claims = [
+        'exp' => strtotime(date('Y-m-d', strtotime('+24 Hours'))),
+        'sub' => 'apg-cs',
+        'acl' => [
+            'paths' => [
+                '/*/users/**' => (object) [],
+                '/*/conversations/**' => (object) [],
+                '/*/sessions/**' => (object) [],
+                '/*/devices/**' => (object) [],
+                '/*/image/**' => (object) [],
+                '/*/media/**' => (object) [],
+                '/*/applications/**' => (object) [],
+                '/*/push/**' => (object) [],
+                '/*/knocking/**' => (object) [],
+                '/*/legs/**' => (object) [],
+            ]
+        ],
+    ];
 
-        $this->assertArrayHasKey('arbitrary', $payload);
-        $this->assertEquals($claims['arbitrary'], $payload['arbitrary']);
-        $this->assertArrayHasKey('nbf', $payload);
-        $this->assertEquals(900, $payload['nbf']);
-    }
+    $jwt = $credentials->generateJwt($claims);
+    [, $payload] = decodeJWT($jwt->toString());
 
-    /**
-     * @link https://github.com/Vonage/vonage-php-sdk-core/issues/276
-     */
-    public function testExampleConversationJWTWorks()
-    {
-        $credentials = new Keypair($this->key, $this->application);
-        $claims = [
-            'exp' => strtotime(date('Y-m-d', strtotime('+24 Hours'))),
-            'sub' => 'apg-cs',
-            'acl' => [
-                'paths' => [
-                    '/*/users/**' => (object) [],
-                    '/*/conversations/**' => (object) [],
-                    '/*/sessions/**' => (object) [],
-                    '/*/devices/**' => (object) [],
-                    '/*/image/**' => (object) [],
-                    '/*/media/**' => (object) [],
-                    '/*/applications/**' => (object) [],
-                    '/*/push/**' => (object) [],
-                    '/*/knocking/**' => (object) [],
-                    '/*/legs/**' => (object) [],
-                ]
-            ],
-        ];
+    $this->assertArrayHasKey('exp', $payload);
+    expect($payload['exp'])->toEqual($claims['exp']);
+    expect($payload['sub'])->toEqual($claims['sub']);
+});
 
-        $jwt = $credentials->generateJwt($claims);
-        [, $payload] = $this->decodeJWT($jwt->toString());
-
-        $this->assertArrayHasKey('exp', $payload);
-        $this->assertEquals($claims['exp'], $payload['exp']);
-        $this->assertEquals($claims['sub'], $payload['sub']);
-    }
-
-    /**
+// Helpers
+/**
      * @param $jwt
      */
-    protected function decodeJWT($jwt): array
-    {
-        $parts = explode('.', $jwt);
+function decodeJWT($jwt): array
+{
+    $parts = explode('.', $jwt);
 
-        $this->assertCount(3, $parts);
+    expect($parts)->toHaveCount(3);
 
-        $header = json_decode(base64_decode($parts[0]), true);
-        $payload = json_decode(base64_decode($parts[1]), true);
-        $sig = $parts[2];
+    $header = json_decode(base64_decode($parts[0]), true);
+    $payload = json_decode(base64_decode($parts[1]), true);
+    $sig = $parts[2];
 
-        return [
-            $header,
-            $payload,
-            $sig
-        ];
-    }
+    return [
+        $header,
+        $payload,
+        $sig
+    ];
 }

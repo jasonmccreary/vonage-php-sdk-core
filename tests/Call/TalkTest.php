@@ -9,10 +9,7 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Call;
-
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -23,212 +20,179 @@ use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
 use VonageTest\Psr7AssertionTrait;
 
-use function fopen;
-use function json_decode;
-use function json_encode;
+uses(Psr7AssertionTrait::class);
 
-class TalkTest extends VonageTestCase
-{
-    use Psr7AssertionTrait;
 
-    protected $id;
+beforeEach(function () {
+    $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
+    $this->class = Talk::class;
 
-    /**
-     * @var Talk
-     */
-    protected $entity;
+    $this->entity = @new Talk('3fd4d839-493e-4485-b2a5-ace527aacff3');
+    $this->new = @new Talk();
 
-    /**
-     * @var Talk
-     */
-    protected $new;
+    $this->vonageClient = $this->prophesize('Vonage\Client');
+    $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-    protected $class;
+    /** @noinspection PhpParamsInspection */
+    $this->entity->setClient($this->vonageClient->reveal());
+    /** @noinspection PhpParamsInspection */
+    $this->new->setClient($this->vonageClient->reveal());
+});
 
-    protected $vonageClient;
+test('has id', function () {
+    expect($this->entity->getId())->toBe($this->id);
+});
 
-    public function setUp(): void
-    {
-        $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
-        $this->class = Talk::class;
+/**
+ * @param $value
+ * @param $param
+ * @param $setter
+ * @param $expected
+ */
+test('set params', function ($value, $param, $setter, $expected) {
+    $this->entity->$setter($value);
+    $data = $this->entity->jsonSerialize();
 
-        $this->entity = @new Talk('3fd4d839-493e-4485-b2a5-ace527aacff3');
-        $this->new = @new Talk();
+    expect($data[$param])->toEqual($expected);
+})->with('setterParameters');
 
-        $this->vonageClient = $this->prophesize('Vonage\Client');
-        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+/**
+ * @param $value
+ * @param $param
+ */
+test('array params', function ($value, $param) {
+    $this->entity[$param] = $value;
+    $data = $this->entity->jsonSerialize();
 
-        /** @noinspection PhpParamsInspection */
-        $this->entity->setClient($this->vonageClient->reveal());
-        /** @noinspection PhpParamsInspection */
-        $this->new->setClient($this->vonageClient->reveal());
-    }
+    expect($data[$param])->toEqual($value);
+})->with('setterParameters');
 
-    public function testHasId(): void
-    {
-        $this->assertSame($this->id, $this->entity->getId());
-    }
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException
+ * @throws RequestException
+ * @throws ServerException
+ */
+test('put makes request', function () {
+    $this->entity->setText('Bingo!');
 
-    /**
-     * @param $value
-     * @param $param
-     * @param $setter
-     * @param $expected
-     * @dataProvider setterParameters
-     */
-    public function testSetParams($value, $param, $setter, $expected): void
-    {
-        $this->entity->$setter($value);
-        $data = $this->entity->jsonSerialize();
+    $callId = $this->id;
+    $entity = $this->entity;
 
-        $this->assertEquals($expected, $data[$param]);
-    }
+    $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
+        $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
+        $expected = json_decode(json_encode($entity), true);
 
-    /**
-     * @param $value
-     * @param $param
-     * @dataProvider setterParameters
-     */
-    public function testArrayParams($value, $param): void
-    {
-        $this->entity[$param] = $value;
-        $data = $this->entity->jsonSerialize();
+        $request->getBody()->rewind();
+        $body = json_decode($request->getBody()->getContents(), true);
+        $request->getBody()->rewind();
 
-        $this->assertEquals($value, $data[$param]);
-    }
+        expect($body)->toEqual($expected);
+        return true;
+    }))->willReturn(getResponse('talk', 200));
 
-    public function setterParameters(): array
-    {
-        return [
-            ['something I want to say', 'text', 'setText', 'something I want to say'],
-            ['Ivy', 'voice_name', 'setVoiceName', 'Ivy'],
-            [0, 'loop', 'setLoop', '0'],
-            [1, 'loop', 'setLoop', '1'],
-        ];
-    }
+    $event = @$this->entity->put();
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testPutMakesRequest(): void
-    {
-        $this->entity->setText('Bingo!');
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('Talk started');
+});
 
-        $callId = $this->id;
-        $entity = $this->entity;
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException
+ * @throws RequestException
+ * @throws ServerException
+ */
+test('put can replace', function () {
+    $class = $this->class;
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
-            $expected = json_decode(json_encode($entity), true);
+    $entity = @new $class();
+    $entity->setText('Ding!');
 
-            $request->getBody()->rewind();
-            $body = json_decode($request->getBody()->getContents(), true);
-            $request->getBody()->rewind();
+    $callId = $this->id;
 
-            $this->assertEquals($expected, $body);
-            return true;
-        }))->willReturn($this->getResponse('talk', 200));
+    $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
+        $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
+        $expected = json_decode(json_encode($entity), true);
 
-        $event = @$this->entity->put();
+        $request->getBody()->rewind();
+        $body = json_decode($request->getBody()->getContents(), true);
+        $request->getBody()->rewind();
 
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('Talk started', $event['message']);
-    }
+        expect($body)->toEqual($expected);
+        return true;
+    }))->willReturn(getResponse('talk', 200));
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testPutCanReplace(): void
-    {
-        $class = $this->class;
+    $event = @$this->entity->put($entity);
 
-        $entity = @new $class();
-        $entity->setText('Ding!');
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('Talk started');
+});
 
-        $callId = $this->id;
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException
+ * @throws RequestException
+ * @throws ServerException
+ */
+test('invoke proxies put with argument', function () {
+    $object = $this->entity;
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'PUT', $request);
-            $expected = json_decode(json_encode($entity), true);
+    $this->vonageClient->send(Argument::any())->willReturn(getResponse('talk', 200));
+    $test = $object();
+    expect($test)->toBe($this->entity);
 
-            $request->getBody()->rewind();
-            $body = json_decode($request->getBody()->getContents(), true);
-            $request->getBody()->rewind();
+    $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
-            $this->assertEquals($expected, $body);
-            return true;
-        }))->willReturn($this->getResponse('talk', 200));
+    $class = $this->class;
+    $entity = @new $class();
+    $entity->setText('Hello!');
 
-        $event = @$this->entity->put($entity);
+    $event = @$object($entity);
 
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('Talk started', $event['message']);
-    }
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('Talk started');
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testInvokeProxiesPutWithArgument(): void
-    {
-        $object = $this->entity;
+    $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
+});
 
-        $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('talk', 200));
-        $test = $object();
-        $this->assertSame($this->entity, $test);
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException
+ * @throws RequestException
+ * @throws ServerException
+ */
+test('delete makes request', function () {
+    $callId = $this->id;
 
-        $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
+    $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId) {
+        $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'DELETE', $request);
+        return true;
+    }))->willReturn(getResponse('talk-delete', 200));
 
-        $class = $this->class;
-        $entity = @new $class();
-        $entity->setText('Hello!');
+    $event = @$this->entity->delete();
 
-        $event = @$object($entity);
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('Talk stopped');
+});
 
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('Talk started', $event['message']);
+// Datasets
+dataset('setterParameters', [
+    ['something I want to say', 'text', 'setText', 'something I want to say'],
+    ['Ivy', 'voice_name', 'setVoiceName', 'Ivy'],
+    [0, 'loop', 'setLoop', '0'],
+    [1, 'loop', 'setLoop', '1'],
+]);
 
-        $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testDeleteMakesRequest(): void
-    {
-        $callId = $this->id;
-
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/talk', 'DELETE', $request);
-            return true;
-        }))->willReturn($this->getResponse('talk-delete', 200));
-
-        $event = @$this->entity->delete();
-
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('Talk stopped', $event['message']);
-    }
-
-    /**
+// Helpers
+/**
      * Get the API response we'd expect for a call to the API.
      */
-    protected function getResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
-    }
+function getResponse(string $type = 'success', int $status = 200): Response
+{
+    return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
 }

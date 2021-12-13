@@ -9,26 +9,16 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Call;
-
 use Helmich\JsonAssert\JsonAssertions;
-use VonageTest\VonageTestCase;
 use Vonage\Call\Earmuff;
 
-use function file_get_contents;
-use function json_decode;
-use function json_encode;
+uses(JsonAssertions::class);
 
-class EarmuffTest extends VonageTestCase
-{
-    use JsonAssertions;
 
-    public function testStructure(): void
-    {
-        $schema = file_get_contents(__DIR__ . '/schema/earmuff.json');
-        $json = json_decode(json_encode(@new Earmuff()), true);
+test('structure', function () {
+    $schema = file_get_contents(__DIR__ . '/schema/earmuff.json');
+    $json = json_decode(json_encode(@new Earmuff()), true);
 
-        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
-        $this->assertJsonValueEquals($json, '$.action', 'earmuff');
-    }
-}
+    $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+    $this->assertJsonValueEquals($json, '$.action', 'earmuff');
+});

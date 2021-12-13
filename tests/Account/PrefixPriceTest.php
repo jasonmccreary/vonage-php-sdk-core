@@ -9,93 +9,77 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Account;
-
-use Exception;
-use VonageTest\VonageTestCase;
 use Vonage\Account\PrefixPrice;
 
-class PrefixPriceTest extends VonageTestCase
-{
-    /**
-     * @dataProvider prefixPriceProvider
-     *
-     * @param $prefixPrice
-     */
-    public function testFromArray($prefixPrice): void
-    {
-        $this->assertEquals("ZW", $prefixPrice->getCountryCode());
-        $this->assertEquals("Zimbabwe", $prefixPrice->getCountryName());
-        $this->assertEquals("263", $prefixPrice->getDialingPrefix());
-    }
+/**
+ *
+ * @param $prefixPrice
+ */
+test('from array', function ($prefixPrice) {
+    expect($prefixPrice->getCountryCode())->toEqual("ZW");
+    expect($prefixPrice->getCountryName())->toEqual("Zimbabwe");
+    expect($prefixPrice->getDialingPrefix())->toEqual("263");
+})->with('prefixPriceProvider');
 
-    /**
-     * @dataProvider prefixPriceProvider
-     *
-     * @param $prefixPrice
-     */
-    public function testGetters($prefixPrice): void
-    {
-        $this->assertEquals("ZW", $prefixPrice->getCountryCode());
-        $this->assertEquals("Zimbabwe", $prefixPrice->getCountryName());
-        $this->assertEquals("Zimbabwe", $prefixPrice->getCountryDisplayName());
-        $this->assertEquals("263", $prefixPrice->getDialingPrefix());
-    }
+/**
+ *
+ * @param $prefixPrice
+ */
+test('getters', function ($prefixPrice) {
+    expect($prefixPrice->getCountryCode())->toEqual("ZW");
+    expect($prefixPrice->getCountryName())->toEqual("Zimbabwe");
+    expect($prefixPrice->getCountryDisplayName())->toEqual("Zimbabwe");
+    expect($prefixPrice->getDialingPrefix())->toEqual("263");
+})->with('prefixPriceProvider');
 
-    /**
-     * @dataProvider prefixPriceProvider
-     *
-     * @param $prefixPrice
-     */
-    public function testArrayAccess($prefixPrice): void
-    {
-        $this->assertEquals("ZW", @$prefixPrice['country_code']);
-        $this->assertEquals("Zimbabwe", @$prefixPrice['country_name']);
-        $this->assertEquals("Zimbabwe", @$prefixPrice['country_display_name']);
-        $this->assertEquals("263", @$prefixPrice['dialing_prefix']);
-    }
+/**
+ *
+ * @param $prefixPrice
+ */
+test('array access', function ($prefixPrice) {
+    expect(@$prefixPrice['country_code'])->toEqual("ZW");
+    expect(@$prefixPrice['country_name'])->toEqual("Zimbabwe");
+    expect(@$prefixPrice['country_display_name'])->toEqual("Zimbabwe");
+    expect(@$prefixPrice['dialing_prefix'])->toEqual("263");
+})->with('prefixPriceProvider');
 
-    /**
-     * @dataProvider prefixPriceProvider
-     *
-     * @param $prefixPrice
-     */
-    public function testUsesCustomPriceForKnownNetwork($prefixPrice): void
-    {
-        $this->assertEquals("0.123", $prefixPrice->getPriceForNetwork('21039'));
-    }
+/**
+ *
+ * @param $prefixPrice
+ */
+test('uses custom price for known network', function ($prefixPrice) {
+    expect($prefixPrice->getPriceForNetwork('21039'))->toEqual("0.123");
+})->with('prefixPriceProvider');
 
-    public function prefixPriceProvider(): array
-    {
-        $r = [];
+/**
+ * @throws \Vonage\Client\Exception\Exception
+ */
+test('cannot get currency', function () {
+    $this->expectException(Exception::class);
+    $this->expectExceptionMessage('Currency is unavailable from this endpoint');
 
-        $prefixPrice = new PrefixPrice();
-        @$prefixPrice->fromArray([
-            'country' => 'ZW',
-            'name' => 'Zimbabwe',
-            'prefix' => 263,
-            'networks' => [
-                [
-                    'code' => '21039',
-                    'network' => 'Demo Network',
-                    'mtPrice' => '0.123'
-                ]
+    $prefixPrice = new PrefixPrice();
+    $prefixPrice->getCurrency();
+});
+
+// Datasets
+dataset('prefixPriceProvider', function () {
+    $r = [];
+
+    $prefixPrice = new PrefixPrice();
+    @$prefixPrice->fromArray([
+        'country' => 'ZW',
+        'name' => 'Zimbabwe',
+        'prefix' => 263,
+        'networks' => [
+            [
+                'code' => '21039',
+                'network' => 'Demo Network',
+                'mtPrice' => '0.123'
             ]
-        ]);
-        $r['jsonUnserialize'] = [$prefixPrice];
+        ]
+    ]);
+    $r['jsonUnserialize'] = [$prefixPrice];
 
-        return $r;
-    }
-
-    /**
-     * @throws \Vonage\Client\Exception\Exception
-     */
-    public function testCannotGetCurrency(): void
-    {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Currency is unavailable from this endpoint');
-
-        $prefixPrice = new PrefixPrice();
-        $prefixPrice->getCurrency();
-    }
-}
+    return $r;
+});

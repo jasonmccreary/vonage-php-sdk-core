@@ -9,38 +9,26 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Client\Credentials;
-
-use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Basic;
 
-class BasicTest extends VonageTestCase
-{
-    protected $key = 'key';
-    protected $secret = 'secret';
+test('as array', function () {
+    $credentials = new Basic($this->key, $this->secret);
+    $array = $credentials->asArray();
 
-    public function testAsArray(): void
-    {
-        $credentials = new Basic($this->key, $this->secret);
-        $array = $credentials->asArray();
+    expect($array['api_key'])->toEqual($this->key);
+    expect($array['api_secret'])->toEqual($this->secret);
+});
 
-        $this->assertEquals($this->key, $array['api_key']);
-        $this->assertEquals($this->secret, $array['api_secret']);
-    }
+test('array access', function () {
+    $credentials = new Basic($this->key, $this->secret);
 
-    public function testArrayAccess(): void
-    {
-        $credentials = new Basic($this->key, $this->secret);
+    expect($credentials['api_key'])->toEqual($this->key);
+    expect($credentials['api_secret'])->toEqual($this->secret);
+});
 
-        $this->assertEquals($this->key, $credentials['api_key']);
-        $this->assertEquals($this->secret, $credentials['api_secret']);
-    }
+test('properties', function () {
+    $credentials = new Basic($this->key, $this->secret);
 
-    public function testProperties(): void
-    {
-        $credentials = new Basic($this->key, $this->secret);
-
-        $this->assertEquals($this->key, $credentials->api_key);
-        $this->assertEquals($this->secret, $credentials->api_secret);
-    }
-}
+    expect($credentials->api_key)->toEqual($this->key);
+    expect($credentials->api_secret)->toEqual($this->secret);
+});

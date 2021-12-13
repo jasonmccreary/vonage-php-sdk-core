@@ -9,98 +9,82 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Account;
-
-use VonageTest\VonageTestCase;
 use Vonage\Account\SmsPrice;
 
-class SmsPriceTest extends VonageTestCase
-{
-    /**
-     * @dataProvider smsPriceProvider
-     *
-     * @param $smsPrice
-     */
-    public function testFromArray($smsPrice): void
-    {
-        $this->assertEquals("US", $smsPrice->getCountryCode());
-        $this->assertEquals("United States", $smsPrice->getCountryName());
-        $this->assertEquals("1", $smsPrice->getDialingPrefix());
-        $this->assertEquals("0.00512", $smsPrice->getDefaultPrice());
-    }
+/**
+ *
+ * @param $smsPrice
+ */
+test('from array', function ($smsPrice) {
+    expect($smsPrice->getCountryCode())->toEqual("US");
+    expect($smsPrice->getCountryName())->toEqual("United States");
+    expect($smsPrice->getDialingPrefix())->toEqual("1");
+    expect($smsPrice->getDefaultPrice())->toEqual("0.00512");
+})->with('smsPriceProvider');
 
-    /**
-     * @dataProvider smsPriceProvider
-     *
-     * @param $smsPrice
-     */
-    public function testGetters($smsPrice): void
-    {
-        $this->assertEquals("US", $smsPrice->getCountryCode());
-        $this->assertEquals("United States", $smsPrice->getCountryName());
-        $this->assertEquals("United States", $smsPrice->getCountryDisplayName());
-        $this->assertEquals("1", $smsPrice->getDialingPrefix());
-        $this->assertEquals("0.00512", $smsPrice->getDefaultPrice());
-    }
+/**
+ *
+ * @param $smsPrice
+ */
+test('getters', function ($smsPrice) {
+    expect($smsPrice->getCountryCode())->toEqual("US");
+    expect($smsPrice->getCountryName())->toEqual("United States");
+    expect($smsPrice->getCountryDisplayName())->toEqual("United States");
+    expect($smsPrice->getDialingPrefix())->toEqual("1");
+    expect($smsPrice->getDefaultPrice())->toEqual("0.00512");
+})->with('smsPriceProvider');
 
-    /**
-     * @dataProvider smsPriceProvider
-     *
-     * @param $smsPrice
-     */
-    public function testArrayAccess($smsPrice): void
-    {
-        $this->assertEquals("US", @$smsPrice['country_code']);
-        $this->assertEquals("United States", @$smsPrice['country_name']);
-        $this->assertEquals("United States", @$smsPrice['country_display_name']);
-        $this->assertEquals("1", @$smsPrice['dialing_prefix']);
-        $this->assertEquals("0.00512", @$smsPrice['default_price']);
-    }
+/**
+ *
+ * @param $smsPrice
+ */
+test('array access', function ($smsPrice) {
+    expect(@$smsPrice['country_code'])->toEqual("US");
+    expect(@$smsPrice['country_name'])->toEqual("United States");
+    expect(@$smsPrice['country_display_name'])->toEqual("United States");
+    expect(@$smsPrice['dialing_prefix'])->toEqual("1");
+    expect(@$smsPrice['default_price'])->toEqual("0.00512");
+})->with('smsPriceProvider');
 
-    /**
-     * @dataProvider smsPriceProvider
-     *
-     * @param $smsPrice
-     */
-    public function testUsesCustomPriceForKnownNetwork($smsPrice): void
-    {
-        $this->assertEquals("0.123", $smsPrice->getPriceForNetwork('21039'));
-    }
+/**
+ *
+ * @param $smsPrice
+ */
+test('uses custom price for known network', function ($smsPrice) {
+    expect($smsPrice->getPriceForNetwork('21039'))->toEqual("0.123");
+})->with('smsPriceProvider');
 
-    /**
-     * @dataProvider smsPriceProvider
-     *
-     * @param $smsPrice
-     */
-    public function testUsesDefaultPriceForUnknownNetwork($smsPrice): void
-    {
-        $this->assertEquals("0.00512", $smsPrice->getPriceForNetwork('007'));
-    }
+/**
+ *
+ * @param $smsPrice
+ */
+test('uses default price for unknown network', function ($smsPrice) {
+    expect($smsPrice->getPriceForNetwork('007'))->toEqual("0.00512");
+})->with('smsPriceProvider');
 
-    public function smsPriceProvider(): array
-    {
-        $r = [];
+// Datasets
+dataset('smsPriceProvider', function () {
+    $r = [];
 
-        $smsPrice = new SmsPrice();
-        @$smsPrice->fromArray([
-            'dialing_prefix' => 1,
-            'default_price' => '0.00512',
-            'currency' => 'EUR',
-            'country_code' => 'US',
-            'country_name' => 'United States',
-            'country_display_name' => 'United States',
-            'prefix' => 1,
-            'networks' => [
-                [
-                    'currency' => 'EUR',
-                    'networkCode' => '21039',
-                    'networkName' => 'Demo Network',
-                    'price' => '0.123'
-                ]
+    $smsPrice = new SmsPrice();
+    @$smsPrice->fromArray([
+        'dialing_prefix' => 1,
+        'default_price' => '0.00512',
+        'currency' => 'EUR',
+        'country_code' => 'US',
+        'country_name' => 'United States',
+        'country_display_name' => 'United States',
+        'prefix' => 1,
+        'networks' => [
+            [
+                'currency' => 'EUR',
+                'networkCode' => '21039',
+                'networkName' => 'Demo Network',
+                'price' => '0.123'
             ]
-        ]);
-        $r['jsonUnserialize'] = [$smsPrice];
+        ]
+    ]);
+    $r['jsonUnserialize'] = [$smsPrice];
 
-        return $r;
-    }
-}
+    return $r;
+});

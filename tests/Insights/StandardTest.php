@@ -9,80 +9,70 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Insights;
-
-use VonageTest\VonageTestCase;
 use Vonage\Insights\Standard;
 
-class StandardTest extends VonageTestCase
-{
-    /**
-     * @dataProvider standardTestProvider
-     *
-     * @param $standard
-     * @param $inputData
-     */
-    public function testArrayAccess($standard, $inputData): void
-    {
-        $this->assertEquals($inputData['refund_price'], @$standard['refund_price']);
-        $this->assertEquals($inputData['request_price'], @$standard['request_price']);
-        $this->assertEquals($inputData['remaining_balance'], @$standard['remaining_balance']);
-        $this->assertEquals($inputData['current_carrier'], @$standard['current_carrier']);
-        $this->assertEquals($inputData['original_carrier'], @$standard['original_carrier']);
-        $this->assertEquals($inputData['ported'], @$standard['ported']);
-        $this->assertEquals($inputData['roaming'], @$standard['roaming']);
-    }
+/**
+ *
+ * @param $standard
+ * @param $inputData
+ */
+test('array access', function ($standard, $inputData) {
+    expect(@$standard['refund_price'])->toEqual($inputData['refund_price']);
+    expect(@$standard['request_price'])->toEqual($inputData['request_price']);
+    expect(@$standard['remaining_balance'])->toEqual($inputData['remaining_balance']);
+    expect(@$standard['current_carrier'])->toEqual($inputData['current_carrier']);
+    expect(@$standard['original_carrier'])->toEqual($inputData['original_carrier']);
+    expect(@$standard['ported'])->toEqual($inputData['ported']);
+    expect(@$standard['roaming'])->toEqual($inputData['roaming']);
+})->with('standardTestProvider');
 
-    /**
-     * @dataProvider standardTestProvider
-     *
-     * @param $standard
-     * @param $inputData
-     */
-    public function testObjectAccess($standard, $inputData): void
-    {
-        $this->assertEquals($inputData['refund_price'], @$standard->getRefundPrice());
-        $this->assertEquals($inputData['request_price'], @$standard->getRequestPrice());
-        $this->assertEquals($inputData['remaining_balance'], @$standard->getRemainingBalance());
-        $this->assertEquals($inputData['current_carrier'], $standard->getCurrentCarrier());
-        $this->assertEquals($inputData['original_carrier'], $standard->getOriginalCarrier());
-        $this->assertEquals($inputData['ported'], $standard->getPorted());
-        $this->assertEquals($inputData['roaming'], $standard->getRoaming());
-    }
+/**
+ *
+ * @param $standard
+ * @param $inputData
+ */
+test('object access', function ($standard, $inputData) {
+    expect(@$standard->getRefundPrice())->toEqual($inputData['refund_price']);
+    expect(@$standard->getRequestPrice())->toEqual($inputData['request_price']);
+    expect(@$standard->getRemainingBalance())->toEqual($inputData['remaining_balance']);
+    expect($standard->getCurrentCarrier())->toEqual($inputData['current_carrier']);
+    expect($standard->getOriginalCarrier())->toEqual($inputData['original_carrier']);
+    expect($standard->getPorted())->toEqual($inputData['ported']);
+    expect($standard->getRoaming())->toEqual($inputData['roaming']);
+})->with('standardTestProvider');
 
-    public function standardTestProvider(): array
-    {
-        $r = [];
+// Datasets
+dataset('standardTestProvider', function () {
+    $r = [];
 
-        $input1 = [
-            'current_carrier' =>
-                [
-                    'network_code' => '23420',
-                    'name' => 'Hutchison 3G Ltd',
-                    'country' => 'GB',
-                    'network_type' => 'mobile',
-                ],
-            'original_carrier' =>
-                [
-                    'network_code' => '23430',
-                    'name' => 'EE Tmobile',
-                    'country' => 'GB',
-                    'network_type' => 'mobile',
-                ],
-            'ported' => 'assumed_ported',
-            'request_price' => '0.00500000',
-            'refund_price' => '0.00500000',
-            'remaining_balance' => '26.294675',
-            'roaming' =>
-                [
-                    'status' => 'unknown',
-                ],
-        ];
+    $input1 = [
+        'current_carrier' =>
+            [
+                'network_code' => '23420',
+                'name' => 'Hutchison 3G Ltd',
+                'country' => 'GB',
+                'network_type' => 'mobile',
+            ],
+        'original_carrier' =>
+            [
+                'network_code' => '23430',
+                'name' => 'EE Tmobile',
+                'country' => 'GB',
+                'network_type' => 'mobile',
+            ],
+        'ported' => 'assumed_ported',
+        'request_price' => '0.00500000',
+        'refund_price' => '0.00500000',
+        'remaining_balance' => '26.294675',
+        'roaming' =>
+            [
+                'status' => 'unknown',
+            ],
+    ];
 
-        $standard1 = new Standard('01234567890');
-        $standard1->fromArray($input1);
-        $r['standard-1'] = [$standard1, $input1];
+    $standard1 = new Standard('01234567890');
+    $standard1->fromArray($input1);
+    $r['standard-1'] = [$standard1, $input1];
 
-        return $r;
-    }
-}
+    return $r;
+});

@@ -9,10 +9,7 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Call;
-
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -21,190 +18,158 @@ use Vonage\Call\Event;
 use Vonage\Client;
 use VonageTest\Psr7AssertionTrait;
 
-use function fopen;
-use function json_decode;
-use function json_encode;
+uses(Psr7AssertionTrait::class);
 
-class DtmfTest extends VonageTestCase
-{
-    use Psr7AssertionTrait;
 
-    protected $id;
+beforeEach(function () {
+    $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
+    $this->class = Dtmf::class;
 
-    /**
-     * @var Dtmf
-     */
-    protected $entity;
+    $this->entity = @new Dtmf('3fd4d839-493e-4485-b2a5-ace527aacff3');
+    $this->new = @new Dtmf();
 
-    /**
-     * @var Dtmf
-     */
-    protected $new;
+    $this->vonageClient = $this->prophesize(Client::class);
+    $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-    protected $class;
+    /** @noinspection PhpParamsInspection */
+    $this->entity->setClient($this->vonageClient->reveal());
+    /** @noinspection PhpParamsInspection */
+    $this->new->setClient($this->vonageClient->reveal());
+});
 
-    protected $vonageClient;
+test('has id', function () {
+    expect($this->entity->getId())->toBe($this->id);
+});
 
-    public function setUp(): void
-    {
-        $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
-        $this->class = Dtmf::class;
+/**
+ * @param $value
+ * @param $param
+ * @param $setter
+ * @param $expected
+ */
+test('set params', function ($value, $param, $setter, $expected) {
+    $this->entity->$setter($value);
+    $data = $this->entity->jsonSerialize();
 
-        $this->entity = @new Dtmf('3fd4d839-493e-4485-b2a5-ace527aacff3');
-        $this->new = @new Dtmf();
+    expect($data[$param])->toEqual($expected);
+})->with('setterParameters');
 
-        $this->vonageClient = $this->prophesize(Client::class);
-        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+/**
+ * @param $value
+ * @param $param
+ */
+test('array params', function ($value, $param) {
+    $this->entity[$param] = $value;
+    $data = $this->entity->jsonSerialize();
 
-        /** @noinspection PhpParamsInspection */
-        $this->entity->setClient($this->vonageClient->reveal());
-        /** @noinspection PhpParamsInspection */
-        $this->new->setClient($this->vonageClient->reveal());
-    }
+    expect($data[$param])->toEqual($value);
+})->with('setterParameters');
 
-    public function testHasId(): void
-    {
-        $this->assertSame($this->id, $this->entity->getId());
-    }
+/**
+ * @throws Client\Exception\Exception
+ * @throws Client\Exception\Request
+ * @throws Client\Exception\Server
+ * @throws ClientExceptionInterface
+ */
+test('put makes request', function () {
+    $this->entity->setDigits('3119');
 
-    /**
-     * @param $value
-     * @param $param
-     * @param $setter
-     * @param $expected
-     * @dataProvider setterParameters
-     */
-    public function testSetParams($value, $param, $setter, $expected): void
-    {
-        $this->entity->$setter($value);
-        $data = $this->entity->jsonSerialize();
+    $callId = $this->id;
+    $entity = $this->entity;
 
-        $this->assertEquals($expected, $data[$param]);
-    }
+    $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
+        $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
+        $expected = json_decode(json_encode($entity), true);
 
-    /**
-     * @param $value
-     * @param $param
-     * @dataProvider setterParameters
-     */
-    public function testArrayParams($value, $param): void
-    {
-        $this->entity[$param] = $value;
-        $data = $this->entity->jsonSerialize();
+        $request->getBody()->rewind();
+        $body = json_decode($request->getBody()->getContents(), true);
+        $request->getBody()->rewind();
 
-        $this->assertEquals($value, $data[$param]);
-    }
+        expect($body)->toEqual($expected);
+        return true;
+    }))->willReturn(getResponse('dtmf', 200));
 
-    /**
-     * @return string[]
-     */
-    public function setterParameters(): array
-    {
-        return [
-            ['1234', 'digits', 'setDigits', '1234']
-        ];
-    }
+    $event = @$this->entity->put();
 
-    /**
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws Client\Exception\Server
-     * @throws ClientExceptionInterface
-     */
-    public function testPutMakesRequest(): void
-    {
-        $this->entity->setDigits('3119');
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('DTMF sent');
+});
 
-        $callId = $this->id;
-        $entity = $this->entity;
+/**
+ * @throws ClientExceptionInterface
+ * @throws Client\Exception\Exception
+ * @throws Client\Exception\Request
+ * @throws Client\Exception\Server
+ */
+test('put can replace', function () {
+    $class = $this->class;
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
-            $expected = json_decode(json_encode($entity), true);
+    $entity = @new $class();
+    $entity->setDigits('1234');
 
-            $request->getBody()->rewind();
-            $body = json_decode($request->getBody()->getContents(), true);
-            $request->getBody()->rewind();
+    $callId = $this->id;
 
-            $this->assertEquals($expected, $body);
-            return true;
-        }))->willReturn($this->getResponse('dtmf', 200));
+    $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
+        $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
+        $expected = json_decode(json_encode($entity), true);
 
-        $event = @$this->entity->put();
+        $request->getBody()->rewind();
+        $body = json_decode($request->getBody()->getContents(), true);
+        $request->getBody()->rewind();
 
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('DTMF sent', $event['message']);
-    }
+        expect($body)->toEqual($expected);
+        return true;
+    }))->willReturn(getResponse('dtmf', 200));
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws Client\Exception\Server
-     */
-    public function testPutCanReplace(): void
-    {
-        $class = $this->class;
+    $event = @$this->entity->put($entity);
 
-        $entity = @new $class();
-        $entity->setDigits('1234');
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('DTMF sent');
+});
 
-        $callId = $this->id;
+/**
+ * @throws ClientExceptionInterface
+ * @throws Client\Exception\Exception
+ * @throws Client\Exception\Request
+ * @throws Client\Exception\Server
+ */
+test('invoke proxies put with argument', function () {
+    $object = $this->entity;
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $entity) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/dtmf', 'PUT', $request);
-            $expected = json_decode(json_encode($entity), true);
+    $this->vonageClient->send(Argument::any())->willReturn(getResponse('dtmf', 200));
+    $test = $object();
+    expect($test)->toBe($this->entity);
 
-            $request->getBody()->rewind();
-            $body = json_decode($request->getBody()->getContents(), true);
-            $request->getBody()->rewind();
+    $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
-            $this->assertEquals($expected, $body);
-            return true;
-        }))->willReturn($this->getResponse('dtmf', 200));
+    $class = $this->class;
+    $entity = @new $class();
+    $entity->setDigits(1234);
 
-        $event = @$this->entity->put($entity);
+    $event = @$object($entity);
 
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('DTMF sent', $event['message']);
-    }
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('DTMF sent');
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws Client\Exception\Server
-     */
-    public function testInvokeProxiesPutWithArgument(): void
-    {
-        $object = $this->entity;
+    $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
+});
 
-        $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('dtmf', 200));
-        $test = $object();
-        $this->assertSame($this->entity, $test);
+// Datasets
+/**
+ * @return string[]
+ */
+dataset('setterParameters', [
+    ['1234', 'digits', 'setDigits', '1234']
+]);
 
-        $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
-
-        $class = $this->class;
-        $entity = @new $class();
-        $entity->setDigits(1234);
-
-        $event = @$object($entity);
-
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('DTMF sent', $event['message']);
-
-        $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
-    }
-
-    /**
+// Helpers
+/**
      * Get the API response we'd expect for a call to the API.
      */
-    protected function getResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
-    }
+function getResponse(string $type = 'success', int $status = 200): Response
+{
+    return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
 }

@@ -9,78 +9,55 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Client\Factory;
-
-use VonageTest\VonageTestCase;
-use RuntimeException;
 use Vonage\Client;
 use Vonage\Client\Factory\MapFactory;
 
-class MapFactoryTest extends VonageTestCase
-{
-    /**
-     * @var MapFactory
-     */
-    protected $factory;
+beforeEach(function () {
+    $this->client = new Client(new Client\Credentials\Basic('key', 'secret'));
 
-    /**
-     * @var Client
-     */
-    protected $client;
+    $this->factory = new MapFactory([
+        'test' => TestDouble::class
+    ], $this->client);
+});
 
-    public function setUp(): void
-    {
-        $this->client = new Client(new Client\Credentials\Basic('key', 'secret'));
+test('client injection', function () {
+    $api = $this->factory->getApi('test');
+    expect($api->client)->toBe($this->client);
+});
 
-        $this->factory = new MapFactory([
-            'test' => TestDouble::class
-        ], $this->client);
-    }
+test('cache', function () {
+    $api = $this->factory->getApi('test');
+    $cache = $this->factory->getApi('test');
 
-    public function testClientInjection(): void
-    {
-        $api = $this->factory->getApi('test');
-        $this->assertSame($this->client, $api->client);
-    }
+    expect($cache)->toBe($api);
+});
 
-    public function testCache(): void
-    {
-        $api = $this->factory->getApi('test');
-        $cache = $this->factory->getApi('test');
+test('class map', function () {
+    expect($this->factory->hasApi('test'))->toBeTrue();
+    expect($this->factory->hasApi('not'))->toBeFalse();
 
-        $this->assertSame($api, $cache);
-    }
+    $api = $this->factory->getApi('test');
+    expect($api)->toBeInstanceOf(TestDouble::class);
 
-    public function testClassMap(): void
-    {
-        $this->assertTrue($this->factory->hasApi('test'));
-        $this->assertFalse($this->factory->hasApi('not'));
+    $this->expectException(RuntimeException::class);
+    $this->factory->getApi('not');
+});
 
-        $api = $this->factory->getApi('test');
-        $this->assertInstanceOf(TestDouble::class, $api);
+test('make creates new instance', function () {
+    $first = $this->factory->make('test');
+    $second = $this->factory->make('test');
 
-        $this->expectException(RuntimeException::class);
-        $this->factory->getApi('not');
-    }
+    $this->assertNotSame($first, $second);
+    expect($first)->toBeInstanceOf(TestDouble::class);
+    expect($second)->toBeInstanceOf(TestDouble::class);
+});
 
-    public function testMakeCreatesNewInstance(): void
-    {
-        $first = $this->factory->make('test');
-        $second = $this->factory->make('test');
+test('make does not use cache', function () {
+    $cached = $this->factory->get('test');
+    $new = $this->factory->make('test');
+    $secondCached = $this->factory->get('test');
 
-        $this->assertNotSame($first, $second);
-        $this->assertInstanceOf(TestDouble::class, $first);
-        $this->assertInstanceOf(TestDouble::class, $second);
-    }
-
-    public function testMakeDoesNotUseCache(): void
-    {
-        $cached = $this->factory->get('test');
-        $new = $this->factory->make('test');
-        $secondCached = $this->factory->get('test');
-
-        $this->assertNotSame($cached, $new);
-        $this->assertNotSame($secondCached, $new);
-        $this->assertSame($cached, $secondCached);
-    }
-}
+    $this->assertNotSame($cached, $new);
+    $this->assertNotSame($secondCached, $new);
+    expect($secondCached)->toBe($cached);
+});

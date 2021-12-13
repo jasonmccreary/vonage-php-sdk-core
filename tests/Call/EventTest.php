@@ -9,45 +9,34 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Call;
-
-use VonageTest\VonageTestCase;
 use Vonage\Call\Event;
 use VonageTest\Fixture\ResponseTrait;
 
-class EventTest extends VonageTestCase
+uses(ResponseTrait::class);
+
+test('expects message', function () {
+    $this->expectException('InvalidArgumentException');
+    @new Event(['uuid' => 'something_unique']);
+});
+
+test('expects u u i d', function () {
+    $this->expectException('InvalidArgumentException');
+    @new Event(['message' => 'something happened']);
+});
+
+test('get id', function () {
+    expect($this->entity->getId())->toBe('5dd627ff-caff-46a8-99ed-891e5ffebc55');
+    expect($this->entity['uuid'])->toBe('5dd627ff-caff-46a8-99ed-891e5ffebc55');
+});
+
+test('get message', function () {
+    expect($this->entity->getMessage())->toBe('Stream stopped');
+    expect($this->entity['message'])->toBe('Stream stopped');
+});
+
+// Helpers
+function setup(): void
 {
-    use ResponseTrait;
-
-    protected $entity;
-
-    public function setup(): void
-    {
-        $data = $this->getResponseData(['calls', 'event']);
-        $this->entity = @new Event($data);
-    }
-
-    public function testExpectsMessage(): void
-    {
-        $this->expectException('InvalidArgumentException');
-        @new Event(['uuid' => 'something_unique']);
-    }
-
-    public function testExpectsUUID(): void
-    {
-        $this->expectException('InvalidArgumentException');
-        @new Event(['message' => 'something happened']);
-    }
-
-    public function testGetId(): void
-    {
-        $this->assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity->getId());
-        $this->assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity['uuid']);
-    }
-
-    public function testGetMessage(): void
-    {
-        $this->assertSame('Stream stopped', $this->entity->getMessage());
-        $this->assertSame('Stream stopped', $this->entity['message']);
-    }
+    $data = test()->getResponseData(['calls', 'event']);
+    test()->entity = @new Event($data);
 }
