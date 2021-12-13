@@ -9,7 +9,6 @@
 
 declare(strict_types=1);
 
-use Exception;
 use Laminas\Diactoros\Response;
 use VonageTest\VonageTestCase;
 use Vonage\Application\Application;
@@ -20,7 +19,6 @@ use Vonage\Application\VoiceConfig;
 uses(VonageTestCase::class);
 use Vonage\Client\Exception\Exception as ClientException;
 
-use function fopen;
 
 beforeEach(function () {
     app() = (new Application())->setName('test');

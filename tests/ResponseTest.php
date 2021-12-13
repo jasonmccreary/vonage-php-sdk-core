@@ -9,14 +9,12 @@
 
 declare(strict_types=1);
 
-use InvalidArgumentException;
 use VonageTest\VonageTestCase;
 use Vonage\Response;
 use Vonage\Response\Message;
 
 uses(VonageTestCase::class);
 
-use function json_decode;
 
 beforeEach(function () {
     $this->response = new Response($this->json);

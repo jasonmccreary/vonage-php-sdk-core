@@ -12,10 +12,6 @@ use Vonage\Client\Credentials\Keypair;
 
 uses(VonageTestCase::class);
 
-use function base64_decode;
-use function explode;
-use function file_get_contents;
-use function json_decode;
 
 beforeEach(function () {
     $this->key = file_get_contents(__DIR__ . '/test.key');

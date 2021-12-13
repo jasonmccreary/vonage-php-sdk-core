@@ -17,9 +17,6 @@ use Vonage\Message\Text;
 
 uses(VonageTestCase::class);
 
-use function array_diff;
-use function array_keys;
-use function json_encode;
 
 beforeEach(function () {
     $this->message = new Message($this->to, $this->from, [

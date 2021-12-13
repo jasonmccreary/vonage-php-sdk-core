@@ -9,7 +9,6 @@
 
 declare(strict_types=1);
 
-use InvalidArgumentException;
 use Laminas\Diactoros\Response;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
@@ -26,10 +25,6 @@ use VonageTest\Psr7AssertionTrait;
 uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
-use function array_unshift;
-use function call_user_func_array;
-use function fopen;
-use function serialize;
 
 /**
  * Create the Message API Client, and mock the Vonage Client

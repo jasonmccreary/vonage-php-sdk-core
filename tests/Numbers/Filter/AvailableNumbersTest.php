@@ -1,6 +1,5 @@
 <?php
 
-use InvalidArgumentException;
 use Vonage\Numbers\Number;
 use VonageTest\VonageTestCase;
 use Vonage\Numbers\Filter\AvailableNumbers;

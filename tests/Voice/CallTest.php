@@ -9,14 +9,11 @@
 
 declare(strict_types=1);
 
-use Exception;
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Call;
 
 uses(VonageTestCase::class);
 
-use function file_get_contents;
-use function json_decode;
 
 /**
  * @throws Exception

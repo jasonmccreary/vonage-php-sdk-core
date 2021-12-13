@@ -9,7 +9,6 @@
 
 declare(strict_types=1);
 
-use DateTime;
 use VonageTest\VonageTestCase;
 use Vonage\Application\Filter;
 

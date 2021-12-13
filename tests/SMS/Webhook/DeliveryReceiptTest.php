@@ -9,8 +9,6 @@
 
 declare(strict_types=1);
 
-use Exception;
-use InvalidArgumentException;
 use Laminas\Diactoros\Request\Serializer;
 use Laminas\Diactoros\ServerRequest;
 use VonageTest\VonageTestCase;
@@ -19,9 +17,6 @@ use Vonage\SMS\Webhook\Factory;
 
 uses(VonageTestCase::class);
 
-use function file_get_contents;
-use function json_decode;
-use function parse_str;
 
 test('can create from get server request', function () {
     $expected = getQueryStringFromRequest('dlr-get');

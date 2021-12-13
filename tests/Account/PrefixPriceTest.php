@@ -9,7 +9,6 @@
 
 declare(strict_types=1);
 
-use Exception;
 use VonageTest\VonageTestCase;
 use Vonage\Account\PrefixPrice;
 

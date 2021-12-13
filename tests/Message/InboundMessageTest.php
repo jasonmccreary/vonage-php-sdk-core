@@ -18,13 +18,6 @@ use Vonage\Message\Message;
 
 uses(VonageTestCase::class);
 
-use function array_key_exists;
-use function count;
-use function file_get_contents;
-use function fopen;
-use function json_decode;
-use function parse_str;
-use function strtoupper;
 
 test('construction with id', function () {
     $message = new InboundMessage('test1234');

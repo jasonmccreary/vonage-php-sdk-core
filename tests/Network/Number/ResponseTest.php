@@ -9,7 +9,6 @@
 
 declare(strict_types=1);
 
-use BadMethodCallException;
 use VonageTest\VonageTestCase;
 use Vonage\Network\Number\Callback;
 use Vonage\Network\Number\Response;

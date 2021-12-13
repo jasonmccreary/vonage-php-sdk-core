@@ -10,7 +10,6 @@
 declare(strict_types=1);
 
 use VonageTest\VonageTestCase;
-use RuntimeException;
 use Vonage\Voice\NCCO\Action\Input;
 
 uses(VonageTestCase::class);

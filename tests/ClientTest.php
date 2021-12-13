@@ -12,13 +12,11 @@ declare(strict_types=1);
 use GuzzleHttp\Client as HttpClient;
 use Http\Message\MessageFactory\DiactorosMessageFactory;
 use Http\Mock\Client as HttpMock;
-use InvalidArgumentException;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use VonageTest\VonageTestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Vonage\Client;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Factory\FactoryInterface;
@@ -28,14 +26,6 @@ use Vonage\Verify\Verification;
 uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
-use function file_get_contents;
-use function http_build_query;
-use function implode;
-use function json_decode;
-use function json_encode;
-use function parse_str;
-use function serialize;
-use function set_include_path;
 
 beforeEach(function () {
     $this->http = getMockHttp();

@@ -15,8 +15,6 @@ use Vonage\Voice\NCCO\NCCO;
 
 uses(VonageTestCase::class);
 
-use function json_decode;
-use function json_encode;
 
 test('can create n c c o from array', function () {
     $data = [

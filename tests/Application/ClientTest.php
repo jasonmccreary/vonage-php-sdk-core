@@ -9,8 +9,6 @@
 
 declare(strict_types=1);
 
-use DateTime;
-use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use VonageTest\VonageTestCase;
@@ -33,10 +31,6 @@ use VonageTest\Psr7AssertionTrait;
 uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
-use function fopen;
-use function is_null;
-use function json_decode;
-use function substr;
 
 beforeEach(function () {
     $this->vonageClient = $this->prophesize(Client::class);

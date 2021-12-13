@@ -10,7 +10,6 @@
 declare(strict_types=1);
 
 use VonageTest\VonageTestCase;
-use RuntimeException;
 use Vonage\Client;
 use Vonage\Client\Factory\MapFactory;
 

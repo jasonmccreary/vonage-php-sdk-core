@@ -30,9 +30,6 @@ use Vonage\Voice\Webhook;
 uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
-use function fopen;
-use function json_decode;
-use function json_encode;
 
 beforeEach(function () {
     $this->vonageClient = $this->prophesize(Client::class);

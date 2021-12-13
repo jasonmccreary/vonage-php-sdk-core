@@ -26,9 +26,6 @@ use VonageTest\Psr7AssertionTrait;
 uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
-use function fopen;
-use function json_decode;
-use function str_repeat;
 
 beforeEach(function () {
     $this->vonageClient = $this->prophesize(Client::class);

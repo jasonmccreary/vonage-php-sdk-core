@@ -9,10 +9,6 @@
 
 declare(strict_types=1);
 
-use DateTime;
-use DateTimeImmutable;
-use Exception;
-use InvalidArgumentException;
 use Laminas\Diactoros\Request\Serializer;
 use Laminas\Diactoros\ServerRequest;
 use VonageTest\VonageTestCase;
@@ -27,9 +23,6 @@ use Vonage\Voice\Webhook\Transfer;
 
 uses(VonageTestCase::class);
 
-use function file_get_contents;
-use function json_decode;
-use function parse_str;
 
 /**
  * @throws Exception

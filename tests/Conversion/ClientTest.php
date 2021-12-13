@@ -25,7 +25,6 @@ use VonageTest\Psr7AssertionTrait;
 uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
-use function fopen;
 
 beforeEach(function () {
     $this->vonageClient = $this->getMockBuilder('Vonage\Client')

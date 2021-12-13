@@ -9,7 +9,6 @@
 
 declare(strict_types=1);
 
-use InvalidArgumentException;
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\EndpointInterface;
 use Vonage\Voice\Endpoint\Phone;

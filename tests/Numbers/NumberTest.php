@@ -16,8 +16,6 @@ use Vonage\Numbers\Number;
 
 uses(VonageTestCase::class);
 
-use function file_get_contents;
-use function json_decode;
 
 beforeEach(function () {
     $this->number = new Number();

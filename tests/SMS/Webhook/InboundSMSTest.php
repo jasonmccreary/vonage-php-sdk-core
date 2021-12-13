@@ -9,20 +9,14 @@
 
 declare(strict_types=1);
 
-use Exception;
-use InvalidArgumentException;
 use Laminas\Diactoros\Request\Serializer;
 use Laminas\Diactoros\ServerRequest;
 use VonageTest\VonageTestCase;
-use RuntimeException;
 use Vonage\SMS\Webhook\Factory;
 use Vonage\SMS\Webhook\InboundSMS;
 
 uses(VonageTestCase::class);
 
-use function file_get_contents;
-use function json_decode;
-use function parse_str;
 
 test('can create from form post server request', function () {
     $expected = getQueryStringFromRequest('inbound');

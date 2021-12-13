@@ -25,8 +25,6 @@ use VonageTest\Psr7AssertionTrait;
 uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
-use function fopen;
-use function is_null;
 
 beforeEach(function () {
     $this->vonageClient = $this->prophesize('Vonage\Client');
