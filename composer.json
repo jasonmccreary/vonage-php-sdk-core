@@ -46,7 +46,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "VonageTest\\": "test/"
+      "VonageTest\\": "tests/"
     }
   },
   "minimum-stability": "stable",
