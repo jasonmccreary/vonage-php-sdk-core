@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\OAuth;
-
 
 test('as array', function () {
     $credentials = new OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);

@@ -2,8 +2,6 @@
 
 use Psr\Log\LoggerInterface;
 use Vonage\Logger\LoggerTrait;
-use VonageTest\VonageTestCase;
-
 
 test('can set and get logger', function () {
     /** @var LoggerTrait $trait */

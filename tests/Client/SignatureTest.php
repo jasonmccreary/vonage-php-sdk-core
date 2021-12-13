@@ -9,10 +9,8 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Signature;
-
 
 test('invalid signature method', function () {
     $fakeAlgo = 'fake_algo';

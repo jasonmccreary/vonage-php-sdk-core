@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Voice\Call\Call;
-
 
 beforeEach(function () {
     $this->call = new Call($this->url, $this->to, $this->from);

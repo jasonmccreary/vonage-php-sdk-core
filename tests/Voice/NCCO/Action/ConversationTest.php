@@ -9,10 +9,8 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Conversation;
 use Vonage\Voice\Webhook;
-
 
 test('simple setup', function () {
     $this->assertSame([

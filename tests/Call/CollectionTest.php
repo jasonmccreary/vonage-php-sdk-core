@@ -10,7 +10,6 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -18,7 +17,6 @@ use Vonage\Call\Call;
 use Vonage\Call\Collection;
 use Vonage\Call\Filter;
 use Vonage\Call\Transfer;
-use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use VonageTest\Psr7AssertionTrait;
 

@@ -9,10 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Message\Callback\Receipt;
-
-
 
 beforeEach(function () {
     $this->receipt = new Receipt($this->data);

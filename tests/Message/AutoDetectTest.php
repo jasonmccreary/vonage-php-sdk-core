@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Message\AutoDetect;
-
 
 /**
  * When creating a message, it should not auto-detect encoding by default

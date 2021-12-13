@@ -9,10 +9,8 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Notify;
 use Vonage\Voice\Webhook;
-
 
 test('can set additional information', function () {
     $webhook = new Webhook('https://test.domain/events');

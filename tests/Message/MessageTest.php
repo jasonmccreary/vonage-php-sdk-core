@@ -11,12 +11,9 @@ declare(strict_types=1);
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Message;
 use Vonage\Message\Text;
-
-
 
 beforeEach(function () {
     $this->message = new Message($this->to, $this->from, [

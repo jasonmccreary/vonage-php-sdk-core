@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Input;
-
 
 test('speech settings generate correct n c c o', function () {
     $ncco = (new Input())

@@ -9,10 +9,8 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Call\Filter;
 use Vonage\Conversations\Conversation;
-
 
 beforeEach(function () {
     $this->filter = @new Filter();

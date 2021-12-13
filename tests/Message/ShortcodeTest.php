@@ -9,13 +9,11 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\Shortcode;
 use Vonage\Message\Shortcode\Alert;
 use Vonage\Message\Shortcode\Marketing;
 use Vonage\Message\Shortcode\TwoFactor;
-
 
 /**
  *

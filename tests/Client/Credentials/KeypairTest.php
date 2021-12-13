@@ -7,10 +7,7 @@
  * @license https://github.com/Vonage/vonage-php-sdk-core/blob/master/LICENSE.txt Apache License 2.0
  */
 
-use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Keypair;
-
-
 
 beforeEach(function () {
     $this->key = file_get_contents(__DIR__ . '/test.key');

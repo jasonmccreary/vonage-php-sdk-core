@@ -9,10 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Response\Message;
-
-
 
 test('success', function () {
     $json = '{

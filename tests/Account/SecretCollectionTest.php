@@ -9,12 +9,9 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Account\Secret;
 use Vonage\Account\SecretCollection;
 use Vonage\InvalidResponseException;
-
-
 
 /**
  * @throws InvalidResponseException

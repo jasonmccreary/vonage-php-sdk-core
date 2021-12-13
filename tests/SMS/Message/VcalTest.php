@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\Vcal;
-
 
 test('can create vcal message', function () {
     $event = 'BEGIN%3AVCALENDAR%0AVERSION%3A2.0%0APRODID%3A-%2F%2Fhacksw%2Fhandcal%2F%2FNONSGML%20v1.0%2F%2FEN%0A' .

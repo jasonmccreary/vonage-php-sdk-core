@@ -11,12 +11,9 @@ declare(strict_types=1);
 
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
-use VonageTest\VonageTestCase;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Message\InboundMessage;
 use Vonage\Message\Message;
-
-
 
 test('construction with id', function () {
     $message = new InboundMessage('test1234');

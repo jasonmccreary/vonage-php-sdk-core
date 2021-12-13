@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\App;
-
 
 test('sets username at creation', function () {
     expect((new App("username"))->getId())->toBe("username");

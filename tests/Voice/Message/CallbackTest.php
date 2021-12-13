@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Voice\Message\Callback;
-
 
 beforeEach(function () {
     $this->callback = new Callback($this->data);

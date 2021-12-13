@@ -8,7 +8,6 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\Request;
-use VonageTest\VonageTestCase;
 use Vonage\Entity\Psr7Trait;
 use Laminas\Diactoros\Response;
 use Vonage\Client\Exception\Request as ExceptionRequest;

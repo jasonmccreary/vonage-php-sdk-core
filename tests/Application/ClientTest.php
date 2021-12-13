@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -22,7 +21,6 @@ use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
 use Vonage\Client;
-use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Entity\Filter\EmptyFilter;

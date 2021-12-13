@@ -10,9 +10,7 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Account\Client as AccountClient;

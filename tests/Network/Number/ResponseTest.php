@@ -9,10 +9,8 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Network\Number\Callback;
 use Vonage\Network\Number\Response;
-
 
 beforeEach(function () {
     $this->response = new Response($this->data);

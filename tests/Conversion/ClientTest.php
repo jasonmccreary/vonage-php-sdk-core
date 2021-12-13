@@ -10,8 +10,6 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\Response;
-use PHPUnit\Framework\MockObject\MockObject;
-use VonageTest\VonageTestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
@@ -20,9 +18,6 @@ use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Conversion\Client as ConversionClient;
-use VonageTest\Psr7AssertionTrait;
-
-
 
 beforeEach(function () {
     $this->vonageClient = $this->getMockBuilder('Vonage\Client')
