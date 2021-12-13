@@ -56,9 +56,9 @@ test('set filter', function () {
     $filter = new Filter(new DateTime('yesterday'), new DateTime('tomorrow'));
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($filter) {
-        $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/v2/applications');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         foreach ($filter->getQuery() as $key => $value) {
             $this->assertRequestQueryContains($key, $value, $request);
@@ -67,9 +67,9 @@ test('set filter', function () {
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('list'));
 
-    $this->assertInstanceOf(EmptyFilter::class, $this->applicationClient->getFilter());
-    $this->assertSame($this->applicationClient, $this->applicationClient->setFilter($filter));
-    $this->assertSame($filter, $this->applicationClient->getFilter());
+    expect($this->applicationClient->getFilter())->toBeInstanceOf(EmptyFilter::class);
+    expect($this->applicationClient->setFilter($filter))->toBe($this->applicationClient);
+    expect($this->applicationClient->getFilter())->toBe($filter);
 
     $this->applicationClient->rewind();
 });
@@ -82,15 +82,15 @@ test('set filter', function () {
  */
 test('set page', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/v2/applications');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('page_index', '1', $request);
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('list'));
 
-    $this->assertSame($this->applicationClient, $this->applicationClient->setPage(1));
-    $this->assertEquals(1, $this->applicationClient->getPage());
+    expect($this->applicationClient->setPage(1))->toBe($this->applicationClient);
+    expect($this->applicationClient->getPage())->toEqual(1);
 
     $this->applicationClient->rewind();
 });
@@ -103,15 +103,15 @@ test('set page', function () {
  */
 test('set size', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/v2/applications');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('page_size', '5', $request);
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('list'));
 
-    $this->assertSame($this->applicationClient, $this->applicationClient->setSize(5));
-    $this->assertEquals(5, $this->applicationClient->getSize());
+    expect($this->applicationClient->setSize(5))->toBe($this->applicationClient);
+    expect($this->applicationClient->getSize())->toEqual(5);
 
     $this->applicationClient->rewind();
 });
@@ -127,10 +127,10 @@ test('iteration properties', function () {
         ->shouldBeCalledTimes(1)
         ->willReturn(getResponse('list'));
 
-    $this->assertEquals(7, $this->applicationClient->count());
-    $this->assertCount(7, $this->applicationClient);
-    $this->assertEquals(2, $this->applicationClient->getPage());
-    $this->assertEquals(3, $this->applicationClient->getSize());
+    expect($this->applicationClient->count())->toEqual(7);
+    expect($this->applicationClient)->toHaveCount(7);
+    expect($this->applicationClient->getPage())->toEqual(2);
+    expect($this->applicationClient->getSize())->toEqual(3);
 });
 
 test('iterate pages', function () {
@@ -144,9 +144,9 @@ test('iterate pages', function () {
             $last = $request;
         }
 
-        $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/v2/applications');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         if ($last !== $request) { //second call
             $this->assertRequestQueryContains('page_size', '3', $request);
@@ -157,20 +157,20 @@ test('iterate pages', function () {
     }))->shouldBeCalledTimes(2)->willReturn($page, $last);
 
     foreach ($this->applicationClient as $id => $application) {
-        $this->assertInstanceOf(Application::class, $application);
-        $this->assertSame($application->getId(), $id);
+        expect($application)->toBeInstanceOf(Application::class);
+        expect($id)->toBe($application->getId());
     }
 });
 
 test('can iterate client', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/v2/applications');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('list'));
 
-    $this->assertInstanceOf('Iterator', $this->applicationClient);
+    expect($this->applicationClient)->toBeInstanceOf('Iterator');
 
     $application = $id = null;
 
@@ -179,9 +179,9 @@ test('can iterate client', function () {
         break;
     }
 
-    $this->assertTrue(isset($application));
-    $this->assertInstanceOf(Application::class, $application);
-    $this->assertSame($application->getId(), $id);
+    expect(isset($application))->toBeTrue();
+    expect($application)->toBeInstanceOf(Application::class);
+    expect($id)->toBe($application->getId());
 });
 
 /**
@@ -195,18 +195,18 @@ test('can iterate client', function () {
  */
 test('get application', function ($payload, $id) {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-        $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/v2/applications/' . $id);
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         return true;
     }))->willReturn(getResponse());
 
     $application = @$this->applicationClient->get($payload);
     $expectedData = json_decode(getResponse()->getBody()->getContents(), true);
 
-    $this->assertInstanceOf(Application::class, $application);
-    $this->assertSame($expectedData['id'], $application->getId());
-    $this->assertSame($expectedData['name'], $application->getName());
+    expect($application)->toBeInstanceOf(Application::class);
+    expect($application->getId())->toBe($expectedData['id']);
+    expect($application->getName())->toBe($expectedData['name']);
     $this->assertSame(
         $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
         $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
@@ -260,9 +260,9 @@ test('get application', function ($payload, $id) {
  */
 test('update application', function ($payload, $method, $id, $expectedId) {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedId) {
-        $this->assertEquals('/v2/applications/' . $expectedId, $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('PUT', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/v2/applications/' . $expectedId);
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('PUT');
 
         $this->assertRequestJsonBodyContains('name', 'My Application', $request);
 
@@ -303,9 +303,9 @@ test('update application', function ($payload, $method, $id, $expectedId) {
 
     $expectedData = json_decode(getResponse()->getBody()->getContents(), true);
 
-    $this->assertInstanceOf(Application::class, $application);
-    $this->assertSame($expectedData['id'], $application->getId());
-    $this->assertSame($expectedData['name'], $application->getName());
+    expect($application)->toBeInstanceOf(Application::class);
+    expect($application->getId())->toBe($expectedData['id']);
+    expect($application->getName())->toBe($expectedData['name']);
     $this->assertSame(
         $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
         $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()
@@ -363,13 +363,13 @@ test('update application', function ($payload, $method, $id, $expectedId) {
  */
 test('delete application', function ($payload, $id) {
     $this->vonageClient->send(Argument::that(function (Request $request) use ($id) {
-        $this->assertEquals('/v2/applications/' . $id, $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('DELETE', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/v2/applications/' . $id);
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('DELETE');
         return true;
     }))->willReturn(new Response('php://memory', 204));
 
-    $this->assertTrue(@$this->applicationClient->delete($payload));
+    expect(@$this->applicationClient->delete($payload))->toBeTrue();
 })->with('deleteApplication');
 
 /**
@@ -399,18 +399,18 @@ test('throws exception', function ($method, $response, $code) {
 
         switch ($class) {
             case '4':
-                $this->assertInstanceOf(Client\Exception\Request::class, $e);
-                $this->assertEquals($msg, $e->getMessage());
-                $this->assertEquals($code, $e->getCode());
+                expect($e)->toBeInstanceOf(Client\Exception\Request::class);
+                expect($e->getMessage())->toEqual($msg);
+                expect($e->getCode())->toEqual($code);
                 break;
             case '5':
-                $this->assertInstanceOf(ServerException::class, $e);
-                $this->assertEquals($msg, $e->getMessage());
-                $this->assertEquals($code, $e->getCode());
+                expect($e)->toBeInstanceOf(ServerException::class);
+                expect($e->getMessage())->toEqual($msg);
+                expect($e->getCode())->toEqual($code);
                 break;
             default:
-                $this->assertInstanceOf(ClientException::class, $e);
-                $this->assertEquals('Unexpected HTTP Status Code', $e->getMessage());
+                expect($e)->toBeInstanceOf(ClientException::class);
+                expect($e->getMessage())->toEqual('Unexpected HTTP Status Code');
                 break;
         }
     }
@@ -425,15 +425,15 @@ test('throws exception', function ($method, $response, $code) {
  */
 test('create application', function ($payload, $method) {
     $this->vonageClient->send(Argument::that(function (Request $request) {
-        $this->assertEquals('/v2/applications', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/v2/applications');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
 
         $this->assertRequestJsonBodyContains('name', 'My Application', $request);
 
         // Check for VBC as an object explicitly
         $request->getBody()->rewind();
-        $this->assertStringContainsString('"vbc":{}', $request->getBody()->getContents());
+        expect($request->getBody()->getContents())->toContain('"vbc":{}');
 
         // And check all other capabilities
         $capabilities = [
@@ -488,9 +488,9 @@ test('create application', function ($payload, $method) {
     $application = @$this->applicationClient->$method($payload);
 
     $expectedData = json_decode(getResponse()->getBody()->getContents(), true);
-    $this->assertInstanceOf(Application::class, $application);
-    $this->assertSame($expectedData['id'], $application->getId());
-    $this->assertSame($expectedData['name'], $application->getName());
+    expect($application)->toBeInstanceOf(Application::class);
+    expect($application->getId())->toBe($expectedData['id']);
+    expect($application->getName())->toBe($expectedData['name']);
     $this->assertSame(
         $expectedData['capabilities']['voice']['webhooks']['answer_url']['address'],
         $application->getVoiceConfig()->getWebhook('answer_url')->getUrl()

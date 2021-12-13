@@ -66,7 +66,7 @@ test('can use message', function () {
 
     $message = @$this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
 
-    $this->assertInstanceOf(Text::class, $message);
+    expect($message)->toBeInstanceOf(Text::class);
 });
 
 /**
@@ -130,7 +130,7 @@ test('sent message has response', function () {
     @$this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
     $message = $this->messageClient->send(new Text('14845551212', '16105551212', 'Not Pats?'));
 
-    $this->assertSame($response, @$message->getResponse());
+    expect(@$message->getResponse())->toBe($response);
 
     $this->vonageClient->send(@$message->getRequest())->shouldHaveBeenCalled();
 });
@@ -150,9 +150,9 @@ test('throw request exception', function () {
 
         self::fail('did not throw exception');
     } catch (ClientException\Request $e) {
-        $this->assertSame($message, $e->getEntity());
-        $this->assertEquals('2', $e->getCode());
-        $this->assertEquals('Missing from param', $e->getMessage());
+        expect($e->getEntity())->toBe($message);
+        expect($e->getCode())->toEqual('2');
+        expect($e->getMessage())->toEqual('Missing from param');
     }
 });
 
@@ -171,8 +171,8 @@ test('throw server exception', function () {
 
         self::fail('did not throw exception');
     } catch (ServerException $e) {
-        $this->assertEquals('5', $e->getCode());
-        $this->assertEquals('Server Error', $e->getMessage());
+        expect($e->getCode())->toEqual('5');
+        expect($e->getMessage())->toEqual('Server Error');
     }
 });
 
@@ -194,8 +194,8 @@ test('throw concurrent requests exception', function () {
 
         self::fail('did not throw exception');
     } catch (ClientException\Request $e) {
-        $this->assertEquals('429', $e->getCode());
-        $this->assertEquals('too many concurrent requests', $e->getMessage());
+        expect($e->getCode())->toEqual('429');
+        expect($e->getMessage())->toEqual('too many concurrent requests');
     }
 });
 
@@ -220,8 +220,8 @@ test('can get message with message object', function () {
     $response->getBody()->rewind();
     $body = json_decode($response->getBody()->getContents(), true);
 
-    $this->assertCount($body['count'], $messages);
-    $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+    expect($messages)->toHaveCount($body['count']);
+    expect($messages[0]->getMessageId())->toBe($body['items'][0]['message-id']);
 });
 
 /**
@@ -245,9 +245,9 @@ test('can get inbound message', function () {
     $response->getBody()->rewind();
     $body = json_decode($response->getBody()->getContents(), true);
 
-    $this->assertCount($body['count'], $messages);
-    $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
-    $this->assertInstanceOf(InboundMessage::class, $messages[0]);
+    expect($messages)->toHaveCount($body['count']);
+    expect($messages[0]->getMessageId())->toBe($body['items'][0]['message-id']);
+    expect($messages[0])->toBeInstanceOf(InboundMessage::class);
 });
 
 /**
@@ -287,7 +287,7 @@ test('get returns empty array with no results', function () {
 
     $messages = $this->messageClient->get($message);
 
-    $this->assertCount(0, $messages);
+    expect($messages)->toHaveCount(0);
 });
 
 /**
@@ -311,8 +311,8 @@ test('can get message with string i d', function () {
     $response->getBody()->rewind();
     $body = json_decode($response->getBody()->getContents(), true);
 
-    $this->assertCount($body['count'], $messages);
-    $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+    expect($messages)->toHaveCount($body['count']);
+    expect($messages[0]->getMessageId())->toBe($body['items'][0]['message-id']);
 });
 
 /**
@@ -336,8 +336,8 @@ test('can get message with array of i ds', function () {
     $response->getBody()->rewind();
     $body = json_decode($response->getBody()->getContents(), true);
 
-    $this->assertCount($body['count'], $messages);
-    $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+    expect($messages)->toHaveCount($body['count']);
+    expect($messages[0]->getMessageId())->toBe($body['items'][0]['message-id']);
 });
 
 /**
@@ -362,8 +362,8 @@ test('can get message with query', function () {
     $response->getBody()->rewind();
     $body = json_decode($response->getBody()->getContents(), true);
 
-    $this->assertCount($body['count'], $messages);
-    $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+    expect($messages)->toHaveCount($body['count']);
+    expect($messages[0]->getMessageId())->toBe($body['items'][0]['message-id']);
 });
 
 /**
@@ -474,7 +474,7 @@ test('can search by message', function () {
     $response->getBody()->rewind();
     $successData = json_decode($response->getBody()->getContents(), true);
 
-    $this->assertEquals($successData['message-id'], $searchedMessage->getMessageId());
+    expect($searchedMessage->getMessageId())->toEqual($successData['message-id']);
 });
 
 /**
@@ -493,8 +493,8 @@ test('can search by single outbound id', function () {
 
     $message = $this->messageClient->search('02000000D912945A');
 
-    $this->assertInstanceOf(Message::class, $message);
-    $this->assertSame($response, @$message->getResponse());
+    expect($message)->toBeInstanceOf(Message::class);
+    expect(@$message->getResponse())->toBe($response);
 });
 
 /**
@@ -513,8 +513,8 @@ test('can search by single inbound id', function () {
 
     $message = $this->messageClient->search('02000000DA7C52E7');
 
-    $this->assertInstanceOf(InboundMessage::class, $message);
-    $this->assertSame($response, @$message->getResponse());
+    expect($message)->toBeInstanceOf(InboundMessage::class);
+    expect(@$message->getResponse())->toBe($response);
 });
 
 /**
@@ -650,8 +650,8 @@ test('rate limit retries', function () {
     $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
     $end = microtime(true);
 
-    $this->assertEquals($success, @$message->getResponse());
-    $this->assertGreaterThanOrEqual(2, $end - $start);
+    expect(@$message->getResponse())->toEqual($success);
+    expect($end - $start)->toBeGreaterThanOrEqual(2);
 });
 
 /**
@@ -685,7 +685,7 @@ test('rate limit retries with default', function () {
     $success->getBody()->rewind();
     $successData = json_decode($success->getBody()->getContents(), true);
 
-    $this->assertEquals($successData['messages'][0]['message-id'], $message->getMessageId());
+    expect($message->getMessageId())->toEqual($successData['messages'][0]['message-id']);
 });
 
 /**
@@ -717,8 +717,8 @@ test('a p i rate limit retries', function () {
     $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
     $end = microtime(true);
 
-    $this->assertEquals($success, @$message->getResponse());
-    $this->assertGreaterThanOrEqual(2, $end - $start);
+    expect(@$message->getResponse())->toEqual($success);
+    expect($end - $start)->toBeGreaterThanOrEqual(2);
 });
 
 /**
@@ -904,7 +904,7 @@ test('magic method is called properly', function () {
     }))->willReturn(getResponse());
 
     $message = $this->messageClient->sendText($args['to'], $args['from'], $args['text']);
-    $this->assertInstanceOf(Text::class, $message);
+    expect($message)->toBeInstanceOf(Text::class);
 });
 
 test('create message throws exception on non send method', function () {

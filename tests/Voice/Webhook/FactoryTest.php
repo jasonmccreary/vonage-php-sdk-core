@@ -32,16 +32,16 @@ test('can generate started event', function () {
     $expected = json_decode(getRequest('event-post-started')->getBody()->getContents(), true);
     $event = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame($expected['status'], $event->getStatus());
-    $this->assertSame($expected['from'], $event->getFrom());
-    $this->assertSame($expected['to'], $event->getTo());
-    $this->assertSame($expected['uuid'], $event->getUuid());
-    $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
-    $this->assertSame($expected['direction'], $event->getDirection());
-    $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
-    $this->assertNull($event->getDuration());
-    $this->assertNull($event->getPrice());
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event->getStatus())->toBe($expected['status']);
+    expect($event->getFrom())->toBe($expected['from']);
+    expect($event->getTo())->toBe($expected['to']);
+    expect($event->getUuid())->toBe($expected['uuid']);
+    expect($event->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($event->getDirection())->toBe($expected['direction']);
+    expect($event->getTimestamp())->toEqual(new DateTime($expected['timestamp']));
+    expect($event->getDuration())->toBeNull();
+    expect($event->getPrice())->toBeNull();
 });
 
 /**
@@ -52,16 +52,16 @@ test('can generate ringing event', function () {
     $expected = json_decode(getRequest('event-post-ringing')->getBody()->getContents(), true);
     $event = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame($expected['status'], $event->getStatus());
-    $this->assertSame($expected['from'], $event->getFrom());
-    $this->assertSame($expected['to'], $event->getTo());
-    $this->assertSame($expected['uuid'], $event->getUuid());
-    $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
-    $this->assertSame($expected['direction'], $event->getDirection());
-    $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
-    $this->assertNull($event->getDuration());
-    $this->assertNull($event->getPrice());
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event->getStatus())->toBe($expected['status']);
+    expect($event->getFrom())->toBe($expected['from']);
+    expect($event->getTo())->toBe($expected['to']);
+    expect($event->getUuid())->toBe($expected['uuid']);
+    expect($event->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($event->getDirection())->toBe($expected['direction']);
+    expect($event->getTimestamp())->toEqual(new DateTime($expected['timestamp']));
+    expect($event->getDuration())->toBeNull();
+    expect($event->getPrice())->toBeNull();
 });
 
 /**
@@ -72,16 +72,16 @@ test('can generate answered event', function () {
     $expected = json_decode(getRequest('event-post-answered')->getBody()->getContents(), true);
     $event = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame($expected['status'], $event->getStatus());
-    $this->assertSame($expected['from'], $event->getFrom());
-    $this->assertSame($expected['to'], $event->getTo());
-    $this->assertSame($expected['uuid'], $event->getUuid());
-    $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
-    $this->assertSame($expected['direction'], $event->getDirection());
-    $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
-    $this->assertNull($event->getStartTime());
-    $this->assertNull($event->getRate());
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event->getStatus())->toBe($expected['status']);
+    expect($event->getFrom())->toBe($expected['from']);
+    expect($event->getTo())->toBe($expected['to']);
+    expect($event->getUuid())->toBe($expected['uuid']);
+    expect($event->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($event->getDirection())->toBe($expected['direction']);
+    expect($event->getTimestamp())->toEqual(new DateTime($expected['timestamp']));
+    expect($event->getStartTime())->toBeNull();
+    expect($event->getRate())->toBeNull();
 });
 
 /**
@@ -92,20 +92,20 @@ test('can generate completed event', function () {
     $expected = json_decode(getRequest('event-post-completed')->getBody()->getContents(), true);
     $event = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame($expected['status'], $event->getStatus());
-    $this->assertSame($expected['from'], $event->getFrom());
-    $this->assertSame($expected['to'], $event->getTo());
-    $this->assertSame($expected['uuid'], $event->getUuid());
-    $this->assertSame($expected['conversation_uuid'], $event->getConversationUuid());
-    $this->assertSame($expected['direction'], $event->getDirection());
-    $this->assertEquals(new DateTime($expected['timestamp']), $event->getTimestamp());
-    $this->assertSame($expected['network'], $event->getNetwork());
-    $this->assertSame($expected['duration'], $event->getDuration());
-    $this->assertEquals(new DateTime($expected['start_time']), $event->getStartTime());
-    $this->assertEquals(new DateTime($expected['end_time']), $event->getEndTime());
-    $this->assertSame($expected['rate'], $event->getRate());
-    $this->assertSame($expected['price'], $event->getPrice());
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event->getStatus())->toBe($expected['status']);
+    expect($event->getFrom())->toBe($expected['from']);
+    expect($event->getTo())->toBe($expected['to']);
+    expect($event->getUuid())->toBe($expected['uuid']);
+    expect($event->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($event->getDirection())->toBe($expected['direction']);
+    expect($event->getTimestamp())->toEqual(new DateTime($expected['timestamp']));
+    expect($event->getNetwork())->toBe($expected['network']);
+    expect($event->getDuration())->toBe($expected['duration']);
+    expect($event->getStartTime())->toEqual(new DateTime($expected['start_time']));
+    expect($event->getEndTime())->toEqual(new DateTime($expected['end_time']));
+    expect($event->getRate())->toBe($expected['rate']);
+    expect($event->getPrice())->toBe($expected['price']);
 });
 
 /**
@@ -116,11 +116,11 @@ test('can generate transfer webhook', function () {
     $expected = json_decode(getRequest('event-post-transfer')->getBody()->getContents(), true);
     $event = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Transfer::class, $event);
-    $this->assertSame($expected['conversation_uuid_from'], $event->getConversationUuidFrom());
-    $this->assertSame($expected['conversation_uuid_to'], $event->getConversationUuidTo());
-    $this->assertSame($expected['uuid'], $event->getUuid());
-    $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $event->getTimestamp());
+    expect($event)->toBeInstanceOf(Transfer::class);
+    expect($event->getConversationUuidFrom())->toBe($expected['conversation_uuid_from']);
+    expect($event->getConversationUuidTo())->toBe($expected['conversation_uuid_to']);
+    expect($event->getUuid())->toBe($expected['uuid']);
+    expect($event->getTimestamp())->toEqual(new DateTimeImmutable($expected['timestamp']));
 });
 
 test('can generate an answer webhook', function () {
@@ -130,11 +130,11 @@ test('can generate an answer webhook', function () {
     /** @var Answer $answer */
     $answer = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Answer::class, $answer);
-    $this->assertSame($expected['conversation_uuid'], $answer->getConversationUuid());
-    $this->assertSame($expected['uuid'], $answer->getUuid());
-    $this->assertSame($expected['to'], $answer->getTo());
-    $this->assertSame($expected['from'], $answer->getFrom());
+    expect($answer)->toBeInstanceOf(Answer::class);
+    expect($answer->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($answer->getUuid())->toBe($expected['uuid']);
+    expect($answer->getTo())->toBe($expected['to']);
+    expect($answer->getFrom())->toBe($expected['from']);
 });
 
 /**
@@ -147,14 +147,14 @@ test('can generate a recording webhook', function () {
     /** @var Record $record */
     $record = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Record::class, $record);
-    $this->assertSame($expected['conversation_uuid'], $record->getConversationUuid());
-    $this->assertEquals(new DateTimeImmutable($expected['end_time']), $record->getEndTime());
-    $this->assertSame($expected['recording_url'], $record->getRecordingUrl());
-    $this->assertSame($expected['recording_uuid'], $record->getRecordingUuid());
-    $this->assertSame((int)$expected['size'], $record->getSize());
-    $this->assertEquals(new DateTimeImmutable($expected['start_time']), $record->getStartTime());
-    $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $record->getTimestamp());
+    expect($record)->toBeInstanceOf(Record::class);
+    expect($record->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($record->getEndTime())->toEqual(new DateTimeImmutable($expected['end_time']));
+    expect($record->getRecordingUrl())->toBe($expected['recording_url']);
+    expect($record->getRecordingUuid())->toBe($expected['recording_uuid']);
+    expect($record->getSize())->toBe((int)$expected['size']);
+    expect($record->getStartTime())->toEqual(new DateTimeImmutable($expected['start_time']));
+    expect($record->getTimestamp())->toEqual(new DateTimeImmutable($expected['timestamp']));
 });
 
 /**
@@ -167,10 +167,10 @@ test('can generate an error webhook', function () {
     /** @var Error $error */
     $error = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Error::class, $error);
-    $this->assertSame($expected['conversation_uuid'], $error->getConversationUuid());
-    $this->assertSame($expected['reason'], $error->getReason());
-    $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $error->getTimestamp());
+    expect($error)->toBeInstanceOf(Error::class);
+    expect($error->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($error->getReason())->toBe($expected['reason']);
+    expect($error->getTimestamp())->toEqual(new DateTimeImmutable($expected['timestamp']));
 });
 
 /**
@@ -183,10 +183,10 @@ test('can generate a notification get webhook', function () {
     /** @var Notification $notification */
     $notification = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Notification::class, $notification);
-    $this->assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
-    $this->assertSame(json_decode($expected['payload'], true), $notification->getPayload());
-    $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
+    expect($notification)->toBeInstanceOf(Notification::class);
+    expect($notification->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($notification->getPayload())->toBe(json_decode($expected['payload'], true));
+    expect($notification->getTimestamp())->toEqual(new DateTimeImmutable($expected['timestamp']));
 });
 
 /**
@@ -199,10 +199,10 @@ test('can generate a notification post webhook', function () {
     /** @var Notification $notification */
     $notification = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Notification::class, $notification);
-    $this->assertSame($expected['conversation_uuid'], $notification->getConversationUuid());
-    $this->assertSame($expected['payload'], $notification->getPayload());
-    $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $notification->getTimestamp());
+    expect($notification)->toBeInstanceOf(Notification::class);
+    expect($notification->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($notification->getPayload())->toBe($expected['payload']);
+    expect($notification->getTimestamp())->toEqual(new DateTimeImmutable($expected['timestamp']));
 });
 
 /**
@@ -215,14 +215,14 @@ test('can generate dtmf input from get webhook', function () {
     /** @var Input $input */
     $input = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Input::class, $input);
-    $this->assertSame(json_decode($expected['speech'], true), $input->getSpeech());
-    $this->assertSame(json_decode($expected['dtmf'], true), $input->getDtmf());
-    $this->assertSame($expected['from'], $input->getFrom());
-    $this->assertSame($expected['to'], $input->getTo());
-    $this->assertSame($expected['uuid'], $input->getUuid());
-    $this->assertSame($expected['conversation_uuid'], $input->getConversationUuid());
-    $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
+    expect($input)->toBeInstanceOf(Input::class);
+    expect($input->getSpeech())->toBe(json_decode($expected['speech'], true));
+    expect($input->getDtmf())->toBe(json_decode($expected['dtmf'], true));
+    expect($input->getFrom())->toBe($expected['from']);
+    expect($input->getTo())->toBe($expected['to']);
+    expect($input->getUuid())->toBe($expected['uuid']);
+    expect($input->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($input->getTimestamp())->toEqual(new DateTimeImmutable($expected['timestamp']));
 });
 
 /**
@@ -235,14 +235,14 @@ test('can generate dtmf input from post webhook', function () {
     /** @var Input $input */
     $input = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Input::class, $input);
-    $this->assertSame($expected['speech'], $input->getSpeech());
-    $this->assertSame($expected['dtmf'], $input->getDtmf());
-    $this->assertSame($expected['from'], $input->getFrom());
-    $this->assertSame($expected['to'], $input->getTo());
-    $this->assertSame($expected['uuid'], $input->getUuid());
-    $this->assertSame($expected['conversation_uuid'], $input->getConversationUuid());
-    $this->assertEquals(new DateTimeImmutable($expected['timestamp']), $input->getTimestamp());
+    expect($input)->toBeInstanceOf(Input::class);
+    expect($input->getSpeech())->toBe($expected['speech']);
+    expect($input->getDtmf())->toBe($expected['dtmf']);
+    expect($input->getFrom())->toBe($expected['from']);
+    expect($input->getTo())->toBe($expected['to']);
+    expect($input->getUuid())->toBe($expected['uuid']);
+    expect($input->getConversationUuid())->toBe($expected['conversation_uuid']);
+    expect($input->getTimestamp())->toEqual(new DateTimeImmutable($expected['timestamp']));
 });
 
 /**
@@ -262,8 +262,8 @@ test('event with detail is deserialized properly', function () {
     /** @var Event $event */
     $event = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame($expected['detail'], $event->getDetail());
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event->getDetail())->toBe($expected['detail']);
 });
 
 test('event without detail is deserialized properly', function () {
@@ -273,8 +273,8 @@ test('event without detail is deserialized properly', function () {
     /** @var Event $event */
     $event = Factory::createFromRequest($request);
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertNull($event->getDetail());
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event->getDetail())->toBeNull();
 });
 
 // Helpers

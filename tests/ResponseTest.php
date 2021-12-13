@@ -22,18 +22,18 @@ beforeEach(function () {
 });
 
 test('message count', function () {
-    $this->assertEquals($this->array['message-count'], $this->response->count());
-    $this->assertCount($this->response->count(), $this->response);
-    $this->assertCount($this->response->count(), $this->response->getMessages());
+    expect($this->response->count())->toEqual($this->array['message-count']);
+    expect($this->response)->toHaveCount(->count(), $this->response);
+    expect($this->response->getMessages())->toHaveCount($this->response->count());
 
     $count = 0;
 
     foreach ($this->response as $message) {
-        $this->assertInstanceOf(Message::class, $message);
+        expect($message)->toBeInstanceOf(Message::class);
         $count++;
     }
 
-    $this->assertEquals($this->response->count(), $count);
+    expect($count)->toEqual($this->response->count());
 });
 
 test('throw exception when non string passed', function () {

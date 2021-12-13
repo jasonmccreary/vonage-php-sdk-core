@@ -55,9 +55,9 @@ test('advanced cnam', function () {
  */
 test('advanced async', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/ni/advanced/async/json', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/ni/advanced/async/json');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains("number", "14155550100", $request);
         $this->assertRequestQueryContains("callback", "example.com/hook", $request);
 
@@ -131,25 +131,25 @@ test('server exception', function () {
 function checkInsightsRequest($methodToCall, $expectedPath, $expectedClass): void
 {
     test()->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
-        test()->assertEquals($expectedPath, $request->getUri()->getPath());
-        test()->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        test()->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual($expectedPath);
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         test()->assertRequestQueryContains("number", "14155550100", $request);
         return true;
     }))->willReturn(test()->getResponse($methodToCall));
 
     $insightsStandard = @test()->insightsClient->$methodToCall('14155550100');
-    test()->assertInstanceOf($expectedClass, $insightsStandard);
-    test()->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
+    expect($insightsStandard)->toBeInstanceOf($expectedClass);
+    expect($insightsStandard->getNationalFormatNumber())->toEqual('(415) 555-0100');
 }
 
 function checkInsightsRequestCnam($methodToCall, $expectedPath, $expectedClass): void
 {
     test()->vonageClient->send(Argument::that(function (RequestInterface $request) use ($expectedPath) {
-        test()->assertEquals($expectedPath, $request->getUri()->getPath());
-        test()->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        test()->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual($expectedPath);
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         test()->assertRequestQueryContains("number", "14155550100", $request);
         test()->assertRequestQueryContains("cnam", "true", $request);
@@ -157,8 +157,8 @@ function checkInsightsRequestCnam($methodToCall, $expectedPath, $expectedClass):
     }))->willReturn(test()->getResponse($methodToCall));
 
     $insightsStandard = @test()->insightsClient->$methodToCall('14155550100');
-    test()->assertInstanceOf($expectedClass, $insightsStandard);
-    test()->assertEquals('(415) 555-0100', $insightsStandard->getNationalFormatNumber());
+    expect($insightsStandard)->toBeInstanceOf($expectedClass);
+    expect($insightsStandard->getNationalFormatNumber())->toEqual('(415) 555-0100');
 }
 
 /**

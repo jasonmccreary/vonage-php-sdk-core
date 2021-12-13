@@ -24,13 +24,13 @@ test('conversation', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('conversation_uuid', $query);
-    $this->assertEquals('test', $query['conversation_uuid']);
+    expect($query['conversation_uuid'])->toEqual('test');
 
     $this->filter->setConversation(new Conversation('test'));
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('conversation_uuid', $query);
-    $this->assertEquals('test', $query['conversation_uuid']);
+    expect($query['conversation_uuid'])->toEqual('test');
 });
 
 test('status', function () {
@@ -38,7 +38,7 @@ test('status', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('status', $query);
-    $this->assertEquals('test', $query['status']);
+    expect($query['status'])->toEqual('test');
 });
 
 test('start', function () {
@@ -47,7 +47,7 @@ test('start', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('date_start', $query);
-    $this->assertEquals('2018-03-31T11:33:42Z', $query['date_start']);
+    expect($query['date_start'])->toEqual('2018-03-31T11:33:42Z');
 });
 
 test('start other timezone', function () {
@@ -56,7 +56,7 @@ test('start other timezone', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('date_start', $query);
-    $this->assertEquals('2018-03-31T14:33:42Z', $query['date_start']);
+    expect($query['date_start'])->toEqual('2018-03-31T14:33:42Z');
 });
 
 test('end', function () {
@@ -65,7 +65,7 @@ test('end', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('date_end', $query);
-    $this->assertEquals('2018-03-31T11:33:42Z', $query['date_end']);
+    expect($query['date_end'])->toEqual('2018-03-31T11:33:42Z');
 });
 
 test('end other timezone', function () {
@@ -74,7 +74,7 @@ test('end other timezone', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('date_end', $query);
-    $this->assertEquals('2018-03-31T08:33:42Z', $query['date_end']);
+    expect($query['date_end'])->toEqual('2018-03-31T08:33:42Z');
 });
 
 test('size', function () {
@@ -82,7 +82,7 @@ test('size', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('page_size', $query);
-    $this->assertEquals(1, $query['page_size']);
+    expect($query['page_size'])->toEqual(1);
 });
 
 test('index', function () {
@@ -90,7 +90,7 @@ test('index', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('record_index', $query);
-    $this->assertEquals(1, $query['record_index']);
+    expect($query['record_index'])->toEqual(1);
 });
 
 test('order', function () {
@@ -98,7 +98,7 @@ test('order', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('order', $query);
-    $this->assertEquals('asc', $query['order']);
+    expect($query['order'])->toEqual('asc');
 });
 
 test('asc', function () {
@@ -106,7 +106,7 @@ test('asc', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('order', $query);
-    $this->assertEquals('asc', $query['order']);
+    expect($query['order'])->toEqual('asc');
 });
 
 test('desc', function () {
@@ -114,5 +114,5 @@ test('desc', function () {
     $query = $this->filter->getQuery();
 
     $this->assertArrayHasKey('order', $query);
-    $this->assertEquals('desc', $query['order']);
+    expect($query['order'])->toEqual('desc');
 });

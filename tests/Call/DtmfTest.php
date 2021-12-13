@@ -40,7 +40,7 @@ beforeEach(function () {
 });
 
 test('has id', function () {
-    $this->assertSame($this->id, $this->entity->getId());
+    expect($this->entity->getId())->toBe($this->id);
 });
 
 /**
@@ -53,7 +53,7 @@ test('set params', function ($value, $param, $setter, $expected) {
     $this->entity->$setter($value);
     $data = $this->entity->jsonSerialize();
 
-    $this->assertEquals($expected, $data[$param]);
+    expect($data[$param])->toEqual($expected);
 })->with('setterParameters');
 
 /**
@@ -64,7 +64,7 @@ test('array params', function ($value, $param) {
     $this->entity[$param] = $value;
     $data = $this->entity->jsonSerialize();
 
-    $this->assertEquals($value, $data[$param]);
+    expect($data[$param])->toEqual($value);
 })->with('setterParameters');
 
 /**
@@ -87,15 +87,15 @@ test('put makes request', function () {
         $body = json_decode($request->getBody()->getContents(), true);
         $request->getBody()->rewind();
 
-        $this->assertEquals($expected, $body);
+        expect($body)->toEqual($expected);
         return true;
     }))->willReturn(getResponse('dtmf', 200));
 
     $event = @$this->entity->put();
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-    $this->assertSame('DTMF sent', $event['message']);
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('DTMF sent');
 });
 
 /**
@@ -120,15 +120,15 @@ test('put can replace', function () {
         $body = json_decode($request->getBody()->getContents(), true);
         $request->getBody()->rewind();
 
-        $this->assertEquals($expected, $body);
+        expect($body)->toEqual($expected);
         return true;
     }))->willReturn(getResponse('dtmf', 200));
 
     $event = @$this->entity->put($entity);
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-    $this->assertSame('DTMF sent', $event['message']);
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('DTMF sent');
 });
 
 /**
@@ -142,7 +142,7 @@ test('invoke proxies put with argument', function () {
 
     $this->vonageClient->send(Argument::any())->willReturn(getResponse('dtmf', 200));
     $test = $object();
-    $this->assertSame($this->entity, $test);
+    expect($test)->toBe($this->entity);
 
     $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
@@ -152,9 +152,9 @@ test('invoke proxies put with argument', function () {
 
     $event = @$object($entity);
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-    $this->assertSame('DTMF sent', $event['message']);
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('DTMF sent');
 
     $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
 });

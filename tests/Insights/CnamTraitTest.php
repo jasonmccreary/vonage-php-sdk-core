@@ -19,10 +19,10 @@ uses(VonageTestCase::class);
  * @param $inputData
  */
 test('array access', function ($cnam, $inputData) {
-    $this->assertEquals($inputData['first_name'], @$cnam['first_name']);
-    $this->assertEquals($inputData['last_name'], @$cnam['last_name']);
-    $this->assertEquals($inputData['caller_name'], @$cnam['caller_name']);
-    $this->assertEquals($inputData['caller_type'], @$cnam['caller_type']);
+    expect(@$cnam['first_name'])->toEqual($inputData['first_name']);
+    expect(@$cnam['last_name'])->toEqual($inputData['last_name']);
+    expect(@$cnam['caller_name'])->toEqual($inputData['caller_name']);
+    expect(@$cnam['caller_type'])->toEqual($inputData['caller_type']);
 })->with('cnamProvider');
 
 /**
@@ -31,10 +31,10 @@ test('array access', function ($cnam, $inputData) {
  * @param $inputData
  */
 test('object access', function ($cnam, $inputData) {
-    $this->assertEquals($inputData['first_name'], $cnam->getFirstName());
-    $this->assertEquals($inputData['last_name'], $cnam->getLastName());
-    $this->assertEquals($inputData['caller_name'], $cnam->getCallerName());
-    $this->assertEquals($inputData['caller_type'], $cnam->getCallerType());
+    expect($cnam->getFirstName())->toEqual($inputData['first_name']);
+    expect($cnam->getLastName())->toEqual($inputData['last_name']);
+    expect($cnam->getCallerName())->toEqual($inputData['caller_name']);
+    expect($cnam->getCallerType())->toEqual($inputData['caller_type']);
 })->with('cnamProvider');
 
 // Datasets

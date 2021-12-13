@@ -21,7 +21,7 @@ uses(VonageTestCase::class);
 
 test('construction with id', function () {
     $message = new InboundMessage('test1234');
-    $this->assertSame('test1234', $message->getMessageId());
+    expect($message->getMessageId())->toBe('test1234');
 });
 
 /**
@@ -46,10 +46,10 @@ test('can create with server request', function (ServerRequest $request) {
         }
     }
 
-    $this->assertCount(count($originalData), $requestData);
+    expect($requestData)->toHaveCount(count($originalData));
 
     foreach ($originalData as $key => $value) {
-        $this->assertSame($value, $requestData[$key]);
+        expect($requestData[$key])->toBe($value);
     }
 })->with('getRequests');
 
@@ -57,12 +57,12 @@ test('can check valid', function () {
     $request = getServerRequest();
     $message = @new InboundMessage($request);
 
-    $this->assertTrue($message->isValid());
+    expect($message->isValid())->toBeTrue();
 
     $request = getServerRequest('http://example.com', 'GET', 'invalid');
     $message = @new InboundMessage($request);
 
-    $this->assertFalse($message->isValid());
+    expect($message->isValid())->toBeFalse();
 });
 
 /**
@@ -74,11 +74,11 @@ test('can check valid', function () {
 test('request object access', function ($request) {
     $message = @new InboundMessage($request);
 
-    $this->assertEquals('14845552121', $message->getFrom());
-    $this->assertEquals('16105553939', $message->getTo());
-    $this->assertEquals('02000000DA7C52E7', $message->getMessageId());
-    $this->assertEquals('Test this.', $message->getBody());
-    $this->assertEquals('text', $message->getType());
+    expect($message->getFrom())->toEqual('14845552121');
+    expect($message->getTo())->toEqual('16105553939');
+    expect($message->getMessageId())->toEqual('02000000DA7C52E7');
+    expect($message->getBody())->toEqual('Test this.');
+    expect($message->getType())->toEqual('text');
 })->with('getRequests');
 
 /**
@@ -90,11 +90,11 @@ test('request object access', function ($request) {
 test('request array access', function ($request) {
     $message = @new InboundMessage($request);
 
-    $this->assertEquals('14845552121', @$message['msisdn']);
-    $this->assertEquals('16105553939', @$message['to']);
-    $this->assertEquals('02000000DA7C52E7', @$message['messageId']);
-    $this->assertEquals('Test this.', @$message['text']);
-    $this->assertEquals('text', @$message['type']);
+    expect(@$message['msisdn'])->toEqual('14845552121');
+    expect(@$message['to'])->toEqual('16105553939');
+    expect(@$message['messageId'])->toEqual('02000000DA7C52E7');
+    expect(@$message['text'])->toEqual('Test this.');
+    expect(@$message['type'])->toEqual('text');
 })->with('getRequests');
 
 /**
@@ -107,12 +107,12 @@ test('response object access', function ($response) {
     $message = new InboundMessage('02000000DA7C52E7');
     @$message->setResponse($response);
 
-    $this->assertEquals('14845552121', $message->getFrom());
-    $this->assertEquals('16105553939', $message->getTo());
-    $this->assertEquals('02000000DA7C52E7', $message->getMessageId());
-    $this->assertEquals('Test this.', $message->getBody());
-    $this->assertEquals('6cff3913', $message->getAccountId());
-    $this->assertEquals('US-VIRTUAL-BANDWIDTH', $message->getNetwork());
+    expect($message->getFrom())->toEqual('14845552121');
+    expect($message->getTo())->toEqual('16105553939');
+    expect($message->getMessageId())->toEqual('02000000DA7C52E7');
+    expect($message->getBody())->toEqual('Test this.');
+    expect($message->getAccountId())->toEqual('6cff3913');
+    expect($message->getNetwork())->toEqual('US-VIRTUAL-BANDWIDTH');
 })->with('getResponses');
 
 /**
@@ -125,13 +125,13 @@ test('response array access', function ($response) {
     $message = new InboundMessage('02000000DA7C52E7');
     @$message->setResponse($response);
 
-    $this->assertEquals('14845552121', @$message['from']);
-    $this->assertEquals('16105553939', @$message['to']);
-    $this->assertEquals('02000000DA7C52E7', @$message['message-id']);
-    $this->assertEquals('Test this.', @$message['body']);
-    $this->assertEquals('MO', @$message['type']);
-    $this->assertEquals('6cff3913', @$message['account-id']);
-    $this->assertEquals('US-VIRTUAL-BANDWIDTH', @$message['network']);
+    expect(@$message['from'])->toEqual('14845552121');
+    expect(@$message['to'])->toEqual('16105553939');
+    expect(@$message['message-id'])->toEqual('02000000DA7C52E7');
+    expect(@$message['body'])->toEqual('Test this.');
+    expect(@$message['type'])->toEqual('MO');
+    expect(@$message['account-id'])->toEqual('6cff3913');
+    expect(@$message['network'])->toEqual('US-VIRTUAL-BANDWIDTH');
 })->with('getResponses');
 
 /**
@@ -141,13 +141,13 @@ test('can create reply', function () {
     $message = @new InboundMessage(getServerRequest());
     $reply = $message->createReply('this is a reply');
 
-    $this->assertInstanceOf(Message::class, $reply);
+    expect($reply)->toBeInstanceOf(Message::class);
 
     $params = $reply->getRequestData(false);
 
-    $this->assertEquals('14845552121', $params['to']);
-    $this->assertEquals('16105553939', $params['from']);
-    $this->assertEquals('this is a reply', $params['text']);
+    expect($params['to'])->toEqual('14845552121');
+    expect($params['from'])->toEqual('16105553939');
+    expect($params['text'])->toEqual('this is a reply');
 });
 
 // Datasets

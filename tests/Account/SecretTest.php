@@ -43,11 +43,11 @@ test('rejects invalid data no created at', function () {
 });
 
 test('object access', function () {
-    $this->assertEquals('ad6dc56f-07b5-46e1-a527-85530e625800', $this->secret->getId());
-    $this->assertEquals('2017-03-02T16:34:49Z', $this->secret->getCreatedAt());
+    expect($this->secret->getId())->toEqual('ad6dc56f-07b5-46e1-a527-85530e625800');
+    expect($this->secret->getCreatedAt())->toEqual('2017-03-02T16:34:49Z');
 });
 
 test('array access', function () {
-    $this->assertEquals('ad6dc56f-07b5-46e1-a527-85530e625800', @$this->secret['id']);
-    $this->assertEquals('2017-03-02T16:34:49Z', @$this->secret['created_at']);
+    expect(@$this->secret['id'])->toEqual('ad6dc56f-07b5-46e1-a527-85530e625800');
+    expect(@$this->secret['created_at'])->toEqual('2017-03-02T16:34:49Z');
 });

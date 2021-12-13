@@ -20,5 +20,5 @@ uses(VonageTestCase::class);
 test('auto detect enabled by default', function () {
     $message = new AutoDetect('to', 'from', 'Example Message');
 
-    $this->assertTrue($message->isEncodingDetectionEnabled());
+    expect($message->isEncodingDetectionEnabled())->toBeTrue();
 });

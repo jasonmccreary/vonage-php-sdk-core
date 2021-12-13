@@ -24,12 +24,12 @@ test('speech settings generate correct n c c o', function () {
         ->setSpeechMaxDuration(10)
         ->toNCCOArray();
 
-    $this->assertSame(['aaaaaaaa-bbbb-cccc-dddd-0123456789ab'], $ncco['speech']->uuid);
-    $this->assertSame(5, $ncco['speech']->endOnSilence);
-    $this->assertSame('en-US', $ncco['speech']->language);
-    $this->assertSame(['foo', 'bar'], $ncco['speech']->context);
-    $this->assertSame(2, $ncco['speech']->startTimeout);
-    $this->assertSame(10, $ncco['speech']->maxDuration);
+    expect($ncco['speech']->uuid)->toBe(['aaaaaaaa-bbbb-cccc-dddd-0123456789ab']);
+    expect($ncco['speech']->endOnSilence)->toBe(5);
+    expect($ncco['speech']->language)->toBe('en-US');
+    expect($ncco['speech']->context)->toBe(['foo', 'bar']);
+    expect($ncco['speech']->startTimeout)->toBe(2);
+    expect($ncco['speech']->maxDuration)->toBe(10);
 });
 
 test('speech settings are set in factory', function () {
@@ -45,12 +45,12 @@ test('speech settings are set in factory', function () {
         ]
     ]);
 
-    $this->assertSame('aaaaaaaa-bbbb-cccc-dddd-0123456789ab', $action->getSpeechUUID());
-    $this->assertSame(5, $action->getSpeechEndOnSilence());
-    $this->assertSame('en-US', $action->getSpeechLanguage());
-    $this->assertSame(['foo', 'bar'], $action->getSpeechContext());
-    $this->assertSame(2, $action->getSpeechStartTimeout());
-    $this->assertSame(10, $action->getSpeechMaxDuration());
+    expect($action->getSpeechUUID())->toBe('aaaaaaaa-bbbb-cccc-dddd-0123456789ab');
+    expect($action->getSpeechEndOnSilence())->toBe(5);
+    expect($action->getSpeechLanguage())->toBe('en-US');
+    expect($action->getSpeechContext())->toBe(['foo', 'bar']);
+    expect($action->getSpeechStartTimeout())->toBe(2);
+    expect($action->getSpeechMaxDuration())->toBe(10);
 });
 
 test('d t m f settings generate correct n c c o', function () {
@@ -60,9 +60,9 @@ test('d t m f settings generate correct n c c o', function () {
         ->setDtmfTimeout(5)
         ->toNCCOArray();
 
-    $this->assertSame(2, $ncco['dtmf']->maxDigits);
-    $this->assertSame('true', $ncco['dtmf']->submitOnHash);
-    $this->assertSame(5, $ncco['dtmf']->timeOut);
+    expect($ncco['dtmf']->maxDigits)->toBe(2);
+    expect($ncco['dtmf']->submitOnHash)->toBe('true');
+    expect($ncco['dtmf']->timeOut)->toBe(5);
 });
 
 test('d t m f settings are set in factory', function () {
@@ -75,9 +75,9 @@ test('d t m f settings are set in factory', function () {
         ]
     ]);
 
-    $this->assertSame(5, $action->getDtmfMaxDigits());
-    $this->assertSame(2, $action->getDtmfTimeout());
-    $this->assertFalse($action->getDtmfSubmitOnHash());
+    expect($action->getDtmfMaxDigits())->toBe(5);
+    expect($action->getDtmfTimeout())->toBe(2);
+    expect($action->getDtmfSubmitOnHash())->toBeFalse();
 });
 
 test('event u r l can be set in factory', function () {
@@ -91,10 +91,10 @@ test('event u r l can be set in factory', function () {
     $action = Input::factory($data);
     $ncco = $action->toNCCOArray();
 
-    $this->assertSame($data['eventUrl'], $ncco['eventUrl']);
-    $this->assertSame($data['eventMethod'], $ncco['eventMethod']);
-    $this->assertSame($data['eventUrl'][0], $action->getEventWebhook()->getUrl());
-    $this->assertSame($data['eventMethod'], $action->getEventWebhook()->getMethod());
+    expect($ncco['eventUrl'])->toBe($data['eventUrl']);
+    expect($ncco['eventMethod'])->toBe($data['eventMethod']);
+    expect($action->getEventWebhook()->getUrl())->toBe($data['eventUrl'][0]);
+    expect($action->getEventWebhook()->getMethod())->toBe($data['eventMethod']);
 });
 
 test('event method defaults to post when not supplied', function () {
@@ -107,10 +107,10 @@ test('event method defaults to post when not supplied', function () {
     $action = Input::factory($data);
     $ncco = $action->toNCCOArray();
 
-    $this->assertSame($data['eventUrl'], $ncco['eventUrl']);
-    $this->assertSame('POST', $ncco['eventMethod']);
-    $this->assertSame($data['eventUrl'][0], $action->getEventWebhook()->getUrl());
-    $this->assertSame('POST', $action->getEventWebhook()->getMethod());
+    expect($ncco['eventUrl'])->toBe($data['eventUrl']);
+    expect($ncco['eventMethod'])->toBe('POST');
+    expect($action->getEventWebhook()->getUrl())->toBe($data['eventUrl'][0]);
+    expect($action->getEventWebhook()->getMethod())->toBe('POST');
 });
 
 test('j s o n serialization looks correct', function () {

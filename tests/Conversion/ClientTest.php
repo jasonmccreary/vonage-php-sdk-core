@@ -50,9 +50,9 @@ beforeEach(function () {
  */
 test('sms with timestamp', function () {
     $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-        $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/conversions/sms');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestQueryContains('message-id', 'ABC123', $request);
         $this->assertRequestQueryContains('delivered', '1', $request);
         $this->assertRequestQueryContains('timestamp', '123456', $request);
@@ -71,9 +71,9 @@ test('sms with timestamp', function () {
  */
 test('sms without timestamp', function () {
     $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-        $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/conversions/sms');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestQueryContains('message-id', 'ABC123', $request);
         $this->assertRequestQueryContains('delivered', '1', $request);
         $this->assertRequestQueryNotContains('timestamp', $request);
@@ -92,9 +92,9 @@ test('sms without timestamp', function () {
  */
 test('voice with timestamp', function () {
     $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-        $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/conversions/voice');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestQueryContains('message-id', 'ABC123', $request);
         $this->assertRequestQueryContains('delivered', '1', $request);
         $this->assertRequestQueryContains('timestamp', '123456', $request);
@@ -113,9 +113,9 @@ test('voice with timestamp', function () {
  */
 test('voice without timestamp', function () {
     $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-        $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/conversions/voice');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestQueryContains('message-id', 'ABC123', $request);
         $this->assertRequestQueryContains('delivered', '1', $request);
         $this->assertRequestQueryNotContains('timestamp', $request);

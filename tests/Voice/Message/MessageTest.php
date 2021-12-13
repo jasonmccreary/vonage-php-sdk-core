@@ -24,9 +24,9 @@ test('constructor params', function () {
     $this->assertArrayHasKey('text', $params);
     $this->assertArrayHasKey('to', $params);
     $this->assertArrayHasKey('from', $params);
-    $this->assertEquals($this->text, $params['text']);
-    $this->assertEquals($this->to, $params['to']);
-    $this->assertEquals($this->from, $params['from']);
+    expect($params['text'])->toEqual($this->text);
+    expect($params['to'])->toEqual($this->to);
+    expect($params['from'])->toEqual($this->from);
 });
 
 test('from is optional', function () {
@@ -41,22 +41,22 @@ test('callback', function () {
     $params = $this->message->getParams();
 
     $this->assertArrayHasKey('callback', $params);
-    $this->assertEquals('http://example.com', $params['callback']);
+    expect($params['callback'])->toEqual('http://example.com');
     $this->assertArrayNotHasKey('callback_method', $params);
 
     $this->message->setCallback('http://example.com', 'POST');
     $params = $this->message->getParams();
 
     $this->assertArrayHasKey('callback', $params);
-    $this->assertEquals('http://example.com', $params['callback']);
+    expect($params['callback'])->toEqual('http://example.com');
     $this->assertArrayHasKey('callback_method', $params);
-    $this->assertEquals('POST', $params['callback_method']);
+    expect($params['callback_method'])->toEqual('POST');
 
     $this->message->setCallback('http://example.com');
     $params = $this->message->getParams();
 
     $this->assertArrayHasKey('callback', $params);
-    $this->assertEquals('http://example.com', $params['callback']);
+    expect($params['callback'])->toEqual('http://example.com');
     $this->assertArrayNotHasKey('callback_method', $params);
 });
 
@@ -66,22 +66,22 @@ test('machine', function () {
 
     $this->assertArrayHasKey('machine_detection', $params);
     $this->assertArrayNotHasKey('machine_timeout', $params);
-    $this->assertEquals('hangup', $params['machine_detection']);
+    expect($params['machine_detection'])->toEqual('hangup');
 
     $this->message->setMachineDetection(true, 100);
     $params = $this->message->getParams();
 
     $this->assertArrayHasKey('machine_detection', $params);
     $this->assertArrayHasKey('machine_timeout', $params);
-    $this->assertEquals('hangup', $params['machine_detection']);
-    $this->assertEquals(100, $params['machine_timeout']);
+    expect($params['machine_detection'])->toEqual('hangup');
+    expect($params['machine_timeout'])->toEqual(100);
 
     $this->message->setMachineDetection(false);
     $params = $this->message->getParams();
 
     $this->assertArrayHasKey('machine_detection', $params);
     $this->assertArrayNotHasKey('machine_timeout', $params);
-    $this->assertEquals('true', $params['machine_detection']);
+    expect($params['machine_detection'])->toEqual('true');
 });
 
 /**
@@ -101,7 +101,7 @@ test('optional params', function ($setter, $param, $values) {
         $params = $this->message->getParams();
 
         $this->assertArrayHasKey($param, $params);
-        $this->assertEquals($expected, $params[$param]);
+        expect($params[$param])->toEqual($expected);
     }
 })->with('optionalParams');
 

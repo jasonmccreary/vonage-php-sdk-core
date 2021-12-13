@@ -44,7 +44,7 @@ test('hmac signature', function ($algorithm, $expected) {
     $secret = '71efab63122f1d179f51c46bac838fb5';
     $signature = new Signature($data, $secret, $algorithm);
 
-    $this->assertEquals($expected, $signature->getSignature());
+    expect($signature->getSignature())->toEqual($expected);
 })->with('hmacSignatureProvider');
 
 /**
@@ -61,10 +61,10 @@ test('signature', function ($algo, $sig, $params, $secret) {
     $signature = new Signature($params, $secret, $algo);
 
     //the parameters should ne be changed
-    $this->assertEquals($params, $signature->getParams());
+    expect($signature->getParams())->toEqual($params);
 
     //the signature should be generated correctly
-    $this->assertEquals($sig, $signature->getSignature());
+    expect($signature->getSignature())->toEqual($sig);
 
     //the signed params should include a sig and timestamp
     $this->assertArrayHasKey('timestamp', $signature->getSignedParams());
@@ -73,9 +73,9 @@ test('signature', function ($algo, $sig, $params, $secret) {
     $this->assertSame($sig, (string)$signature);
 
     //signature can validate a string signature, or a set of params that includes a signature
-    $this->assertTrue($signature->check($sig));
+    expect($signature->check($sig))->toBeTrue();
     if (isset($params['sig'])) {
-        $this->assertTrue($signature->check($params));
+        expect($signature->check($params))->toBeTrue();
     }
 })->with('signatures');
 

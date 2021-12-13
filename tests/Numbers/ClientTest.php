@@ -68,9 +68,9 @@ test('update number', function ($payload, $id, $expectedId, $lookup) {
             return true;
         }
 
-        $this->assertEquals('/number/update', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/number/update');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
 
         $this->assertRequestFormBodyContains('country', 'US', $request);
         $this->assertRequestFormBodyContains('msisdn', $expectedId, $request);
@@ -89,9 +89,9 @@ test('update number', function ($payload, $id, $expectedId, $lookup) {
         $number = @$this->numberClient->update($payload);
     }
 
-    $this->assertInstanceOf(Number::class, $number);
+    expect($number)->toBeInstanceOf(Number::class);
     if ($payload instanceof Number) {
-        $this->assertSame($payload, $number);
+        expect($number)->toBe($payload);
     }
 })->with('updateNumber');
 
@@ -107,22 +107,22 @@ test('update number', function ($payload, $id, $expectedId, $lookup) {
  */
 test('get number', function ($payload, $id) {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($id) {
-        $this->assertEquals('/account/numbers', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/numbers');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('pattern', $id, $request);
         return true;
     }))->willReturn(getResponse('single'));
 
     $number = @$this->numberClient->get($payload);
 
-    $this->assertInstanceOf(Number::class, $number);
+    expect($number)->toBeInstanceOf(Number::class);
 
     if ($payload instanceof Number) {
-        $this->assertSame($payload, $number);
+        expect($number)->toBe($payload);
     }
 
-    $this->assertSame($id, $number->getId());
+    expect($number->getId())->toBe($id);
 })->with('numbers');
 
 /**
@@ -133,19 +133,19 @@ test('get number', function ($payload, $id) {
  */
 test('list numbers', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/numbers', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/numbers');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         return true;
     }))->willReturn(getResponse('list'));
 
     $numbers = $this->numberClient->search();
 
-    $this->assertIsArray($numbers);
-    $this->assertInstanceOf(Number::class, $numbers[0]);
-    $this->assertInstanceOf(Number::class, $numbers[1]);
-    $this->assertSame('14155550100', $numbers[0]->getId());
-    $this->assertSame('14155550101', $numbers[1]->getId());
+    expect($numbers)->toBeArray();
+    expect($numbers[0])->toBeInstanceOf(Number::class);
+    expect($numbers[1])->toBeInstanceOf(Number::class);
+    expect($numbers[0]->getId())->toBe('14155550100');
+    expect($numbers[1]->getId())->toBe('14155550101');
 });
 
 /**
@@ -164,9 +164,9 @@ test('search available passes through whitelisted options', function () {
     ];
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($options) {
-        $this->assertEquals('/number/search', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/number/search');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         // Things that are whitelisted should be shown
         foreach ($options as $name => $value) {
@@ -195,9 +195,9 @@ test('search available accepts filter interface options', function () {
     ]);
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/number/search', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/number/search');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         return true;
     }))->willReturn(getResponse('available-numbers'));
@@ -228,20 +228,20 @@ test('unknown parameter value for search throws exception', function () {
  */
 test('search available returns number list', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/number/search', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/number/search');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         return true;
     }))->willReturn(getResponse('available-numbers'));
 
     $numbers = $this->numberClient->searchAvailable('US');
 
-    $this->assertIsArray($numbers);
-    $this->assertInstanceOf(Number::class, $numbers[0]);
-    $this->assertInstanceOf(Number::class, $numbers[1]);
-    $this->assertSame('14155550100', $numbers[0]->getId());
-    $this->assertSame('14155550101', $numbers[1]->getId());
+    expect($numbers)->toBeArray();
+    expect($numbers[0])->toBeInstanceOf(Number::class);
+    expect($numbers[1])->toBeInstanceOf(Number::class);
+    expect($numbers[0]->getId())->toBe('14155550100');
+    expect($numbers[1]->getId())->toBe('14155550101');
 });
 
 /**
@@ -254,17 +254,17 @@ test('search available returns number list', function () {
  */
 test('search available returns empty number list', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/number/search', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/number/search');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         return true;
     }))->willReturn(getResponse('empty'));
 
     $numbers = @$this->numberClient->searchAvailable('US');
 
-    $this->assertIsArray($numbers);
-    $this->assertEmpty($numbers);
+    expect($numbers)->toBeArray();
+    expect($numbers)->toBeEmpty();
 });
 
 /**
@@ -288,9 +288,9 @@ test('search owned errors on unknown search parameters', function () {
  */
 test('search owned passes in allowed additional parameters', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/numbers', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/numbers');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('index', '1', $request);
         $this->assertRequestQueryContains('size', '100', $request);
         $this->assertRequestQueryContains('search_pattern', '0', $request);
@@ -317,18 +317,18 @@ test('search owned passes in allowed additional parameters', function () {
  */
 test('search owned returns single number', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/numbers', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/numbers');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         return true;
     }))->willReturn(getResponse('single'));
 
     $numbers = $this->numberClient->searchOwned('1415550100');
 
-    $this->assertIsArray($numbers);
-    $this->assertInstanceOf(Number::class, $numbers[0]);
-    $this->assertSame('1415550100', $numbers[0]->getId());
+    expect($numbers)->toBeArray();
+    expect($numbers[0])->toBeInstanceOf(Number::class);
+    expect($numbers[0]->getId())->toBe('1415550100');
 });
 
 /**
@@ -337,9 +337,9 @@ test('search owned returns single number', function () {
  */
 test('purchase number with number object', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/number/buy', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/number/buy');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
 
         return true;
     }))->willReturn(getResponse('post'));
@@ -364,9 +364,9 @@ test('purchase number with number and country', function () {
     // Then we purchase the number
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
         if ($request->getUri()->getPath() === '/number/buy') {
-            $this->assertEquals('/number/buy', $request->getUri()->getPath());
-            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
+            expect($request->getUri()->getPath())->toEqual('/number/buy');
+            expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+            expect($request->getMethod())->toEqual('POST');
             return true;
         }
         return false;
@@ -398,9 +398,9 @@ test('purchase number errors', function (
     $expectedExceptionMessage
 ) {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/number/buy', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/number/buy');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         return true;
     }))->willReturn(getResponse($responseFile, $expectedHttpCode));
 
@@ -419,9 +419,9 @@ test('purchase number errors', function (
  */
 test('cancel number with number object', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/number/cancel', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/number/cancel');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
 
         return true;
     }))->willReturn(getResponse('cancel'));
@@ -448,8 +448,8 @@ test('cancel number with number string', function () {
 // Then we get a POST request to cancel
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
         if ($request->getUri()->getPath() === '/number/cancel') {
-            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
+            expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+            expect($request->getMethod())->toEqual('POST');
 
             return true;
         }
@@ -474,8 +474,8 @@ test('cancel number with number and country string', function () {
     // Then we get a POST request to cancel
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
         if ($request->getUri()->getPath() === '/number/cancel') {
-            $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
+            expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+            expect($request->getMethod())->toEqual('POST');
 
             return true;
         }
@@ -493,9 +493,9 @@ test('cancel number with number and country string', function () {
  */
 test('cancel number error', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/number/cancel', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/number/cancel');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
 
         return true;
     }))->willReturn(getResponse('method-failed', 420));

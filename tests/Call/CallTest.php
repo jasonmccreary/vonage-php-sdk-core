@@ -54,7 +54,7 @@ test('construct with id', function () {
     $class = $this->class;
     $entity = @new $class('3fd4d839-493e-4485-b2a5-ace527aacff3');
 
-    $this->assertSame('3fd4d839-493e-4485-b2a5-ace527aacff3', $entity->getId());
+    expect($entity->getId())->toBe('3fd4d839-493e-4485-b2a5-ace527aacff3');
 });
 
 /**
@@ -103,7 +103,7 @@ test('put makes request', function ($payload, $expectedHttpCode, $expectedRespon
         $body = json_decode($request->getBody()->getContents(), true);
         $request->getBody()->rewind();
 
-        $this->assertEquals($expected, $body);
+        expect($body)->toEqual($expected);
 
         return true;
     }))->willReturn(getResponse($expectedResponse, $expectedHttpCode));
@@ -128,7 +128,7 @@ test('lazy load', function () {
     }))->willReturn($response);
 
     $return = @$this->entity->getStatus();
-    $this->assertSame('completed', $return);
+    expect($return)->toBe('completed');
 
     @assertEntityMatchesResponse($this->entity, $response);
 });
@@ -137,11 +137,11 @@ test('stream', function () {
     // @todo Remove deprecated tests
     @$stream = $this->entity->stream;
 
-    $this->assertInstanceOf(Stream::class, $stream);
-    $this->assertSame($this->entity->getId(), $stream->getId());
+    expect($stream)->toBeInstanceOf(Stream::class);
+    expect($stream->getId())->toBe($this->entity->getId());
 
-    $this->assertSame($stream, @$this->entity->stream);
-    $this->assertSame($stream, @$this->entity->stream());
+    expect(@$this->entity->stream)->toBe($stream);
+    expect(@$this->entity->stream())->toBe($stream);
 
     @$this->entity->stream->setUrl('http://example.com');
 
@@ -161,11 +161,11 @@ test('s talk', function () {
     // @todo Remove deprecated tests
     @$talk = $this->entity->talk;
 
-    $this->assertInstanceOf(Talk::class, $talk);
-    $this->assertSame($this->entity->getId(), $talk->getId());
+    expect($talk)->toBeInstanceOf(Talk::class);
+    expect($talk->getId())->toBe($this->entity->getId());
 
-    $this->assertSame($talk, @$this->entity->talk);
-    $this->assertSame($talk, @$this->entity->talk());
+    expect(@$this->entity->talk)->toBe($talk);
+    expect(@$this->entity->talk())->toBe($talk);
 
     @$this->entity->talk->setText('Boom!');
 
@@ -185,11 +185,11 @@ test('s dtmf', function () {
     // @todo Remove deprecated tests
     $dtmf = @$this->entity->dtmf;
 
-    $this->assertInstanceOf(Dtmf::class, $dtmf);
-    $this->assertSame($this->entity->getId(), $dtmf->getId());
+    expect($dtmf)->toBeInstanceOf(Dtmf::class);
+    expect($dtmf->getId())->toBe($this->entity->getId());
 
-    $this->assertSame($dtmf, @$this->entity->dtmf);
-    $this->assertSame($dtmf, @$this->entity->dtmf());
+    expect(@$this->entity->dtmf)->toBe($dtmf);
+    expect(@$this->entity->dtmf())->toBe($dtmf);
 
     @$this->entity->dtmf->setDigits(1234);
 
@@ -215,31 +215,31 @@ test('to is set', function () {
     // @todo split into discrete tests, use trait as can be useful elsewhere for consistency
     @$this->new->setTo('14845551212');
     $this->assertSame('14845551212', (string)$this->new->getTo());
-    $this->assertSame('14845551212', $this->new->getTo()->getId());
-    $this->assertSame('phone', $this->new->getTo()->getType());
+    expect($this->new->getTo()->getId())->toBe('14845551212');
+    expect($this->new->getTo()->getType())->toBe('phone');
 
     $data = $this->new->jsonSerialize();
 
     $this->assertArrayHasKey('to', $data);
-    $this->assertIsArray($data['to']);
+    expect($data['to'])->toBeArray();
     $this->assertArrayHasKey('number', $data['to'][0]);
     $this->assertArrayHasKey('type', $data['to'][0]);
-    $this->assertEquals('14845551212', $data['to'][0]['number']);
-    $this->assertEquals('phone', $data['to'][0]['type']);
+    expect($data['to'][0]['number'])->toEqual('14845551212');
+    expect($data['to'][0]['type'])->toEqual('phone');
 
     $this->new->setTo(@new Endpoint('14845551212'));
     $this->assertSame('14845551212', (string)$this->new->getTo());
-    $this->assertSame('14845551212', $this->new->getTo()->getId());
-    $this->assertSame('phone', $this->new->getTo()->getType());
+    expect($this->new->getTo()->getId())->toBe('14845551212');
+    expect($this->new->getTo()->getType())->toBe('phone');
 
     $data = $this->new->jsonSerialize();
 
     $this->assertArrayHasKey('to', $data);
-    $this->assertIsArray($data['to']);
+    expect($data['to'])->toBeArray();
     $this->assertArrayHasKey('number', $data['to'][0]);
     $this->assertArrayHasKey('type', $data['to'][0]);
-    $this->assertEquals('14845551212', $data['to'][0]['number']);
-    $this->assertEquals('phone', $data['to'][0]['type']);
+    expect($data['to'][0]['number'])->toEqual('14845551212');
+    expect($data['to'][0]['type'])->toEqual('phone');
 });
 
 /**
@@ -251,29 +251,29 @@ test('to is set', function () {
 test('from is set', function () {
     @$this->new->setFrom('14845551212');
     $this->assertSame('14845551212', (string)$this->new->getFrom());
-    $this->assertSame('14845551212', $this->new->getFrom()->getId());
-    $this->assertSame('phone', $this->new->getFrom()->getType());
+    expect($this->new->getFrom()->getId())->toBe('14845551212');
+    expect($this->new->getFrom()->getType())->toBe('phone');
 
     $data = $this->new->jsonSerialize();
 
     $this->assertArrayHasKey('from', $data);
     $this->assertArrayHasKey('number', $data['from']);
     $this->assertArrayHasKey('type', $data['from']);
-    $this->assertEquals('14845551212', $data['from']['number']);
-    $this->assertEquals('phone', $data['from']['type']);
+    expect($data['from']['number'])->toEqual('14845551212');
+    expect($data['from']['type'])->toEqual('phone');
 
     $this->new->setFrom(@new Endpoint('14845551212'));
     $this->assertSame('14845551212', (string)$this->new->getFrom());
-    $this->assertSame('14845551212', $this->new->getFrom()->getId());
-    $this->assertSame('phone', $this->new->getFrom()->getType());
+    expect($this->new->getFrom()->getId())->toBe('14845551212');
+    expect($this->new->getFrom()->getType())->toBe('phone');
 
     $data = $this->new->jsonSerialize();
 
     $this->assertArrayHasKey('from', $data);
     $this->assertArrayHasKey('number', $data['from']);
     $this->assertArrayHasKey('type', $data['from']);
-    $this->assertEquals('14845551212', $data['from']['number']);
-    $this->assertEquals('phone', $data['from']['type']);
+    expect($data['from']['number'])->toEqual('14845551212');
+    expect($data['from']['type'])->toEqual('phone');
 });
 
 test('webhooks', function () {
@@ -281,15 +281,15 @@ test('webhooks', function () {
 
     $data = $this->entity->jsonSerialize();
     $this->assertArrayHasKey('answer_url', $data[0]);
-    $this->assertCount(1, $data[0]['answer_url']);
-    $this->assertEquals('http://example.com', $data[0]['answer_url'][0]);
+    expect($data[0]['answer_url'])->toHaveCount(1);
+    expect($data[0]['answer_url'][0])->toEqual('http://example.com');
 
     $this->entity->setWebhook(@new Webhook(Call::WEBHOOK_ANSWER, 'http://example.com'));
 
     $data = $this->entity->jsonSerialize();
     $this->assertArrayHasKey('answer_url', $data[0]);
-    $this->assertCount(1, $data[0]['answer_url']);
-    $this->assertEquals('http://example.com', $data[0]['answer_url'][0]);
+    expect($data[0]['answer_url'])->toHaveCount(1);
+    expect($data[0]['answer_url'][0])->toEqual('http://example.com');
 
     $this->entity->setWebhook(
         @new Webhook(Call::WEBHOOK_ANSWER, ['http://example.com', 'http://example.com/test'])
@@ -297,15 +297,15 @@ test('webhooks', function () {
 
     $data = $this->entity->jsonSerialize();
     $this->assertArrayHasKey('answer_url', $data[0]);
-    $this->assertCount(2, $data[0]['answer_url']);
-    $this->assertEquals('http://example.com', $data[0]['answer_url'][0]);
-    $this->assertEquals('http://example.com/test', $data[0]['answer_url'][1]);
+    expect($data[0]['answer_url'])->toHaveCount(2);
+    expect($data[0]['answer_url'][0])->toEqual('http://example.com');
+    expect($data[0]['answer_url'][1])->toEqual('http://example.com/test');
 
     $this->entity->setWebhook(@new Webhook(Call::WEBHOOK_ANSWER, 'http://example.com', 'POST'));
 
     $data = $this->entity->jsonSerialize();
     $this->assertArrayHasKey('answer_method', $data[0]);
-    $this->assertEquals('POST', $data[0]['answer_method']);
+    expect($data[0]['answer_method'])->toEqual('POST');
 });
 
 test('timers', function () {
@@ -313,7 +313,7 @@ test('timers', function () {
     $data = $this->entity->jsonSerialize();
 
     $this->assertArrayHasKey('length_timer', $data);
-    $this->assertEquals(10, $data['length_timer']);
+    expect($data['length_timer'])->toEqual(10);
 });
 
 test('timeouts', function () {
@@ -321,7 +321,7 @@ test('timeouts', function () {
     $data = $this->entity->jsonSerialize();
 
     $this->assertArrayHasKey('machine_timeout', $data);
-    $this->assertEquals(10, $data['machine_timeout']);
+    expect($data['machine_timeout'])->toEqual(10);
 });
 
 /**
@@ -389,22 +389,22 @@ function assertEntityMatchesResponse(Call $entity, Response $response): void
      */
 function assertEntityMatchesData(Call $entity, $data): void
 {
-    test()->assertSame($data['uuid'], $entity->getId());
+    expect($entity->getId())->toBe($data['uuid']);
 
-    test()->assertEquals($data['to']['type'], $entity->getTo()->getType());
-    test()->assertEquals($data['from']['type'], $entity->getFrom()->getType());
+    expect($entity->getTo()->getType())->toEqual($data['to']['type']);
+    expect($entity->getFrom()->getType())->toEqual($data['from']['type']);
 
-    test()->assertEquals($data['to']['number'], $entity->getTo()->getId());
-    test()->assertEquals($data['from']['number'], $entity->getFrom()->getId());
+    expect($entity->getTo()->getId())->toEqual($data['to']['number']);
+    expect($entity->getFrom()->getId())->toEqual($data['from']['number']);
 
-    test()->assertEquals($data['to']['number'], $entity->getTo()->getNumber());
-    test()->assertEquals($data['from']['number'], $entity->getFrom()->getNumber());
+    expect($entity->getTo()->getNumber())->toEqual($data['to']['number']);
+    expect($entity->getFrom()->getNumber())->toEqual($data['from']['number']);
 
-    test()->assertEquals($data['status'], $entity->getStatus());
-    test()->assertEquals($data['direction'], $entity->getDirection());
+    expect($entity->getStatus())->toEqual($data['status']);
+    expect($entity->getDirection())->toEqual($data['direction']);
 
-    test()->assertInstanceOf(Conversation::class, $entity->getConversation());
-    test()->assertEquals($data['conversation_uuid'], $entity->getConversation()->getId());
+    expect($entity->getConversation())->toBeInstanceOf(Conversation::class);
+    expect($entity->getConversation()->getId())->toEqual($data['conversation_uuid']);
 }
 
 /**

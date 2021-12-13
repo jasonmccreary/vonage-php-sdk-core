@@ -16,10 +16,10 @@ uses(VonageTestCase::class);
 
 
 test('methods match data', function () {
-    $this->assertEquals($this->data['request_id'], $this->callback->getId());
-    $this->assertEquals($this->data['callback_total_parts'], $this->callback->getCallbackTotal());
-    $this->assertEquals($this->data['callback_part'], $this->callback->getCallbackIndex());
-    $this->assertEquals($this->data['number'], $this->callback->getNumber());
+    expect($this->callback->getId())->toEqual($this->data['request_id']);
+    expect($this->callback->getCallbackTotal())->toEqual($this->data['callback_total_parts']);
+    expect($this->callback->getCallbackIndex())->toEqual($this->data['callback_part']);
+    expect($this->callback->getNumber())->toEqual($this->data['number']);
 });
 
 /**

@@ -40,9 +40,9 @@ beforeEach(function () {
  */
 test('url and method', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/v1/redact/transaction', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/v1/redact/transaction');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
 
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('success', 204));

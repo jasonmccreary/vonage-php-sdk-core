@@ -70,14 +70,14 @@ test('can send s m s', function () {
     $response = $this->smsClient->send($message);
     $sentData = $response->current();
 
-    $this->assertCount(1, $response);
-    $this->assertSame($args['to'], $sentData->getTo());
-    $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-    $this->assertSame("0.03330000", $sentData->getMessagePrice());
-    $this->assertSame("12345", $sentData->getNetwork());
-    $this->assertSame("3.14159265", $sentData->getRemainingBalance());
-    $this->assertSame("customer1234", $sentData->getAccountRef());
-    $this->assertSame("my-personal-reference", $sentData->getClientRef());
+    expect($response)->toHaveCount(1);
+    expect($sentData->getTo())->toBe($args['to']);
+    expect($sentData->getMessageId())->toBe('0A0000000123ABCD1');
+    expect($sentData->getMessagePrice())->toBe("0.03330000");
+    expect($sentData->getNetwork())->toBe("12345");
+    expect($sentData->getRemainingBalance())->toBe("3.14159265");
+    expect($sentData->getAccountRef())->toBe("customer1234");
+    expect($sentData->getClientRef())->toBe("my-personal-reference");
 });
 
 /**
@@ -152,14 +152,14 @@ test('can handle rate limit requests', function () {
     $sentData = $response->current();
     $end = microtime(true);
 
-    $this->assertCount(1, $response);
-    $this->assertSame($args['to'], $sentData->getTo());
-    $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-    $this->assertSame("0.03330000", $sentData->getMessagePrice());
-    $this->assertSame("12345", $sentData->getNetwork());
-    $this->assertSame("3.14159265", $sentData->getRemainingBalance());
-    $this->assertSame(0, $sentData->getStatus());
-    $this->assertGreaterThanOrEqual(2, $end - $start);
+    expect($response)->toHaveCount(1);
+    expect($sentData->getTo())->toBe($args['to']);
+    expect($sentData->getMessageId())->toBe('0A0000000123ABCD1');
+    expect($sentData->getMessagePrice())->toBe("0.03330000");
+    expect($sentData->getNetwork())->toBe("12345");
+    expect($sentData->getRemainingBalance())->toBe("3.14159265");
+    expect($sentData->getStatus())->toBe(0);
+    expect($end - $start)->toBeGreaterThanOrEqual(2);
 });
 
 /**
@@ -188,13 +188,13 @@ test('can handle rate limit requests with no declared timeout', function () {
     $response = $this->smsClient->send(new SMS($args['to'], $args['from'], $args['text']));
     $sentData = $response->current();
 
-    $this->assertCount(1, $response);
-    $this->assertSame($args['to'], $sentData->getTo());
-    $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-    $this->assertSame("0.03330000", $sentData->getMessagePrice());
-    $this->assertSame("12345", $sentData->getNetwork());
-    $this->assertSame("3.14159265", $sentData->getRemainingBalance());
-    $this->assertSame(0, $sentData->getStatus());
+    expect($response)->toHaveCount(1);
+    expect($sentData->getTo())->toBe($args['to']);
+    expect($sentData->getMessageId())->toBe('0A0000000123ABCD1');
+    expect($sentData->getMessagePrice())->toBe("0.03330000");
+    expect($sentData->getNetwork())->toBe("12345");
+    expect($sentData->getRemainingBalance())->toBe("3.14159265");
+    expect($sentData->getStatus())->toBe(0);
 });
 
 /**
@@ -224,14 +224,14 @@ test('can handle a p i rate limit requests', function () {
     $sentData = $response->current();
     $end = microtime(true);
 
-    $this->assertCount(1, $response);
-    $this->assertSame($args['to'], $sentData->getTo());
-    $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-    $this->assertSame("0.03330000", $sentData->getMessagePrice());
-    $this->assertSame("12345", $sentData->getNetwork());
-    $this->assertSame("3.14159265", $sentData->getRemainingBalance());
-    $this->assertSame(0, $sentData->getStatus());
-    $this->assertGreaterThanOrEqual(2, $end - $start);
+    expect($response)->toHaveCount(1);
+    expect($sentData->getTo())->toBe($args['to']);
+    expect($sentData->getMessageId())->toBe('0A0000000123ABCD1');
+    expect($sentData->getMessagePrice())->toBe("0.03330000");
+    expect($sentData->getNetwork())->toBe("12345");
+    expect($sentData->getRemainingBalance())->toBe("3.14159265");
+    expect($sentData->getStatus())->toBe(0);
+    expect($end - $start)->toBeGreaterThanOrEqual(2);
 });
 
 /**
@@ -256,15 +256,15 @@ test('can understand multi message responses', function () {
     $response = $this->smsClient->send((new SMS($args['to'], $args['from'], $args['text'])));
     $rawData = json_decode(getResponse('multi')->getBody()->getContents(), true);
 
-    $this->assertCount((int)$rawData['message-count'], $response);
+    expect($response)->toHaveCount((int)$rawData['message-count']);
 
     foreach ($response as $key => $sentData) {
-        $this->assertSame($rawData['messages'][$key]['to'], $sentData->getTo());
-        $this->assertSame($rawData['messages'][$key]['message-id'], $sentData->getMessageId());
-        $this->assertSame($rawData['messages'][$key]['message-price'], $sentData->getMessagePrice());
-        $this->assertSame($rawData['messages'][$key]['network'], $sentData->getNetwork());
-        $this->assertSame($rawData['messages'][$key]['remaining-balance'], $sentData->getRemainingBalance());
-        $this->assertSame((int)$rawData['messages'][$key]['status'], $sentData->getStatus());
+        expect($sentData->getTo())->toBe($rawData['messages'][$key]['to']);
+        expect($sentData->getMessageId())->toBe($rawData['messages'][$key]['message-id']);
+        expect($sentData->getMessagePrice())->toBe($rawData['messages'][$key]['message-price']);
+        expect($sentData->getNetwork())->toBe($rawData['messages'][$key]['network']);
+        expect($sentData->getRemainingBalance())->toBe($rawData['messages'][$key]['remaining-balance']);
+        expect($sentData->getStatus())->toBe((int)$rawData['messages'][$key]['status']);
     }
 });
 
@@ -282,12 +282,12 @@ test('can send2 f a message', function () {
 
     $sentData = $this->smsClient->sendTwoFactor('447700900000', 1245);
 
-    $this->assertSame('447700900000', $sentData->getTo());
-    $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-    $this->assertSame("0.03330000", $sentData->getMessagePrice());
-    $this->assertSame("12345", $sentData->getNetwork());
-    $this->assertSame("3.14159265", $sentData->getRemainingBalance());
-    $this->assertSame(0, $sentData->getStatus());
+    expect($sentData->getTo())->toBe('447700900000');
+    expect($sentData->getMessageId())->toBe('0A0000000123ABCD1');
+    expect($sentData->getMessagePrice())->toBe("0.03330000");
+    expect($sentData->getNetwork())->toBe("12345");
+    expect($sentData->getRemainingBalance())->toBe("3.14159265");
+    expect($sentData->getStatus())->toBe(0);
 });
 
 /**
@@ -320,13 +320,13 @@ test('can send alert', function () {
     $response = $this->smsClient->sendAlert('447700900000', ['key' => 'value']);
     $sentData = $response->current();
 
-    $this->assertCount(1, $response);
-    $this->assertSame('447700900000', $sentData->getTo());
-    $this->assertSame('0A0000000123ABCD1', $sentData->getMessageId());
-    $this->assertSame("0.03330000", $sentData->getMessagePrice());
-    $this->assertSame("12345", $sentData->getNetwork());
-    $this->assertSame("3.14159265", $sentData->getRemainingBalance());
-    $this->assertSame(0, $sentData->getStatus());
+    expect($response)->toHaveCount(1);
+    expect($sentData->getTo())->toBe('447700900000');
+    expect($sentData->getMessageId())->toBe('0A0000000123ABCD1');
+    expect($sentData->getMessagePrice())->toBe("0.03330000");
+    expect($sentData->getNetwork())->toBe("12345");
+    expect($sentData->getRemainingBalance())->toBe("3.14159265");
+    expect($sentData->getStatus())->toBe(0);
 });
 
 /**

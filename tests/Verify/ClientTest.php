@@ -89,12 +89,12 @@ test('unserialize sets client', function () {
     $string = serialize($verification);
     $object = @$this->client->unserialize($string);
 
-    $this->assertInstanceOf(Verification::class, $object);
+    expect($object)->toBeInstanceOf(Verification::class);
 
     $search = setupClientForSearch('search');
     @$object->sync();
 
-    $this->assertSame($search, @$object->getResponse());
+    expect(@$object->getResponse())->toBe($search);
 });
 
 test('serialize matches entity', function () {
@@ -103,7 +103,7 @@ test('serialize matches entity', function () {
 
     $string = serialize($verification);
 
-    $this->assertSame($string, @$this->client->serialize($verification));
+    expect(@$this->client->serialize($verification))->toBe($string);
 });
 
 /**
@@ -120,7 +120,7 @@ test('can start verification with verification object', function () {
     $verification = @new Verification('14845551212', 'Test Verify');
     @$this->client->start($verification);
 
-    $this->assertSame($success, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($success);
 });
 
 /**
@@ -135,7 +135,7 @@ test('can start verification', function () {
     $verification = new Request('14845551212', 'Test Verify');
     $verification = @$this->client->start($verification);
 
-    $this->assertSame($success, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($success);
 });
 
 /**
@@ -162,8 +162,8 @@ test('can start p s d2 verification', function () {
     $request = new RequestPSD2('14845551212', 'Test Verify', '5.25');
     $response = @$this->client->requestPSD2($request);
 
-    $this->assertSame('0', $response['status']);
-    $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
+    expect($response['status'])->toBe('0');
+    expect($response['request_id'])->toBe('44a5279b27dd4a638d614d265ad57a77');
 });
 
 /**
@@ -191,8 +191,8 @@ test('can start p s d2 verification with workflow i d', function () {
     $request = new RequestPSD2('14845551212', 'Test Verify', '5.25', 5);
     $response = @$this->client->requestPSD2($request);
 
-    $this->assertSame('0', $response['status']);
-    $this->assertSame('44a5279b27dd4a638d614d265ad57a77', $response['request_id']);
+    expect($response['status'])->toBe('0');
+    expect($response['request_id'])->toBe('44a5279b27dd4a638d614d265ad57a77');
 });
 
 /**
@@ -211,7 +211,7 @@ test('can start array', function () {
         ]
     );
 
-    $this->assertSame($response, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($response);
 });
 
 /**
@@ -232,12 +232,12 @@ test('start throws exception', function () {
 
         self::fail('did not throw exception');
     } catch (Client\Exception\Request $e) {
-        $this->assertEquals('2', $e->getCode());
+        expect($e->getCode())->toEqual('2');
         $this->assertEquals(
             'Your request is incomplete and missing the mandatory parameter: brand',
             $e->getMessage()
         );
-        $this->assertSame($response, @$e->getEntity()->getResponse());
+        expect(@$e->getEntity()->getResponse())->toBe($response);
     }
 });
 
@@ -259,9 +259,9 @@ test('start throws server exception', function () {
 
         self::fail('did not throw exception');
     } catch (ServerException $e) {
-        $this->assertEquals('5', $e->getCode());
-        $this->assertEquals('Server Error', $e->getMessage());
-        $this->assertSame($response, @$e->getEntity()->getResponse());
+        expect($e->getCode())->toEqual('5');
+        expect($e->getMessage())->toEqual('Server Error');
+        expect(@$e->getEntity()->getResponse())->toBe($response);
     }
 });
 
@@ -277,7 +277,7 @@ test('can search verification', function () {
     $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
     @$this->client->search($verification);
 
-    $this->assertSame($response, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($response);
 });
 
 /**
@@ -291,7 +291,7 @@ test('can search id', function () {
 
     $verification = @$this->client->search('44a5279b27dd4a638d614d265ad57a77');
 
-    $this->assertSame($response, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($response);
 });
 
 /**
@@ -307,9 +307,9 @@ test('search throws exception', function () {
 
         self::fail('did not throw exception');
     } catch (Client\Exception\Request $e) {
-        $this->assertEquals('101', $e->getCode());
-        $this->assertEquals('No response found', $e->getMessage());
-        $this->assertSame($response, @$e->getEntity()->getResponse());
+        expect($e->getCode())->toEqual('101');
+        expect($e->getMessage())->toEqual('No response found');
+        expect(@$e->getEntity()->getResponse())->toBe($response);
     }
 });
 
@@ -326,9 +326,9 @@ test('search throws server exception', function () {
 
         self::fail('did not throw exception');
     } catch (ServerException $e) {
-        $this->assertEquals('5', $e->getCode());
-        $this->assertEquals('Server Error', $e->getMessage());
-        $this->assertSame($response, @$e->getEntity()->getResponse());
+        expect($e->getCode())->toEqual('5');
+        expect($e->getMessage())->toEqual('Server Error');
+        expect(@$e->getEntity()->getResponse())->toBe($response);
     }
 });
 
@@ -346,7 +346,7 @@ test('search replaces response', function () {
     $response = setupClientForSearch('search');
     @$this->client->search($verification);
 
-    $this->assertSame($response, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($response);
 });
 
 /**
@@ -361,8 +361,8 @@ test('can cancel verification', function () {
     $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
     $result = @$this->client->cancel($verification);
 
-    $this->assertSame($verification, $result);
-    $this->assertSame($response, @$verification->getResponse());
+    expect($result)->toBe($verification);
+    expect(@$verification->getResponse())->toBe($response);
 });
 
 /**
@@ -376,7 +376,7 @@ test('can cancel id', function () {
 
     $verification = @$this->client->cancel('44a5279b27dd4a638d614d265ad57a77');
 
-    $this->assertSame($response, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($response);
 });
 
 /**
@@ -392,13 +392,13 @@ test('cancel throws client exception', function () {
 
         self::fail('did not throw exception');
     } catch (Client\Exception\Request $e) {
-        $this->assertEquals('19', $e->getCode());
+        expect($e->getCode())->toEqual('19');
         $this->assertEquals(
             "Verification request  ['c1878c7451f94c1992d52797df57658e'] can't " .
             "be cancelled now. Too many attempts to re-deliver have already been made.",
             $e->getMessage()
         );
-        $this->assertSame($response, @$e->getEntity()->getResponse());
+        expect(@$e->getEntity()->getResponse())->toBe($response);
     }
 });
 
@@ -415,9 +415,9 @@ test('cancel throws server exception', function () {
 
         self::fail('did not throw exception');
     } catch (ServerException $e) {
-        $this->assertEquals('5', $e->getCode());
-        $this->assertEquals('Server Error', $e->getMessage());
-        $this->assertSame($response, @$e->getEntity()->getResponse());
+        expect($e->getCode())->toEqual('5');
+        expect($e->getMessage())->toEqual('Server Error');
+        expect(@$e->getEntity()->getResponse())->toBe($response);
     }
 });
 
@@ -432,7 +432,7 @@ test('can trigger id', function () {
 
     $verification = @$this->client->trigger('44a5279b27dd4a638d614d265ad57a77');
 
-    $this->assertSame($response, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($response);
 });
 
 /**
@@ -447,8 +447,8 @@ test('can trigger verification', function () {
     $verification = new Verification('44a5279b27dd4a638d614d265ad57a77');
     $result = @$this->client->trigger($verification);
 
-    $this->assertSame($verification, $result);
-    $this->assertSame($response, @$verification->getResponse());
+    expect($result)->toBe($verification);
+    expect(@$verification->getResponse())->toBe($response);
 });
 
 /**
@@ -464,13 +464,13 @@ test('trigger throws client exception', function () {
 
         self::fail('did not throw exception');
     } catch (Client\Exception\Request $e) {
-        $this->assertEquals('6', $e->getCode());
+        expect($e->getCode())->toEqual('6');
         $this->assertEquals(
             "The requestId '44a5279b27dd4a638d614d265ad57a77' does " .
             "not exist or its no longer active.",
             $e->getMessage()
         );
-        $this->assertSame($response, @$e->getEntity()->getResponse());
+        expect(@$e->getEntity()->getResponse())->toBe($response);
     }
 });
 
@@ -487,9 +487,9 @@ test('trigger throws server exception', function () {
 
         self::fail('did not throw exception');
     } catch (ServerException $e) {
-        $this->assertEquals('5', $e->getCode());
-        $this->assertEquals('Server Error', $e->getMessage());
-        $this->assertSame($response, @$e->getEntity()->getResponse());
+        expect($e->getCode())->toEqual('5');
+        expect($e->getMessage())->toEqual('Server Error');
+        expect(@$e->getEntity()->getResponse())->toBe($response);
     }
 });
 
@@ -506,7 +506,7 @@ test('control not replace response', function ($method, $cmd) {
     setupClientForControl($method, $cmd);
     @$this->client->$method($verification);
 
-    $this->assertSame($response, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($response);
 })->with('getControlCommands');
 
 /**
@@ -521,7 +521,7 @@ test('can check verification', function () {
 
     @$this->client->check($verification, '1234');
 
-    $this->assertSame($response, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($response);
 });
 
 /**
@@ -534,7 +534,7 @@ test('can check id', function () {
     $response = setupClientForCheck('check', '1234');
     $verification = @$this->client->check('44a5279b27dd4a638d614d265ad57a77', '1234');
 
-    $this->assertSame($response, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($response);
 });
 
 /**
@@ -550,9 +550,9 @@ test('check throws client exception', function () {
 
         self::fail('did not throw exception');
     } catch (Client\Exception\Request $e) {
-        $this->assertEquals('16', $e->getCode());
-        $this->assertEquals('The code provided does not match the expected value', $e->getMessage());
-        $this->assertSame($response, @$e->getEntity()->getResponse());
+        expect($e->getCode())->toEqual('16');
+        expect($e->getMessage())->toEqual('The code provided does not match the expected value');
+        expect(@$e->getEntity()->getResponse())->toBe($response);
     }
 });
 
@@ -569,9 +569,9 @@ test('check throws server exception', function () {
 
         self::fail('did not throw exception');
     } catch (ServerException $e) {
-        $this->assertEquals('5', $e->getCode());
-        $this->assertEquals('Server Error', $e->getMessage());
-        $this->assertSame($response, @$e->getEntity()->getResponse());
+        expect($e->getCode())->toEqual('5');
+        expect($e->getMessage())->toEqual('Server Error');
+        expect(@$e->getEntity()->getResponse())->toBe($response);
     }
 });
 
@@ -589,7 +589,7 @@ test('check not replace response', function () {
     setupClientForCheck('check', '1234');
 
     @$this->client->check($verification, '1234');
-    $this->assertSame($old, @$verification->getResponse());
+    expect(@$verification->getResponse())->toBe($old);
 });
 
 // Datasets

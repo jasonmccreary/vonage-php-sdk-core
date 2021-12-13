@@ -25,17 +25,17 @@ beforeEach(function () {
 });
 
 test('object access', function () {
-    $this->assertEquals("https://example.com/webhooks/inbound-sms", $this->config->getSmsCallbackUrl());
-    $this->assertEquals("https://example.com/webhooks/delivery-receipt", $this->config->getDrCallbackUrl());
-    $this->assertEquals(30, $this->config->getMaxOutboundRequest());
-    $this->assertEquals(31, $this->config->getMaxInboundRequest());
-    $this->assertEquals(32, $this->config->getMaxCallsPerSecond());
+    expect($this->config->getSmsCallbackUrl())->toEqual("https://example.com/webhooks/inbound-sms");
+    expect($this->config->getDrCallbackUrl())->toEqual("https://example.com/webhooks/delivery-receipt");
+    expect($this->config->getMaxOutboundRequest())->toEqual(30);
+    expect($this->config->getMaxInboundRequest())->toEqual(31);
+    expect($this->config->getMaxCallsPerSecond())->toEqual(32);
 });
 
 test('array access', function () {
-    $this->assertEquals("https://example.com/webhooks/inbound-sms", @$this->config['sms_callback_url']);
-    $this->assertEquals("https://example.com/webhooks/delivery-receipt", @$this->config['dr_callback_url']);
-    $this->assertEquals(30, @$this->config['max_outbound_request']);
-    $this->assertEquals(31, @$this->config['max_inbound_request']);
-    $this->assertEquals(32, @$this->config['max_calls_per_second']);
+    expect(@$this->config['sms_callback_url'])->toEqual("https://example.com/webhooks/inbound-sms");
+    expect(@$this->config['dr_callback_url'])->toEqual("https://example.com/webhooks/delivery-receipt");
+    expect(@$this->config['max_outbound_request'])->toEqual(30);
+    expect(@$this->config['max_inbound_request'])->toEqual(31);
+    expect(@$this->config['max_calls_per_second'])->toEqual(32);
 });

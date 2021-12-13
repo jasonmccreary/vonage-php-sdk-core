@@ -22,32 +22,32 @@ beforeEach(function () {
 test('service center timestamp', function () {
     $date = $this->receipt->getTimestamp();
 
-    $this->assertEquals(new DateTime('12/30/2014 12:25'), $date);
+    expect($date)->toEqual(new DateTime('12/30/2014 12:25'));
 });
 
 test('sent timestamp', function () {
     $date = $this->receipt->getSent();
 
-    $this->assertEquals(new DateTime('7/23/2014 03:41:03'), $date);
+    expect($date)->toEqual(new DateTime('7/23/2014 03:41:03'));
 });
 
 test('simple values', function () {
-    $this->assertEquals($this->data['err-code'], $this->receipt->getErrorCode());
-    $this->assertEquals($this->data['messageId'], $this->receipt->getId());
-    $this->assertEquals($this->data['network-code'], $this->receipt->getNetwork());
-    $this->assertEquals($this->data['price'], $this->receipt->getPrice());
-    $this->assertEquals($this->data['status'], $this->receipt->getStatus());
-    $this->assertEquals($this->data['msisdn'], $this->receipt->getReceiptFrom());
-    $this->assertEquals($this->data['msisdn'], $this->receipt->getTo());
-    $this->assertEquals($this->data['to'], $this->receipt->getReceiptTo());
-    $this->assertEquals($this->data['to'], $this->receipt->getFrom());
+    expect($this->receipt->getErrorCode())->toEqual($this->data['err-code']);
+    expect($this->receipt->getId())->toEqual($this->data['messageId']);
+    expect($this->receipt->getNetwork())->toEqual($this->data['network-code']);
+    expect($this->receipt->getPrice())->toEqual($this->data['price']);
+    expect($this->receipt->getStatus())->toEqual($this->data['status']);
+    expect($this->receipt->getReceiptFrom())->toEqual($this->data['msisdn']);
+    expect($this->receipt->getTo())->toEqual($this->data['msisdn']);
+    expect($this->receipt->getReceiptTo())->toEqual($this->data['to']);
+    expect($this->receipt->getFrom())->toEqual($this->data['to']);
 });
 
 test('client ref default', function () {
-    $this->assertNull($this->receipt->getClientRef());
+    expect($this->receipt->getClientRef())->toBeNull();
 });
 
 test('client ref', function () {
     $receipt = new Receipt(array_merge(['client-ref' => 'test'], $this->data));
-    $this->assertEquals('test', $receipt->getClientRef());
+    expect($receipt->getClientRef())->toEqual('test');
 });

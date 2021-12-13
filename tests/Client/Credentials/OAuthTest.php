@@ -18,26 +18,26 @@ test('as array', function () {
     $credentials = new OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
     $array = $credentials->asArray();
 
-    $this->assertEquals($this->clientToken, $array['token']);
-    $this->assertEquals($this->clientSecret, $array['token_secret']);
-    $this->assertEquals($this->appToken, $array['consumer_key']);
-    $this->assertEquals($this->appSecret, $array['consumer_secret']);
+    expect($array['token'])->toEqual($this->clientToken);
+    expect($array['token_secret'])->toEqual($this->clientSecret);
+    expect($array['consumer_key'])->toEqual($this->appToken);
+    expect($array['consumer_secret'])->toEqual($this->appSecret);
 });
 
 test('array access', function () {
     $credentials = new OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
 
-    $this->assertEquals($this->clientToken, $credentials['token']);
-    $this->assertEquals($this->clientSecret, $credentials['token_secret']);
-    $this->assertEquals($this->appToken, $credentials['consumer_key']);
-    $this->assertEquals($this->appSecret, $credentials['consumer_secret']);
+    expect($credentials['token'])->toEqual($this->clientToken);
+    expect($credentials['token_secret'])->toEqual($this->clientSecret);
+    expect($credentials['consumer_key'])->toEqual($this->appToken);
+    expect($credentials['consumer_secret'])->toEqual($this->appSecret);
 });
 
 test('properties', function () {
     $credentials = new OAuth($this->appToken, $this->appSecret, $this->clientToken, $this->clientSecret);
 
-    $this->assertEquals($this->clientToken, $credentials->token);
-    $this->assertEquals($this->clientSecret, $credentials->token_secret);
-    $this->assertEquals($this->appToken, $credentials->consumer_key);
-    $this->assertEquals($this->appSecret, $credentials->consumer_secret);
+    expect($credentials->token)->toEqual($this->clientToken);
+    expect($credentials->token_secret)->toEqual($this->clientSecret);
+    expect($credentials->consumer_key)->toEqual($this->appToken);
+    expect($credentials->consumer_secret)->toEqual($this->appSecret);
 });

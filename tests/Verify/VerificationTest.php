@@ -32,12 +32,12 @@ beforeEach(function () {
 });
 
 test('existing and new', function () {
-    $this->assertTrue(@$this->verification->isDirty());
-    $this->assertFalse(@$this->existing->isDirty());
+    expect(@$this->verification->isDirty())->toBeTrue();
+    expect(@$this->existing->isDirty())->toBeFalse();
 });
 
 test('construct data as object', function () {
-    $this->assertEquals($this->number, @$this->verification->getNumber());
+    expect(@$this->verification->getNumber())->toEqual($this->number);
 });
 
 /**
@@ -45,13 +45,13 @@ test('construct data as object', function () {
  */
 test('construct data as params', function () {
     $params = $this->verification->getRequestData(false);
-    $this->assertEquals($this->number, @$params['number']);
-    $this->assertEquals($this->brand, @$params['brand']);
+    expect(@$params['number'])->toEqual($this->number);
+    expect(@$params['brand'])->toEqual($this->brand);
 });
 
 test('construct data as array', function () {
-    $this->assertEquals($this->number, @$this->verification['number']);
-    $this->assertEquals($this->brand, @$this->verification['brand']);
+    expect(@$this->verification['number'])->toEqual($this->number);
+    expect(@$this->verification['brand'])->toEqual($this->brand);
 });
 
 /**
@@ -75,8 +75,8 @@ test('can construct optional values', function ($value, $setter, $param, $normal
 
     $params = $verification->getRequestData(false);
 
-    $this->assertEquals($normal, $params[$param]);
-    $this->assertEquals($normal, @$verification[$param]);
+    expect($params[$param])->toEqual($normal);
+    expect(@$verification[$param])->toEqual($normal);
 })->with('optionalValues');
 
 /**
@@ -96,19 +96,19 @@ test('can set optional values', function ($value, $setter, $param, $normal = nul
     $this->verification->$setter($value);
     $params = @$this->verification->getRequestData(false);
 
-    $this->assertEquals($normal, $params[$param]);
-    $this->assertEquals($normal, @$this->verification[$param]);
+    expect($params[$param])->toEqual($normal);
+    expect(@$this->verification[$param])->toEqual($normal);
 })->with('optionalValues');
 
 /**
  * Test that the request id can be accessed when a verification is created with it, or when a request is created.
  */
 test('request id', function () {
-    $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->existing->getRequestId());
+    expect(@$this->existing->getRequestId())->toEqual('44a5279b27dd4a638d614d265ad57a77');
 
     @$this->verification->setResponse(getResponse('search'));
 
-    $this->assertEquals('44a5279b27dd4a638d614d265ad57a77', @$this->verification->getRequestId());
+    expect(@$this->verification->getRequestId())->toEqual('44a5279b27dd4a638d614d265ad57a77');
 });
 
 /**
@@ -119,38 +119,38 @@ test('request id', function () {
 test('search params as object', function () {
     @$this->existing->setResponse(getResponse('search'));
 
-    $this->assertEquals('6cff3913', @$this->existing->getAccountId());
-    $this->assertEquals('14845551212', @$this->existing->getNumber());
-    $this->assertEquals('verify', @$this->existing->getSenderId());
-    $this->assertEquals(new DateTime("2016-05-15 03:55:05"), @$this->existing->getSubmitted());
-    $this->assertEquals(null, @$this->existing->getFinalized());
-    $this->assertEquals(new DateTime("2016-05-15 03:55:05"), @$this->existing->getFirstEvent());
-    $this->assertEquals(new DateTime("2016-05-15 03:57:12"), @$this->existing->getLastEvent());
-    $this->assertEquals('0.10000000', @$this->existing->getPrice());
-    $this->assertEquals('EUR', @$this->existing->getCurrency());
-    $this->assertEquals(Verification::FAILED, @$this->existing->getStatus());
+    expect(@$this->existing->getAccountId())->toEqual('6cff3913');
+    expect(@$this->existing->getNumber())->toEqual('14845551212');
+    expect(@$this->existing->getSenderId())->toEqual('verify');
+    expect(@$this->existing->getSubmitted())->toEqual(new DateTime("2016-05-15 03:55:05"));
+    expect(@$this->existing->getFinalized())->toEqual(null);
+    expect(@$this->existing->getFirstEvent())->toEqual(new DateTime("2016-05-15 03:55:05"));
+    expect(@$this->existing->getLastEvent())->toEqual(new DateTime("2016-05-15 03:57:12"));
+    expect(@$this->existing->getPrice())->toEqual('0.10000000');
+    expect(@$this->existing->getCurrency())->toEqual('EUR');
+    expect(@$this->existing->getStatus())->toEqual(Verification::FAILED);
 
     @$checks = $this->existing->getChecks();
 
-    $this->assertIsArray($checks);
-    $this->assertCount(3, $checks);
+    expect($checks)->toBeArray();
+    expect($checks)->toHaveCount(3);
 
     foreach ($checks as $index => $check) {
-        $this->assertInstanceOf(Check::class, $check);
+        expect($check)->toBeInstanceOf(Check::class);
     }
 
-    $this->assertEquals('123456', $checks[0]->getCode());
-    $this->assertEquals('1234', $checks[1]->getCode());
-    $this->assertEquals('1234', $checks[2]->getCode());
-    $this->assertEquals(new DateTime('2016-05-15 03:58:11'), $checks[0]->getDate());
-    $this->assertEquals(new DateTime('2016-05-15 03:55:50'), $checks[1]->getDate());
-    $this->assertEquals(new DateTime('2016-05-15 03:59:18'), $checks[2]->getDate());
-    $this->assertEquals(Check::INVALID, $checks[0]->getStatus());
-    $this->assertEquals(Check::INVALID, $checks[1]->getStatus());
-    $this->assertEquals(Check::INVALID, $checks[2]->getStatus());
-    $this->assertEquals(null, $checks[0]->getIpAddress());
-    $this->assertEquals(null, $checks[1]->getIpAddress());
-    $this->assertEquals('8.8.4.4', $checks[2]->getIpAddress());
+    expect($checks[0]->getCode())->toEqual('123456');
+    expect($checks[1]->getCode())->toEqual('1234');
+    expect($checks[2]->getCode())->toEqual('1234');
+    expect($checks[0]->getDate())->toEqual(new DateTime('2016-05-15 03:58:11'));
+    expect($checks[1]->getDate())->toEqual(new DateTime('2016-05-15 03:55:50'));
+    expect($checks[2]->getDate())->toEqual(new DateTime('2016-05-15 03:59:18'));
+    expect($checks[0]->getStatus())->toEqual(Check::INVALID);
+    expect($checks[1]->getStatus())->toEqual(Check::INVALID);
+    expect($checks[2]->getStatus())->toEqual(Check::INVALID);
+    expect($checks[0]->getIpAddress())->toEqual(null);
+    expect($checks[1]->getIpAddress())->toEqual(null);
+    expect($checks[2]->getIpAddress())->toEqual('8.8.4.4');
 });
 
 /**
@@ -216,8 +216,8 @@ test('check returns bool for invalid code', function () {
 
     @$this->existing->setClient($client->reveal());
 
-    @$this->assertFalse($this->existing->check('4321'));
-    @$this->assertTrue($this->existing->check('1234'));
+    @expect($this->existing->check('4321'))->toBeFalse();
+    @expect($this->existing->check('1234'))->toBeTrue();
 });
 
 /**
@@ -234,8 +234,8 @@ test('check returns bool for too many attempts', function () {
 
     @$this->existing->setClient($client->reveal());
 
-    @$this->assertFalse($this->existing->check('4321'));
-    @$this->assertTrue($this->existing->check('1234'));
+    @expect($this->existing->check('4321'))->toBeFalse();
+    @expect($this->existing->check('1234'))->toBeTrue();
 });
 
 /**
@@ -270,10 +270,10 @@ test('serialize', function ($response) {
     $serialized = serialize($this->existing);
     $unserialized = unserialize($serialized, [Verification::class]);
 
-    $this->assertInstanceOf(get_class($this->existing), $unserialized);
-    $this->assertEquals(@$this->existing->getAccountId(), @$unserialized->getAccountId());
-    $this->assertEquals(@$this->existing->getStatus(), @$unserialized->getStatus());
-    $this->assertEquals(@$this->existing->getResponseData(), @$unserialized->getResponseData());
+    expect($unserialized)->toBeInstanceOf(get_class($this->existing));
+    expect(@$unserialized->getAccountId())->toEqual(@$this->existing->getAccountId());
+    expect(@$unserialized->getStatus())->toEqual(@$this->existing->getStatus());
+    expect(@$unserialized->getResponseData())->toEqual(@$this->existing->getResponseData());
 })->with('getSerializeResponses');
 
 /**

@@ -46,8 +46,8 @@ test('invoke with filter', function () {
     $filter = @new Filter();
     $return = @$collection($filter);
 
-    $this->assertSame($collection, $return);
-    $this->assertSame($collection->getFilter(), $filter);
+    expect($return)->toBe($collection);
+    expect($filter)->toBe($collection->getFilter());
 });
 
 /**
@@ -81,12 +81,12 @@ test('array is lazy', function ($payload, $id) {
     $collection = $this->collection;
     $call = @$collection[$payload];
 
-    $this->assertInstanceOf(Call::class, $call);
+    expect($call)->toBeInstanceOf(Call::class);
     $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
-    $this->assertEquals($id, $call->getId());
+    expect($call->getId())->toEqual($id);
 
     if ($payload instanceof Call) {
-        $this->assertSame($payload, $call);
+        expect($call)->toBe($payload);
     }
 
     @$call->get();
@@ -115,9 +115,9 @@ test('get is not lazy', function ($payload, $id) {
 
     $call = @$this->collection->get($payload);
 
-    $this->assertInstanceOf(Call::class, $call);
+    expect($call)->toBeInstanceOf(Call::class);
     if ($payload instanceof Call) {
-        $this->assertSame($payload, $call);
+        expect($call)->toBe($payload);
     }
 })->with('getCall');
 
@@ -135,8 +135,8 @@ test('create post call', function ($payload, $method) {
 
     $call = @$this->collection->$method($payload);
 
-    $this->assertInstanceOf(Call::class, $call);
-    $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
+    expect($call)->toBeInstanceOf(Call::class);
+    expect($call->getId())->toEqual('e46fd8bd-504d-4044-9600-26dd18b41111');
 })->with('postCall');
 
 /**
@@ -160,8 +160,8 @@ test('create call ncco', function ($payload) {
 
     $call = @$this->collection->create($payload);
 
-    $this->assertInstanceOf(Call::class, $call);
-    $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $call->getId());
+    expect($call)->toBeInstanceOf(Call::class);
+    expect($call->getId())->toEqual('e46fd8bd-504d-4044-9600-26dd18b41111');
 })->with('postCallNcco');
 
 /**
@@ -182,7 +182,7 @@ test('create post call error from v api', function ($payload, $method) {
 
         self::fail('Expected to throw request exception');
     } catch (ClientException\Request $e) {
-        $this->assertEquals('Bad Request', $e->getMessage());
+        expect($e->getMessage())->toEqual('Bad Request');
     }
 })->with('postCall');
 
@@ -204,7 +204,7 @@ test('create post call error from proxy', function ($payload, $method) {
 
         self::fail('Expected to throw request exception');
     } catch (ClientException\Request $e) {
-        $this->assertEquals('Unsupported Media Type', $e->getMessage());
+        expect($e->getMessage())->toEqual('Unsupported Media Type');
     }
 })->with('postCall');
 
@@ -225,7 +225,7 @@ test('create post call error unknown format', function ($payload, $method) {
 
         self::fail('Expected to throw request exception');
     } catch (ClientException\Request $e) {
-        $this->assertEquals("Unexpected error", $e->getMessage());
+        expect($e->getMessage())->toEqual("Unexpected error");
     }
 })->with('postCall');
 
@@ -249,12 +249,12 @@ test('put call', function ($expectedId, $id, $payload) {
     }))->willReturn(getResponse('updated'))->shouldBeCalled();
 
     $call = @$this->collection->put($payload, $id);
-    $this->assertInstanceOf(Call::class, $call);
+    expect($call)->toBeInstanceOf(Call::class);
 
     if ($id instanceof Call) {
-        $this->assertSame($id, $call);
+        expect($call)->toBe($id);
     } else {
-        $this->assertEquals($id, $call->getId());
+        expect($call->getId())->toEqual($id);
     }
 })->with('putCall');
 

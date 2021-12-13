@@ -21,22 +21,22 @@ test('as array', function () {
     $credentials = new Keypair($this->key, $this->application);
 
     $array = $credentials->asArray();
-    $this->assertEquals($this->key, $array['key']);
-    $this->assertEquals($this->application, $array['application']);
+    expect($array['key'])->toEqual($this->key);
+    expect($array['application'])->toEqual($this->application);
 });
 
 test('array access', function () {
     $credentials = new Keypair($this->key, $this->application);
 
-    $this->assertEquals($this->key, $credentials['key']);
-    $this->assertEquals($this->application, $credentials['application']);
+    expect($credentials['key'])->toEqual($this->key);
+    expect($credentials['application'])->toEqual($this->application);
 });
 
 test('properties', function () {
     $credentials = new Keypair($this->key, $this->application);
 
-    $this->assertEquals($this->key, $credentials->__get('key'));
-    $this->assertEquals($this->application, $credentials->application);
+    expect($credentials->__get('key'))->toEqual($this->key);
+    expect($credentials->application)->toEqual($this->application);
 });
 
 test('default j w t', function () {
@@ -49,11 +49,11 @@ test('default j w t', function () {
 
     $this->assertArrayHasKey('typ', $header);
     $this->assertArrayHasKey('alg', $header);
-    $this->assertEquals('JWT', $header['typ']);
-    $this->assertEquals('RS256', $header['alg']);
+    expect($header['typ'])->toEqual('JWT');
+    expect($header['alg'])->toEqual('RS256');
     $this->assertArrayHasKey('application_id', $payload);
     $this->assertArrayHasKey('jti', $payload);
-    $this->assertEquals($this->application, $payload['application_id']);
+    expect($payload['application_id'])->toEqual($this->application);
 });
 
 test('additional claims', function () {
@@ -72,9 +72,9 @@ test('additional claims', function () {
     [, $payload] = decodeJWT($jwt->toString());
 
     $this->assertArrayHasKey('arbitrary', $payload);
-    $this->assertEquals($claims['arbitrary'], $payload['arbitrary']);
+    expect($payload['arbitrary'])->toEqual($claims['arbitrary']);
     $this->assertArrayHasKey('nbf', $payload);
-    $this->assertEquals(900, $payload['nbf']);
+    expect($payload['nbf'])->toEqual(900);
 });
 
 /**
@@ -105,8 +105,8 @@ test('example conversation j w t works', function () {
     [, $payload] = decodeJWT($jwt->toString());
 
     $this->assertArrayHasKey('exp', $payload);
-    $this->assertEquals($claims['exp'], $payload['exp']);
-    $this->assertEquals($claims['sub'], $payload['sub']);
+    expect($payload['exp'])->toEqual($claims['exp']);
+    expect($payload['sub'])->toEqual($claims['sub']);
 });
 
 // Helpers
@@ -117,7 +117,7 @@ function decodeJWT($jwt): array
 {
     $parts = explode('.', $jwt);
 
-    test()->assertCount(3, $parts);
+    expect($parts)->toHaveCount(3);
 
     $header = json_decode(base64_decode($parts[0]), true);
     $payload = json_decode(base64_decode($parts[1]), true);

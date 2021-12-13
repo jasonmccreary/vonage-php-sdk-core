@@ -84,10 +84,10 @@ test('can create outbound call', function () {
         ->setMachineDetection(OutboundCall::MACHINE_HANGUP);
     $callData = $this->voiceClient->createOutboundCall($outboundCall);
 
-    $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
-    $this->assertEquals('started', $callData->getStatus());
-    $this->assertEquals('outbound', $callData->getDirection());
-    $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
+    expect($callData->getUuid())->toEqual('e46fd8bd-504d-4044-9600-26dd18b41111');
+    expect($callData->getStatus())->toEqual('started');
+    expect($callData->getDirection())->toEqual('outbound');
+    expect($callData->getConversationUuid())->toEqual('2541d01c-253e-48be-a8e0-da4bbe4c3722');
 });
 
 /**
@@ -132,10 +132,10 @@ test('can create outbound call with n c c o', function () {
         ->setRingingTimer(60);
     $callData = $this->voiceClient->createOutboundCall($outboundCall);
 
-    $this->assertEquals('e46fd8bd-504d-4044-9600-26dd18b41111', $callData->getUuid());
-    $this->assertEquals('started', $callData->getStatus());
-    $this->assertEquals('outbound', $callData->getDirection());
-    $this->assertEquals('2541d01c-253e-48be-a8e0-da4bbe4c3722', $callData->getConversationUuid());
+    expect($callData->getUuid())->toEqual('e46fd8bd-504d-4044-9600-26dd18b41111');
+    expect($callData->getStatus())->toEqual('started');
+    expect($callData->getDirection())->toEqual('outbound');
+    expect($callData->getConversationUuid())->toEqual('2541d01c-253e-48be-a8e0-da4bbe4c3722');
 });
 
 /**
@@ -185,17 +185,17 @@ test('can retrieve call information', function () {
 
     $call = $this->voiceClient->get($id);
 
-    $this->assertEquals($id, $call->getUuid());
-    $this->assertEquals('447700900000', $call->getTo()->getId());
-    $this->assertEquals('447700900001', $call->getFrom()->getId());
-    $this->assertEquals('started', $call->getStatus());
-    $this->assertEquals('outbound', $call->getDirection());
-    $this->assertEquals('0.39', $call->getRate());
-    $this->assertEquals('23.40', $call->getPrice());
-    $this->assertEquals('60', $call->getDuration());
-    $this->assertEquals('2020-01-01 12:00:00', $call->getStartTime()->format('Y-m-d H:i:s'));
-    $this->assertEquals('2020-01-01 12:00:00', $call->getEndTime()->format('Y-m-d H:i:s'));
-    $this->assertEquals('65512', $call->getNetwork());
+    expect($call->getUuid())->toEqual($id);
+    expect($call->getTo()->getId())->toEqual('447700900000');
+    expect($call->getFrom()->getId())->toEqual('447700900001');
+    expect($call->getStatus())->toEqual('started');
+    expect($call->getDirection())->toEqual('outbound');
+    expect($call->getRate())->toEqual('0.39');
+    expect($call->getPrice())->toEqual('23.40');
+    expect($call->getDuration())->toEqual('60');
+    expect($call->getStartTime()->format('Y-m-d H:i:s'))->toEqual('2020-01-01 12:00:00');
+    expect($call->getEndTime()->format('Y-m-d H:i:s'))->toEqual('2020-01-01 12:00:00');
+    expect($call->getNetwork())->toEqual('65512');
 });
 
 /**
@@ -384,8 +384,8 @@ test('testcan stream audio into call', function () {
 
     $response = $this->voiceClient->streamAudio($id, $url);
 
-    $this->assertEquals($id, $response['uuid']);
-    $this->assertEquals('Stream started', $response['message']);
+    expect($response['uuid'])->toEqual($id);
+    expect($response['message'])->toEqual('Stream started');
 });
 
 /**
@@ -402,8 +402,8 @@ test('can stop streaming audio into call', function () {
 
     $response = $this->voiceClient->stopStreamAudio($id);
 
-    $this->assertEquals($id, $response['uuid']);
-    $this->assertEquals('Stream stopped', $response['message']);
+    expect($response['uuid'])->toEqual($id);
+    expect($response['message'])->toEqual('Stream stopped');
 });
 
 /**
@@ -426,8 +426,8 @@ test('can play t t s into call', function () {
     $action = new Talk('This is sample text');
     $response = $this->voiceClient->playTTS($id, $action);
 
-    $this->assertEquals($id, $response['uuid']);
-    $this->assertEquals('Talk started', $response['message']);
+    expect($response['uuid'])->toEqual($id);
+    expect($response['message'])->toEqual('Talk started');
 });
 
 /**
@@ -445,8 +445,8 @@ test('can stop t t s in call', function () {
 
     $response = $this->voiceClient->stopTTS($id);
 
-    $this->assertEquals($id, $response['uuid']);
-    $this->assertEquals('Talk stopped', $response['message']);
+    expect($response['uuid'])->toEqual($id);
+    expect($response['message'])->toEqual('Talk stopped');
 });
 
 /**
@@ -466,8 +466,8 @@ test('can play d t m f into call', function () {
 
     $response = $this->voiceClient->playDTMF($id, $payload['digits']);
 
-    $this->assertEquals($id, $response['uuid']);
-    $this->assertEquals('DTMF sent', $response['message']);
+    expect($response['uuid'])->toEqual($id);
+    expect($response['message'])->toEqual('DTMF sent');
 });
 
 /**
@@ -494,11 +494,11 @@ test('can search calls', function () {
     $filter->setStatus(VoiceFilter::STATUS_STARTED);
     $response = $this->voiceClient->search($filter);
 
-    $this->assertCount(1, $response);
+    expect($response)->toHaveCount(1);
 
     $call = $response->current();
 
-    $this->assertEquals($data['_embedded']['calls'][0]['uuid'], $call->getUuid());
+    expect($call->getUuid())->toEqual($data['_embedded']['calls'][0]['uuid']);
 });
 
 // Helpers

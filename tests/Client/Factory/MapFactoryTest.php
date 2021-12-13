@@ -25,22 +25,22 @@ beforeEach(function () {
 
 test('client injection', function () {
     $api = $this->factory->getApi('test');
-    $this->assertSame($this->client, $api->client);
+    expect($api->client)->toBe($this->client);
 });
 
 test('cache', function () {
     $api = $this->factory->getApi('test');
     $cache = $this->factory->getApi('test');
 
-    $this->assertSame($api, $cache);
+    expect($cache)->toBe($api);
 });
 
 test('class map', function () {
-    $this->assertTrue($this->factory->hasApi('test'));
-    $this->assertFalse($this->factory->hasApi('not'));
+    expect($this->factory->hasApi('test'))->toBeTrue();
+    expect($this->factory->hasApi('not'))->toBeFalse();
 
     $api = $this->factory->getApi('test');
-    $this->assertInstanceOf(TestDouble::class, $api);
+    expect($api)->toBeInstanceOf(TestDouble::class);
 
     $this->expectException(RuntimeException::class);
     $this->factory->getApi('not');
@@ -51,8 +51,8 @@ test('make creates new instance', function () {
     $second = $this->factory->make('test');
 
     $this->assertNotSame($first, $second);
-    $this->assertInstanceOf(TestDouble::class, $first);
-    $this->assertInstanceOf(TestDouble::class, $second);
+    expect($first)->toBeInstanceOf(TestDouble::class);
+    expect($second)->toBeInstanceOf(TestDouble::class);
 });
 
 test('make does not use cache', function () {
@@ -62,5 +62,5 @@ test('make does not use cache', function () {
 
     $this->assertNotSame($cached, $new);
     $this->assertNotSame($secondCached, $new);
-    $this->assertSame($cached, $secondCached);
+    expect($secondCached)->toBe($cached);
 });

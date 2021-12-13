@@ -23,17 +23,17 @@ test('overriding base url uses client api url', function () {
     $resource = new APIResource();
     $resource->setClient($mockClient->reveal());
 
-    $this->assertSame('https://test.domain', $resource->getBaseUrl());
+    expect($resource->getBaseUrl())->toBe('https://test.domain');
 });
 
 test('overriding base url manually works', function () {
     $resource = new APIResource();
     $resource->setBaseUrl('https://test.domain');
 
-    $this->assertSame('https://test.domain', $resource->getBaseUrl());
+    expect($resource->getBaseUrl())->toBe('https://test.domain');
 });
 
 test('not overriding base u r l returns blank', function () {
     $resource = new APIResource();
-    $this->assertSame('', $resource->getBaseUrl());
+    expect($resource->getBaseUrl())->toBe('');
 });

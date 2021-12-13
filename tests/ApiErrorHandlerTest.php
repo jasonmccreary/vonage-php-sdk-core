@@ -27,7 +27,7 @@ test('does not throw on success', function () {
     /** @noinspection UnnecessaryAssertionInspection */
     /** @noinspection PhpVoidFunctionResultUsedInspection */
     /** @noinspection PhpUnhandledExceptionInspection */
-    $this->assertNull(ApiErrorHandler::check(['success' => true], 200));
+    expect(ApiErrorHandler::check(['success' => true], 200))->toBeNull();
 });
 
 /**
@@ -85,7 +85,7 @@ test('throws on400 with validation errors', function () {
             ]
         ], 400);
     } catch (ValidationException $e) {
-        $this->assertInstanceOf(ValidationException::class, $e);
+        expect($e)->toBeInstanceOf(ValidationException::class);
         $this->assertEquals(
             'Bad Request: The request failed due to validation errors. ' .
             'See http://example.com/error for more information',

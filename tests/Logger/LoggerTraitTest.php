@@ -12,14 +12,14 @@ test('can set and get logger', function () {
     $logger = $this->prophesize(LoggerInterface::class)->reveal();
     $trait->setLogger($logger);
 
-    $this->assertSame($logger, $trait->getLogger());
+    expect($trait->getLogger())->toBe($logger);
 });
 
 test('no logger returns null', function () {
     /** @var LoggerTrait $trait */
     $trait = $this->getMockForTrait(LoggerTrait::class);
 
-    $this->assertNull($trait->getLogger());
+    expect($trait->getLogger())->toBeNull();
 });
 
 test('can log message with logger', function () {
@@ -28,12 +28,12 @@ test('can log message with logger', function () {
     $logger = $this->prophesize(LoggerInterface::class)->reveal();
     $trait->setLogger($logger);
 
-    $this->assertNull($trait->log('debug', 'This is a message'));
+    expect($trait->log('debug', 'This is a message'))->toBeNull();
 });
 
 test('logging accepts message with logger', function () {
     /** @var LoggerTrait $trait */
     $trait = $this->getMockForTrait(LoggerTrait::class);
 
-    $this->assertNull($trait->log('debug', 'This is a message'));
+    expect($trait->log('debug', 'This is a message'))->toBeNull();
 });

@@ -20,13 +20,13 @@ uses(VonageTestCase::class);
  * @param $inputData
  */
 test('array access', function ($basic, $inputData) {
-    $this->assertEquals($inputData['request_id'], @$basic['request_id']);
-    $this->assertEquals($inputData['international_format_number'], @$basic['international_format_number']);
-    $this->assertEquals($inputData['national_format_number'], @$basic['national_format_number']);
-    $this->assertEquals($inputData['country_code'], @$basic['country_code']);
-    $this->assertEquals($inputData['country_code_iso3'], @$basic['country_code_iso3']);
-    $this->assertEquals($inputData['country_name'], @$basic['country_name']);
-    $this->assertEquals($inputData['country_prefix'], @$basic['country_prefix']);
+    expect(@$basic['request_id'])->toEqual($inputData['request_id']);
+    expect(@$basic['international_format_number'])->toEqual($inputData['international_format_number']);
+    expect(@$basic['national_format_number'])->toEqual($inputData['national_format_number']);
+    expect(@$basic['country_code'])->toEqual($inputData['country_code']);
+    expect(@$basic['country_code_iso3'])->toEqual($inputData['country_code_iso3']);
+    expect(@$basic['country_name'])->toEqual($inputData['country_name']);
+    expect(@$basic['country_prefix'])->toEqual($inputData['country_prefix']);
 })->with('basicTestProvider');
 
 /**
@@ -35,13 +35,13 @@ test('array access', function ($basic, $inputData) {
  * @param $inputData
  */
 test('object access', function ($basic, $inputData) {
-    $this->assertEquals($inputData['request_id'], $basic->getRequestId());
-    $this->assertEquals($inputData['international_format_number'], $basic->getInternationalFormatNumber());
-    $this->assertEquals($inputData['national_format_number'], $basic->getNationalFormatNumber());
-    $this->assertEquals($inputData['country_code'], $basic->getCountryCode());
-    $this->assertEquals($inputData['country_code_iso3'], $basic->getCountryCodeISO3());
-    $this->assertEquals($inputData['country_name'], $basic->getCountryName());
-    $this->assertEquals($inputData['country_prefix'], $basic->getCountryPrefix());
+    expect($basic->getRequestId())->toEqual($inputData['request_id']);
+    expect($basic->getInternationalFormatNumber())->toEqual($inputData['international_format_number']);
+    expect($basic->getNationalFormatNumber())->toEqual($inputData['national_format_number']);
+    expect($basic->getCountryCode())->toEqual($inputData['country_code']);
+    expect($basic->getCountryCodeISO3())->toEqual($inputData['country_code_iso3']);
+    expect($basic->getCountryName())->toEqual($inputData['country_name']);
+    expect($basic->getCountryPrefix())->toEqual($inputData['country_prefix']);
 })->with('basicTestProvider');
 
 // Datasets

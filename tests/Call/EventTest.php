@@ -27,13 +27,13 @@ test('expects u u i d', function () {
 });
 
 test('get id', function () {
-    $this->assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity->getId());
-    $this->assertSame('5dd627ff-caff-46a8-99ed-891e5ffebc55', $this->entity['uuid']);
+    expect($this->entity->getId())->toBe('5dd627ff-caff-46a8-99ed-891e5ffebc55');
+    expect($this->entity['uuid'])->toBe('5dd627ff-caff-46a8-99ed-891e5ffebc55');
 });
 
 test('get message', function () {
-    $this->assertSame('Stream stopped', $this->entity->getMessage());
-    $this->assertSame('Stream stopped', $this->entity['message']);
+    expect($this->entity->getMessage())->toBe('Stream stopped');
+    expect($this->entity['message'])->toBe('Stream stopped');
 });
 
 // Helpers

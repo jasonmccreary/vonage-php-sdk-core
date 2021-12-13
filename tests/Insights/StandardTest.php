@@ -20,13 +20,13 @@ uses(VonageTestCase::class);
  * @param $inputData
  */
 test('array access', function ($standard, $inputData) {
-    $this->assertEquals($inputData['refund_price'], @$standard['refund_price']);
-    $this->assertEquals($inputData['request_price'], @$standard['request_price']);
-    $this->assertEquals($inputData['remaining_balance'], @$standard['remaining_balance']);
-    $this->assertEquals($inputData['current_carrier'], @$standard['current_carrier']);
-    $this->assertEquals($inputData['original_carrier'], @$standard['original_carrier']);
-    $this->assertEquals($inputData['ported'], @$standard['ported']);
-    $this->assertEquals($inputData['roaming'], @$standard['roaming']);
+    expect(@$standard['refund_price'])->toEqual($inputData['refund_price']);
+    expect(@$standard['request_price'])->toEqual($inputData['request_price']);
+    expect(@$standard['remaining_balance'])->toEqual($inputData['remaining_balance']);
+    expect(@$standard['current_carrier'])->toEqual($inputData['current_carrier']);
+    expect(@$standard['original_carrier'])->toEqual($inputData['original_carrier']);
+    expect(@$standard['ported'])->toEqual($inputData['ported']);
+    expect(@$standard['roaming'])->toEqual($inputData['roaming']);
 })->with('standardTestProvider');
 
 /**
@@ -35,13 +35,13 @@ test('array access', function ($standard, $inputData) {
  * @param $inputData
  */
 test('object access', function ($standard, $inputData) {
-    $this->assertEquals($inputData['refund_price'], @$standard->getRefundPrice());
-    $this->assertEquals($inputData['request_price'], @$standard->getRequestPrice());
-    $this->assertEquals($inputData['remaining_balance'], @$standard->getRemainingBalance());
-    $this->assertEquals($inputData['current_carrier'], $standard->getCurrentCarrier());
-    $this->assertEquals($inputData['original_carrier'], $standard->getOriginalCarrier());
-    $this->assertEquals($inputData['ported'], $standard->getPorted());
-    $this->assertEquals($inputData['roaming'], $standard->getRoaming());
+    expect(@$standard->getRefundPrice())->toEqual($inputData['refund_price']);
+    expect(@$standard->getRequestPrice())->toEqual($inputData['request_price']);
+    expect(@$standard->getRemainingBalance())->toEqual($inputData['remaining_balance']);
+    expect($standard->getCurrentCarrier())->toEqual($inputData['current_carrier']);
+    expect($standard->getOriginalCarrier())->toEqual($inputData['original_carrier']);
+    expect($standard->getPorted())->toEqual($inputData['ported']);
+    expect($standard->getRoaming())->toEqual($inputData['roaming']);
 })->with('standardTestProvider');
 
 // Datasets

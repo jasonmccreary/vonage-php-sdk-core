@@ -45,7 +45,7 @@ beforeEach(function () {
 test('get secrets', function () {
     $secrets = $this->collection->getSecrets();
 
-    $this->assertInstanceOf(Secret::class, $secrets[0]);
+    expect($secrets[0])->toBeInstanceOf(Secret::class);
 });
 
 test('get links', function () {
@@ -56,24 +56,24 @@ test('get links', function () {
  * @throws InvalidResponseException
  */
 test('object access', function () {
-    $this->assertEquals($this->links, $this->collection->getLinks());
+    expect($this->collection->getLinks())->toEqual($this->links);
 
     $secrets = array_map(static function ($v) {
         return @Secret::fromApi($v);
     }, $this->secrets);
 
-    $this->assertEquals($secrets, $this->collection->getSecrets());
+    expect($this->collection->getSecrets())->toEqual($secrets);
 });
 
 /**
  * @throws InvalidResponseException
  */
 test('array access', function () {
-    $this->assertEquals($this->links, @$this->collection['_links']);
+    expect(@$this->collection['_links'])->toEqual($this->links);
 
     $secrets = array_map(static function ($v) {
         return @Secret::fromApi($v);
     }, $this->secrets);
 
-    $this->assertEquals($secrets, @$this->collection['secrets']);
+    expect(@$this->collection['secrets'])->toEqual($secrets);
 });

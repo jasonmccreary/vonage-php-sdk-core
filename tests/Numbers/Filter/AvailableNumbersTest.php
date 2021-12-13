@@ -10,7 +10,7 @@ test('can set valid number type', function (string $type) {
     $filter = new AvailableNumbers();
     $filter->setType($type);
 
-    $this->assertSame($type, $filter->getType());
+    expect($filter->getType())->toBe($type);
 })->with('numberTypes');
 
 test('invalid type throws exception', function () {

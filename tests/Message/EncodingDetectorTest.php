@@ -21,7 +21,7 @@ uses(VonageTestCase::class);
  */
 test('detects unicode', function ($content, $expected) {
     $d = new EncodingDetector();
-    $this->assertEquals($expected, $d->requiresUnicodeEncoding($content));
+    expect($d->requiresUnicodeEncoding($content))->toEqual($expected);
 })->with('unicodeProvider');
 
 // Datasets

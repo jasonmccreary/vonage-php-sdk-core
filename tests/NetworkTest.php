@@ -15,15 +15,15 @@ uses(VonageTestCase::class);
 test('network array access', function () {
     $network = new Network('12345', 'Demo Network');
 
-    $this->assertEquals('12345', @$network['network_code']);
-    $this->assertEquals('Demo Network', @$network['network_name']);
+    expect(@$network['network_code'])->toEqual('12345');
+    expect(@$network['network_name'])->toEqual('Demo Network');
 });
 
 test('network getters', function () {
     $network = new Network('12345', 'Demo Network');
 
-    $this->assertEquals('12345', $network->getCode());
-    $this->assertEquals('Demo Network', $network->getName());
+    expect($network->getCode())->toEqual('12345');
+    expect($network->getName())->toEqual('Demo Network');
 });
 
 test('network from array', function () {
@@ -39,23 +39,23 @@ test('network from array', function () {
         'mnc' => '740',
     ]);
 
-    $this->assertEquals('12345', $network->getCode());
-    $this->assertEquals('Demo Network', $network->getName());
-    $this->assertEquals('0.0331', $network->getOutboundSmsPrice());
-    $this->assertEquals('0.0123', $network->getOutboundVoicePrice());
-    $this->assertEquals('EUR', $network->getCurrency());
+    expect($network->getCode())->toEqual('12345');
+    expect($network->getName())->toEqual('Demo Network');
+    expect($network->getOutboundSmsPrice())->toEqual('0.0331');
+    expect($network->getOutboundVoicePrice())->toEqual('0.0123');
+    expect($network->getCurrency())->toEqual('EUR');
 });
 
 test('sms price fallback', function () {
     $network = new Network('12345', 'Demo Network');
     $network->fromArray(['price' => '0.0331']);
 
-    $this->assertEquals('0.0331', $network->getOutboundSmsPrice());
+    expect($network->getOutboundSmsPrice())->toEqual('0.0331');
 });
 
 test('voice price fallback', function () {
     $network = new Network('12345', 'Demo Network');
     $network->fromArray(['price' => '0.0331']);
 
-    $this->assertEquals('0.0331', $network->getOutboundSmsPrice());
+    expect($network->getOutboundSmsPrice())->toEqual('0.0331');
 });

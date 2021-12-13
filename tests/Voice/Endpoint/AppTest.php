@@ -15,11 +15,11 @@ use Vonage\Voice\Endpoint\App;
 uses(VonageTestCase::class);
 
 test('sets username at creation', function () {
-    $this->assertSame("username", (new App("username"))->getId());
+    expect((new App("username"))->getId())->toBe("username");
 });
 
 test('factory creates app endpoint', function () {
-    $this->assertSame("username", App::factory('username')->getId());
+    expect(App::factory('username')->getId())->toBe("username");
 });
 
 test('to array has correct structure', function () {

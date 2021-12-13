@@ -23,17 +23,17 @@ test('can create from form post server request', function () {
     $request = getServerRequest('inbound');
     $inboundSMS = Factory::createFromRequest($request);
 
-    $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-    $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
-    $this->assertSame($expected['to'], $inboundSMS->getTo());
-    $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
-    $this->assertSame($expected['text'], $inboundSMS->getText());
-    $this->assertSame($expected['type'], $inboundSMS->getType());
-    $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
-    $this->assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
-    $this->assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
-    $this->assertSame($expected['nonce'], $inboundSMS->getNonce());
-    $this->assertSame($expected['sig'], $inboundSMS->getSignature());
+    expect($inboundSMS->getMsisdn())->toBe($expected['msisdn']);
+    expect($inboundSMS->getFrom())->toBe($expected['msisdn']);
+    expect($inboundSMS->getTo())->toBe($expected['to']);
+    expect($inboundSMS->getMessageId())->toBe($expected['messageId']);
+    expect($inboundSMS->getText())->toBe($expected['text']);
+    expect($inboundSMS->getType())->toBe($expected['type']);
+    expect($inboundSMS->getKeyword())->toBe($expected['keyword']);
+    expect($inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'))->toBe($expected['message-timestamp']);
+    expect($inboundSMS->getTimestamp())->toBe((int)$expected['timestamp']);
+    expect($inboundSMS->getNonce())->toBe($expected['nonce']);
+    expect($inboundSMS->getSignature())->toBe($expected['sig']);
 });
 
 test('can create incoming binary message', function () {
@@ -41,15 +41,15 @@ test('can create incoming binary message', function () {
     $request = getServerRequest('inbound-binary');
     $inboundSMS = Factory::createFromRequest($request);
 
-    $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-    $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
-    $this->assertSame($expected['to'], $inboundSMS->getTo());
-    $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
-    $this->assertSame($expected['text'], $inboundSMS->getText());
-    $this->assertSame($expected['type'], $inboundSMS->getType());
-    $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
-    $this->assertSame($expected['data'], $inboundSMS->getData());
-    $this->assertSame($expected['udh'], $inboundSMS->getUdh());
+    expect($inboundSMS->getMsisdn())->toBe($expected['msisdn']);
+    expect($inboundSMS->getFrom())->toBe($expected['msisdn']);
+    expect($inboundSMS->getTo())->toBe($expected['to']);
+    expect($inboundSMS->getMessageId())->toBe($expected['messageId']);
+    expect($inboundSMS->getText())->toBe($expected['text']);
+    expect($inboundSMS->getType())->toBe($expected['type']);
+    expect($inboundSMS->getKeyword())->toBe($expected['keyword']);
+    expect($inboundSMS->getData())->toBe($expected['data']);
+    expect($inboundSMS->getUdh())->toBe($expected['udh']);
 });
 
 test('can create from concat message form post server request', function () {
@@ -57,18 +57,18 @@ test('can create from concat message form post server request', function () {
     $request = getServerRequest('inbound-long');
     $inboundSMS = Factory::createFromRequest($request);
 
-    $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-    $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
-    $this->assertSame($expected['to'], $inboundSMS->getTo());
-    $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
-    $this->assertSame($expected['text'], $inboundSMS->getText());
-    $this->assertSame($expected['type'], $inboundSMS->getType());
-    $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
-    $this->assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
-    $this->assertSame((bool)$expected['concat'], $inboundSMS->getConcat());
-    $this->assertSame((int)$expected['concat-part'], $inboundSMS->getConcatPart());
-    $this->assertSame($expected['concat-ref'], $inboundSMS->getConcatRef());
-    $this->assertSame((int)$expected['concat-total'], $inboundSMS->getConcatTotal());
+    expect($inboundSMS->getMsisdn())->toBe($expected['msisdn']);
+    expect($inboundSMS->getFrom())->toBe($expected['msisdn']);
+    expect($inboundSMS->getTo())->toBe($expected['to']);
+    expect($inboundSMS->getMessageId())->toBe($expected['messageId']);
+    expect($inboundSMS->getText())->toBe($expected['text']);
+    expect($inboundSMS->getType())->toBe($expected['type']);
+    expect($inboundSMS->getKeyword())->toBe($expected['keyword']);
+    expect($inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'))->toBe($expected['message-timestamp']);
+    expect($inboundSMS->getConcat())->toBe((bool)$expected['concat']);
+    expect($inboundSMS->getConcatPart())->toBe((int)$expected['concat-part']);
+    expect($inboundSMS->getConcatRef())->toBe($expected['concat-ref']);
+    expect($inboundSMS->getConcatTotal())->toBe((int)$expected['concat-total']);
 });
 
 test('throw runtime exception when invalid request detected', function () {
@@ -84,16 +84,16 @@ test('can create from j s o n post server request', function () {
     $request = getServerRequest('json');
     $inboundSMS = Factory::createFromRequest($request);
 
-    $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-    $this->assertSame($expected['to'], $inboundSMS->getTo());
-    $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
-    $this->assertSame($expected['text'], $inboundSMS->getText());
-    $this->assertSame($expected['type'], $inboundSMS->getType());
-    $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
-    $this->assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
-    $this->assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
-    $this->assertSame($expected['nonce'], $inboundSMS->getNonce());
-    $this->assertSame($expected['sig'], $inboundSMS->getSignature());
+    expect($inboundSMS->getMsisdn())->toBe($expected['msisdn']);
+    expect($inboundSMS->getTo())->toBe($expected['to']);
+    expect($inboundSMS->getMessageId())->toBe($expected['messageId']);
+    expect($inboundSMS->getText())->toBe($expected['text']);
+    expect($inboundSMS->getType())->toBe($expected['type']);
+    expect($inboundSMS->getKeyword())->toBe($expected['keyword']);
+    expect($inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'))->toBe($expected['message-timestamp']);
+    expect($inboundSMS->getTimestamp())->toBe((int)$expected['timestamp']);
+    expect($inboundSMS->getNonce())->toBe($expected['nonce']);
+    expect($inboundSMS->getSignature())->toBe($expected['sig']);
 });
 
 /**
@@ -103,17 +103,17 @@ test('can create from raw array', function () {
     $expected = getQueryStringFromRequest('inbound');
     $inboundSMS = new InboundSMS($expected);
 
-    $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-    $this->assertSame($expected['msisdn'], $inboundSMS->getFrom());
-    $this->assertSame($expected['to'], $inboundSMS->getTo());
-    $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
-    $this->assertSame($expected['text'], $inboundSMS->getText());
-    $this->assertSame($expected['type'], $inboundSMS->getType());
-    $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
-    $this->assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
-    $this->assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
-    $this->assertSame($expected['nonce'], $inboundSMS->getNonce());
-    $this->assertSame($expected['sig'], $inboundSMS->getSignature());
+    expect($inboundSMS->getMsisdn())->toBe($expected['msisdn']);
+    expect($inboundSMS->getFrom())->toBe($expected['msisdn']);
+    expect($inboundSMS->getTo())->toBe($expected['to']);
+    expect($inboundSMS->getMessageId())->toBe($expected['messageId']);
+    expect($inboundSMS->getText())->toBe($expected['text']);
+    expect($inboundSMS->getType())->toBe($expected['type']);
+    expect($inboundSMS->getKeyword())->toBe($expected['keyword']);
+    expect($inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'))->toBe($expected['message-timestamp']);
+    expect($inboundSMS->getTimestamp())->toBe((int)$expected['timestamp']);
+    expect($inboundSMS->getNonce())->toBe($expected['nonce']);
+    expect($inboundSMS->getSignature())->toBe($expected['sig']);
 });
 
 test('can create from get with body server request', function () {
@@ -121,16 +121,16 @@ test('can create from get with body server request', function () {
     $request = getServerRequest('inbound');
     $inboundSMS = Factory::createFromRequest($request);
 
-    $this->assertSame($expected['msisdn'], $inboundSMS->getMsisdn());
-    $this->assertSame($expected['to'], $inboundSMS->getTo());
-    $this->assertSame($expected['messageId'], $inboundSMS->getMessageId());
-    $this->assertSame($expected['text'], $inboundSMS->getText());
-    $this->assertSame($expected['type'], $inboundSMS->getType());
-    $this->assertSame($expected['keyword'], $inboundSMS->getKeyword());
-    $this->assertSame($expected['message-timestamp'], $inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'));
-    $this->assertSame((int)$expected['timestamp'], $inboundSMS->getTimestamp());
-    $this->assertSame($expected['nonce'], $inboundSMS->getNonce());
-    $this->assertSame($expected['sig'], $inboundSMS->getSignature());
+    expect($inboundSMS->getMsisdn())->toBe($expected['msisdn']);
+    expect($inboundSMS->getTo())->toBe($expected['to']);
+    expect($inboundSMS->getMessageId())->toBe($expected['messageId']);
+    expect($inboundSMS->getText())->toBe($expected['text']);
+    expect($inboundSMS->getType())->toBe($expected['type']);
+    expect($inboundSMS->getKeyword())->toBe($expected['keyword']);
+    expect($inboundSMS->getMessageTimestamp()->format('Y-m-d H:i:s'))->toBe($expected['message-timestamp']);
+    expect($inboundSMS->getTimestamp())->toBe((int)$expected['timestamp']);
+    expect($inboundSMS->getNonce())->toBe($expected['nonce']);
+    expect($inboundSMS->getSignature())->toBe($expected['sig']);
 });
 
 /**

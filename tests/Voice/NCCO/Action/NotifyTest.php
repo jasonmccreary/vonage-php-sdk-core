@@ -19,8 +19,8 @@ test('can set additional information', function () {
     $webhook = new Webhook('https://test.domain/events');
     $action = (new Notify(['foo' => 'bar'], $webhook))->setEventWebhook($webhook);
 
-    $this->assertSame(['foo' => 'bar'], $action->getPayload());
-    $this->assertSame($webhook, $action->getEventWebhook());
+    expect($action->getPayload())->toBe(['foo' => 'bar']);
+    expect($action->getEventWebhook())->toBe($webhook);
 });
 
 test('can generate from factory', function () {
@@ -32,9 +32,9 @@ test('can generate from factory', function () {
 
     $action = Notify::factory(['foo' => 'bar'], $data);
 
-    $this->assertSame(['foo' => 'bar'], $action->getPayload());
-    $this->assertSame('https://test.domain/events', $action->getEventWebhook()->getUrl());
-    $this->assertSame('POST', $action->getEventWebhook()->getMethod());
+    expect($action->getPayload())->toBe(['foo' => 'bar']);
+    expect($action->getEventWebhook()->getUrl())->toBe('https://test.domain/events');
+    expect($action->getEventWebhook()->getMethod())->toBe('POST');
 });
 
 test('generates correct n c c o array', function () {
@@ -45,27 +45,27 @@ test('generates correct n c c o array', function () {
 
     $ncco = $action->toNCCOArray();
 
-    $this->assertSame('notify', $ncco['action']);
-    $this->assertSame(['foo' => 'bar'], $ncco['payload']);
-    $this->assertSame(['https://test.domain/events'], $ncco['eventUrl']);
-    $this->assertSame('POST', $ncco['eventMethod']);
+    expect($ncco['action'])->toBe('notify');
+    expect($ncco['payload'])->toBe(['foo' => 'bar']);
+    expect($ncco['eventUrl'])->toBe(['https://test.domain/events']);
+    expect($ncco['eventMethod'])->toBe('POST');
 });
 
 test('j s o n serializes to correct structure', function () {
     $webhook = new Webhook('https://test.domain/events');
     $ncco = (new Notify(['foo' => 'bar'], $webhook))->setEventWebhook($webhook)->jsonSerialize();
 
-    $this->assertSame('notify', $ncco['action']);
-    $this->assertSame(['foo' => 'bar'], $ncco['payload']);
-    $this->assertSame(['https://test.domain/events'], $ncco['eventUrl']);
-    $this->assertSame('POST', $ncco['eventMethod']);
+    expect($ncco['action'])->toBe('notify');
+    expect($ncco['payload'])->toBe(['foo' => 'bar']);
+    expect($ncco['eventUrl'])->toBe(['https://test.domain/events']);
+    expect($ncco['eventMethod'])->toBe('POST');
 });
 
 test('can add to payload', function () {
     $webhook = new Webhook('https://test.domain/events');
     $action = (new Notify(['foo' => 'bar'], $webhook))->addToPayload('baz', 'biff');
 
-    $this->assertSame(['foo' => 'bar', 'baz' => 'biff'], $action->getPayload());
+    expect($action->getPayload())->toBe(['foo' => 'bar', 'baz' => 'biff']);
 });
 
 test('throws exception when missing event u r l', function () {

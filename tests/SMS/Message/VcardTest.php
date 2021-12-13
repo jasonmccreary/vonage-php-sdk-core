@@ -24,7 +24,7 @@ test('can create vcard message', function () {
         $card
     ))->toArray();
 
-    $this->assertSame('447700900000', $data['to']);
-    $this->assertSame('16105551212', $data['from']);
-    $this->assertSame($card, $data['vcard']);
+    expect($data['to'])->toBe('447700900000');
+    expect($data['from'])->toBe('16105551212');
+    expect($data['vcard'])->toBe($card);
 });

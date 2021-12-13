@@ -45,12 +45,12 @@ test('array is lazy', function ($payload, $id) {
 
     $user = $this->collection[$payload];
 
-    $this->assertInstanceOf(User::class, $user);
+    expect($user)->toBeInstanceOf(User::class);
     $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
-    $this->assertEquals($id, $user->getId());
+    expect($user->getId())->toEqual($id);
 
     if ($payload instanceof User) {
-        $this->assertSame($payload, $user);
+        expect($user)->toBe($payload);
     }
 
     // Once we call get() the rest of the data should be populated
@@ -80,7 +80,7 @@ test('get is not lazy', function ($payload, $id) {
     $user = $this->collection->get($payload);
 
     if ($payload instanceof User) {
-        $this->assertSame($payload, $user);
+        expect($user)->toBe($payload);
     }
 })->with('getUser');
 
@@ -93,10 +93,10 @@ test('can fetch all users', function () {
 
     $users = $this->collection->fetch();
 
-    $this->assertCount(3, $users);
-    $this->assertInstanceOf(User::class, $users[0]);
-    $this->assertInstanceOf(User::class, $users[1]);
-    $this->assertInstanceOf(User::class, $users[2]);
+    expect($users)->toHaveCount(3);
+    expect($users[0])->toBeInstanceOf(User::class);
+    expect($users[1])->toBeInstanceOf(User::class);
+    expect($users[2])->toBeInstanceOf(User::class);
 });
 
 /**
@@ -114,8 +114,8 @@ test('create post conversation', function ($payload, $method) {
 
     $user = $this->collection->$method($payload);
 
-    $this->assertInstanceOf(User::class, $user);
-    $this->assertEquals('USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab', $user->getId());
+    expect($user)->toBeInstanceOf(User::class);
+    expect($user->getId())->toEqual('USR-aaaaaaaa-bbbb-cccc-dddd-0123456789ab');
 })->with('postUser');
 
 /**
@@ -136,7 +136,7 @@ test('create post user error from stitch', function ($payload, $method) {
 
         self::fail('Expected to throw request exception');
     } catch (ClientException\Request $e) {
-        $this->assertEquals('the token was rejected', $e->getMessage());
+        expect($e->getMessage())->toEqual('the token was rejected');
     }
 })->with('postUser');
 
@@ -158,7 +158,7 @@ test('create post user error from proxy', function ($payload, $method) {
 
         self::fail('Expected to throw request exception');
     } catch (ClientException\Request $e) {
-        $this->assertEquals('Unsupported Media Type', $e->getMessage());
+        expect($e->getMessage())->toEqual('Unsupported Media Type');
     }
 })->with('postUser');
 
@@ -179,7 +179,7 @@ test('create post call error unknown format', function ($payload, $method) {
 
         self::fail('Expected to throw request exception');
     } catch (ClientException\Request $e) {
-        $this->assertEquals("Unexpected error", $e->getMessage());
+        expect($e->getMessage())->toEqual("Unexpected error");
     }
 })->with('postUser');
 

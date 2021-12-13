@@ -31,14 +31,14 @@ beforeEach(function () {
 test('basic', function ($credential, $type) {
     $container = new Container($credential);
 
-    $this->assertSame($credential, $container->get($type));
-    $this->assertSame($credential, $container[$type]);
+    expect($container->get($type))->toBe($credential);
+    expect($container[$type])->toBe($credential);
 
     foreach ($this->types as $class) {
         if ($type === $class) {
-            $this->assertTrue($container->has($class));
+            expect($container->has($class))->toBeTrue();
         } else {
-            $this->assertFalse($container->has($class));
+            expect($container->has($class))->toBeFalse();
         }
     }
 })->with('credentials');
@@ -57,7 +57,7 @@ test('multiple', function () {
     $container = new Container($this->basic, $this->secret, $this->keypair);
 
     foreach ($this->types as $class) {
-        $this->assertTrue($container->has($class));
+        expect($container->has($class))->toBeTrue();
     }
 });
 
