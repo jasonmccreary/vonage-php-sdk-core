@@ -9,8 +9,6 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Call;
-
 use Laminas\Diactoros\Response;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
@@ -21,207 +19,181 @@ use Vonage\Call\Stream;
 use Vonage\Client;
 use VonageTest\Psr7AssertionTrait;
 
+uses(VonageTestCase::class);
+uses(Psr7AssertionTrait::class);
+
 use function fopen;
 use function json_decode;
 use function json_encode;
 
-class StreamTest extends VonageTestCase
-{
-    use Psr7AssertionTrait;
+beforeEach(function () {
+    $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
+    $this->class = Stream::class;
 
-    protected $id;
+    $this->entity = @new Stream('3fd4d839-493e-4485-b2a5-ace527aacff3');
+    $this->new = @new Stream();
 
-    /**
-     * @var Stream
-     */
-    protected $entity;
+    $this->vonageClient = $this->prophesize(Client::class);
+    $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
 
-    /**
-     * @var Stream
-     */
-    protected $new;
+    /** @noinspection PhpParamsInspection */
+    $this->entity->setClient($this->vonageClient->reveal());
 
-    protected $class;
+    /** @noinspection PhpParamsInspection */
+    $this->new->setClient($this->vonageClient->reveal());
+});
 
-    protected $vonageClient;
+test('has id', function () {
+    $this->assertSame($this->id, $this->entity->getId());
+});
 
-    public function setUp(): void
-    {
-        $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';
-        $this->class = Stream::class;
+test('set url', function () {
+    $url = 'http://example.com';
+    $this->entity->setUrl($url);
+    $data = $this->entity->jsonSerialize();
 
-        $this->entity = @new Stream('3fd4d839-493e-4485-b2a5-ace527aacff3');
-        $this->new = @new Stream();
+    $this->assertSame([$url], $data['stream_url']);
+});
 
-        $this->vonageClient = $this->prophesize(Client::class);
-        $this->vonageClient->getApiUrl()->willReturn('https://api.nexmo.com');
+test('set url array', function () {
+    $url = ['http://example.com', 'http://backup.example.com'];
+    $this->entity->setUrl($url);
+    $data = $this->entity->jsonSerialize();
 
-        /** @noinspection PhpParamsInspection */
-        $this->entity->setClient($this->vonageClient->reveal());
+    $this->assertSame($url, $data['stream_url']);
+});
 
-        /** @noinspection PhpParamsInspection */
-        $this->new->setClient($this->vonageClient->reveal());
-    }
+test('set loop', function () {
+    $loop = 10;
+    $this->entity->setLoop($loop);
+    $data = $this->entity->jsonSerialize();
 
-    public function testHasId(): void
-    {
-        $this->assertSame($this->id, $this->entity->getId());
-    }
+    $this->assertSame($loop, $data['loop']);
+});
 
-    public function testSetUrl(): void
-    {
-        $url = 'http://example.com';
-        $this->entity->setUrl($url);
-        $data = $this->entity->jsonSerialize();
+/**
+ * @throws ClientExceptionInterface
+ * @throws Client\Exception\Exception
+ * @throws Client\Exception\Request
+ * @throws Client\Exception\Server
+ */
+test('put makes request', function () {
+    $this->entity->setUrl('http://example.com');
+    $this->entity->setLoop(10);
 
-        $this->assertSame([$url], $data['stream_url']);
-    }
+    $callId = $this->id;
+    $stream = $this->entity;
 
-    public function testSetUrlArray(): void
-    {
-        $url = ['http://example.com', 'http://backup.example.com'];
-        $this->entity->setUrl($url);
-        $data = $this->entity->jsonSerialize();
+    $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $stream) {
+        $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'PUT', $request);
+        $expected = json_decode(json_encode($stream), true);
 
-        $this->assertSame($url, $data['stream_url']);
-    }
+        $request->getBody()->rewind();
+        $body = json_decode($request->getBody()->getContents(), true);
+        $request->getBody()->rewind();
 
-    public function testSetLoop(): void
-    {
-        $loop = 10;
-        $this->entity->setLoop($loop);
-        $data = $this->entity->jsonSerialize();
+        $this->assertEquals($expected, $body);
 
-        $this->assertSame($loop, $data['loop']);
-    }
+        return true;
+    }))->willReturn(getResponse('stream', 200));
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws Client\Exception\Server
-     */
-    public function testPutMakesRequest(): void
-    {
-        $this->entity->setUrl('http://example.com');
-        $this->entity->setLoop(10);
+    $event = @$this->entity->put();
 
-        $callId = $this->id;
-        $stream = $this->entity;
+    $this->assertInstanceOf(Event::class, $event);
+    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+    $this->assertSame('Stream started', $event['message']);
+});
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $stream) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'PUT', $request);
-            $expected = json_decode(json_encode($stream), true);
+/**
+ * @throws ClientExceptionInterface
+ * @throws Client\Exception\Exception
+ * @throws Client\Exception\Request
+ * @throws Client\Exception\Server
+ */
+test('put can replace', function () {
+    $stream = @new Stream();
+    $stream->setUrl('http://example.com');
+    $stream->setLoop(10);
 
-            $request->getBody()->rewind();
-            $body = json_decode($request->getBody()->getContents(), true);
-            $request->getBody()->rewind();
+    $callId = $this->id;
 
-            $this->assertEquals($expected, $body);
+    $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $stream) {
+        $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'PUT', $request);
+        $expected = json_decode(json_encode($stream), true);
 
-            return true;
-        }))->willReturn($this->getResponse('stream', 200));
+        $request->getBody()->rewind();
+        $body = json_decode($request->getBody()->getContents(), true);
+        $request->getBody()->rewind();
 
-        $event = @$this->entity->put();
+        $this->assertEquals($expected, $body);
 
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('Stream started', $event['message']);
-    }
+        return true;
+    }))->willReturn(getResponse('stream', 200));
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws Client\Exception\Server
-     */
-    public function testPutCanReplace(): void
-    {
-        $stream = @new Stream();
-        $stream->setUrl('http://example.com');
-        $stream->setLoop(10);
+    $event = @$this->entity->put($stream);
 
-        $callId = $this->id;
+    $this->assertInstanceOf(Event::class, $event);
+    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+    $this->assertSame('Stream started', $event['message']);
+});
 
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId, $stream) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'PUT', $request);
-            $expected = json_decode(json_encode($stream), true);
+/**
+ * @throws Client\Exception\Exception
+ * @throws Client\Exception\Request
+ * @throws Client\Exception\Server
+ * @throws ClientExceptionInterface
+ */
+test('invoke proxies put with argument', function () {
+    $object = $this->entity;
 
-            $request->getBody()->rewind();
-            $body = json_decode($request->getBody()->getContents(), true);
-            $request->getBody()->rewind();
+    $this->vonageClient->send(Argument::any())->willReturn(getResponse('stream', 200));
+    $test = $object();
 
-            $this->assertEquals($expected, $body);
+    $this->assertSame($this->entity, $test);
 
-            return true;
-        }))->willReturn($this->getResponse('stream', 200));
+    $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
-        $event = @$this->entity->put($stream);
+    $stream = @new Stream();
+    $stream->setUrl('http://example.com');
 
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('Stream started', $event['message']);
-    }
+    $event = @$object($stream);
 
-    /**
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws Client\Exception\Server
-     * @throws ClientExceptionInterface
-     */
-    public function testInvokeProxiesPutWithArgument(): void
-    {
-        $object = $this->entity;
+    $this->assertInstanceOf(Event::class, $event);
+    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+    $this->assertSame('Stream started', $event['message']);
 
-        $this->vonageClient->send(Argument::any())->willReturn($this->getResponse('stream', 200));
-        $test = $object();
+    $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
+});
 
-        $this->assertSame($this->entity, $test);
+/**
+ * @throws ClientExceptionInterface
+ * @throws Client\Exception\Exception
+ * @throws Client\Exception\Request
+ * @throws Client\Exception\Server
+ */
+test('delete makes request', function () {
+    $this->entity;
+    $this->entity;
 
-        $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
+    $callId = $this->id;
 
-        $stream = @new Stream();
-        $stream->setUrl('http://example.com');
+    $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId) {
+        $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'DELETE', $request);
+        return true;
+    }))->willReturn(getResponse('stream-delete', 200));
 
-        $event = @$object($stream);
+    $event = @$this->entity->delete();
 
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('Stream started', $event['message']);
+    $this->assertInstanceOf(Event::class, $event);
+    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
+    $this->assertSame('Stream stopped', $event['message']);
+});
 
-        $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws Client\Exception\Exception
-     * @throws Client\Exception\Request
-     * @throws Client\Exception\Server
-     */
-    public function testDeleteMakesRequest(): void
-    {
-        $this->entity;
-        $this->entity;
-
-        $callId = $this->id;
-
-        $this->vonageClient->send(Argument::that(function (RequestInterface $request) use ($callId) {
-            $this->assertRequestUrl('api.nexmo.com', '/v1/calls/' . $callId . '/stream', 'DELETE', $request);
-            return true;
-        }))->willReturn($this->getResponse('stream-delete', 200));
-
-        $event = @$this->entity->delete();
-
-        $this->assertInstanceOf(Event::class, $event);
-        $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-        $this->assertSame('Stream stopped', $event['message']);
-    }
-
-    /**
+// Helpers
+/**
      * Get the API response we'd expect for a call to the API.
      */
-    protected function getResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
-    }
+function getResponse(string $type = 'success', int $status = 200): Response
+{
+    return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
 }

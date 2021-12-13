@@ -9,108 +9,99 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Voice\NCCO\Action;
-
 use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Talk;
 
-class TalkTest extends VonageTestCase
-{
-    public function testSimpleSetup(): void
-    {
-        $this->assertSame([
-            'action' => 'talk',
-            'text' => 'Hello',
-        ], (new Talk('Hello'))->jsonSerialize());
-    }
+uses(VonageTestCase::class);
 
-    public function testJsonSerializeLooksCorrect(): void
-    {
-        $expected = [
-            'action' => 'talk',
-            'text' => 'Hello',
-            'bargeIn' => 'false',
-            'level' => '0',
-            'loop' => '1',
-            'voiceName' => 'kimberly'
-        ];
+test('simple setup', function () {
+    $this->assertSame([
+        'action' => 'talk',
+        'text' => 'Hello',
+    ], (new Talk('Hello'))->jsonSerialize());
+});
 
-        $action = new Talk('Hello');
-        $action->setBargeIn(false);
-        $action->setLevel(0);
-        $action->setLoop(1);
-        @$action->setVoiceName('kimberly');
+test('json serialize looks correct', function () {
+    $expected = [
+        'action' => 'talk',
+        'text' => 'Hello',
+        'bargeIn' => 'false',
+        'level' => '0',
+        'loop' => '1',
+        'voiceName' => 'kimberly'
+    ];
 
-        $this->assertSame($expected, $action->jsonSerialize());
-    }
+    $action = new Talk('Hello');
+    $action->setBargeIn(false);
+    $action->setLevel(0);
+    $action->setLoop(1);
+    @$action->setVoiceName('kimberly');
 
-    public function testCanSetLanguage()
-    {
-        $expected = [
-            'action' => 'talk',
-            'text' => 'Hello',
-            'language' => 'en-US',
-            'style' => '0'
-        ];
+    $this->assertSame($expected, $action->jsonSerialize());
+});
 
-        $action = new Talk($expected['text']);
-        $action->setLanguage($expected['language']);
+test('can set language', function () {
+    $expected = [
+        'action' => 'talk',
+        'text' => 'Hello',
+        'language' => 'en-US',
+        'style' => '0'
+    ];
 
-        $this->assertSame($expected['language'], $action->getLanguage());
-        $this->assertSame(0, $action->getLanguageStyle());
+    $action = new Talk($expected['text']);
+    $action->setLanguage($expected['language']);
 
-        $this->assertSame($expected, $action->toNCCOArray());
-    }
+    $this->assertSame($expected['language'], $action->getLanguage());
+    $this->assertSame(0, $action->getLanguageStyle());
 
-    public function testCanSetLanguageStyle()
-    {
-        $expected = [
-            'action' => 'talk',
-            'text' => 'Hello',
-            'language' => 'en-US',
-            'style' => '3'
-        ];
+    $this->assertSame($expected, $action->toNCCOArray());
+});
 
-        $action = new Talk($expected['text']);
-        $action->setLanguage($expected['language'], (int) $expected['style']);
+test('can set language style', function () {
+    $expected = [
+        'action' => 'talk',
+        'text' => 'Hello',
+        'language' => 'en-US',
+        'style' => '3'
+    ];
 
-        $this->assertSame($expected['language'], $action->getLanguage());
-        $this->assertSame((int) $expected['style'], $action->getLanguageStyle());
+    $action = new Talk($expected['text']);
+    $action->setLanguage($expected['language'], (int) $expected['style']);
 
-        $this->assertSame($expected, $action->toNCCOArray());
-    }
+    $this->assertSame($expected['language'], $action->getLanguage());
+    $this->assertSame((int) $expected['style'], $action->getLanguageStyle());
 
-    public function testFactorySetsLanguage()
-    {
-        $expected = [
-            'action' => 'talk',
-            'text' => 'Hello',
-            'language' => 'en-US',
-            'style' => '0'
-        ];
+    $this->assertSame($expected, $action->toNCCOArray());
+});
 
-        $action = Talk::factory($expected['text'], $expected);
+test('factory sets language', function () {
+    $expected = [
+        'action' => 'talk',
+        'text' => 'Hello',
+        'language' => 'en-US',
+        'style' => '0'
+    ];
 
-        $this->assertSame($expected['language'], $action->getLanguage());
-        $this->assertSame(0, $action->getLanguageStyle());
+    $action = Talk::factory($expected['text'], $expected);
 
-        $this->assertSame($expected, $action->toNCCOArray());
-    }
+    $this->assertSame($expected['language'], $action->getLanguage());
+    $this->assertSame(0, $action->getLanguageStyle());
 
-    public function testFactorySetsLanguageAndStyle()
-    {
-        $expected = [
-            'action' => 'talk',
-            'text' => 'Hello',
-            'language' => 'en-US',
-            'style' => '3'
-        ];
+    $this->assertSame($expected, $action->toNCCOArray());
+});
 
-        $action = Talk::factory($expected['text'], $expected);
+test('factory sets language and style', function () {
+    $expected = [
+        'action' => 'talk',
+        'text' => 'Hello',
+        'language' => 'en-US',
+        'style' => '3'
+    ];
 
-        $this->assertSame($expected['language'], $action->getLanguage());
-        $this->assertSame((int) $expected['style'], $action->getLanguageStyle());
+    $action = Talk::factory($expected['text'], $expected);
 
-        $this->assertSame($expected, $action->toNCCOArray());
-    }
-}
+    $this->assertSame($expected['language'], $action->getLanguage());
+    $this->assertSame((int) $expected['style'], $action->getLanguageStyle());
+
+    $this->assertSame($expected, $action->toNCCOArray());
+});

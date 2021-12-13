@@ -9,26 +9,21 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Call;
-
 use Helmich\JsonAssert\JsonAssertions;
 use VonageTest\VonageTestCase;
 use Vonage\Call\Mute;
+
+uses(VonageTestCase::class);
+uses(JsonAssertions::class);
 
 use function file_get_contents;
 use function json_decode;
 use function json_encode;
 
-class MuteTest extends VonageTestCase
-{
-    use JsonAssertions;
+test('structure', function () {
+    $schema = file_get_contents(__DIR__ . '/schema/mute.json');
+    $json = json_decode(json_encode(@new Mute()), true);
 
-    public function testStructure(): void
-    {
-        $schema = file_get_contents(__DIR__ . '/schema/mute.json');
-        $json = json_decode(json_encode(@new Mute()), true);
-
-        $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
-        $this->assertJsonValueEquals($json, '$.action', 'mute');
-    }
-}
+    $this->assertJsonDocumentMatchesSchema($json, json_decode(json_encode($schema), true));
+    $this->assertJsonValueEquals($json, '$.action', 'mute');
+});

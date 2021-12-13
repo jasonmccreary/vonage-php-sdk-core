@@ -9,79 +9,62 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Account;
-
 use VonageTest\VonageTestCase;
 use Vonage\Account\Balance;
+
+uses(VonageTestCase::class);
 use Vonage\Client\Exception\Exception as ClientException;
 
-class BalanceTest extends VonageTestCase
-{
-    /**
-     * @var Balance
-     */
-    protected $balance;
+beforeEach(function () {
+    $this->balance = new Balance('12.99', false);
+});
 
-    public function setUp(): void
-    {
-        $this->balance = new Balance('12.99', false);
-    }
+test('object access', function () {
+    $this->assertEquals("12.99", $this->balance->getBalance());
+    $this->assertEquals(false, $this->balance->getAutoReload());
+});
 
-    public function testObjectAccess(): void
-    {
-        $this->assertEquals("12.99", $this->balance->getBalance());
-        $this->assertEquals(false, $this->balance->getAutoReload());
-    }
+test('array access', function () {
+    $this->assertEquals("12.99", @$this->balance['balance']);
+    $this->assertEquals(false, @$this->balance['auto_reload']);
+});
 
-    public function testArrayAccess(): void
-    {
-        $this->assertEquals("12.99", @$this->balance['balance']);
-        $this->assertEquals(false, @$this->balance['auto_reload']);
-    }
+test('json serialize', function () {
+    $data = $this->balance->jsonSerialize();
 
-    public function testJsonSerialize(): void
-    {
-        $data = $this->balance->jsonSerialize();
+    $this->assertSame('12.99', $data['balance']);
+    $this->assertFalse($data['auto_reload']);
+});
 
-        $this->assertSame('12.99', $data['balance']);
-        $this->assertFalse($data['auto_reload']);
-    }
+test('json unserialize', function () {
+    $data = ['value' => '5.00', 'autoReload' => false];
 
-    public function testJsonUnserialize(): void
-    {
-        $data = ['value' => '5.00', 'autoReload' => false];
+    $balance = new Balance('1.99', true);
+    $balance->fromArray($data);
 
-        $balance = new Balance('1.99', true);
-        $balance->fromArray($data);
+    $this->assertSame($data['value'], @$balance['balance']);
+    $this->assertSame($data['autoReload'], @$balance['auto_reload']);
+});
 
-        $this->assertSame($data['value'], @$balance['balance']);
-        $this->assertSame($data['autoReload'], @$balance['auto_reload']);
-    }
+test('acts like array', function () {
+    $this->assertSame('12.99', @$this->balance['balance']);
+    $this->assertTrue(@isset($this->balance['balance']));
+});
 
-    public function testActsLikeArray(): void
-    {
-        $this->assertSame('12.99', @$this->balance['balance']);
-        $this->assertTrue(@isset($this->balance['balance']));
-    }
+test('cannot remove array key', function () {
+    $this->expectException(ClientException::class);
+    $this->expectExceptionMessage('Balance is read only');
 
-    public function testCannotRemoveArrayKey(): void
-    {
-        $this->expectException(ClientException::class);
-        $this->expectExceptionMessage('Balance is read only');
+    unset($this->balance['balance']);
+});
 
-        unset($this->balance['balance']);
-    }
+test('cannot directly set array key', function () {
+    $this->expectException(ClientException::class);
+    $this->expectExceptionMessage('Balance is read only');
 
-    public function testCannotDirectlySetArrayKey(): void
-    {
-        $this->expectException(ClientException::class);
-        $this->expectExceptionMessage('Balance is read only');
+    $this->balance['balance'] = '5.00';
+});
 
-        $this->balance['balance'] = '5.00';
-    }
-
-    public function testMakeSureDataIsPubliclyVisible(): void
-    {
-        $this->assertSame('12.99', @$this->balance->data['balance']);
-    }
-}
+test('make sure data is publicly visible', function () {
+    $this->assertSame('12.99', @$this->balance->data['balance']);
+});

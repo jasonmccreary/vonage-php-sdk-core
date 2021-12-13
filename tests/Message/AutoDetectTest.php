@@ -9,20 +9,16 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Message;
-
 use VonageTest\VonageTestCase;
 use Vonage\Message\AutoDetect;
 
-class AutoDetectTest extends VonageTestCase
-{
-    /**
-     * When creating a message, it should not auto-detect encoding by default
-     */
-    public function testAutoDetectEnabledByDefault(): void
-    {
-        $message = new AutoDetect('to', 'from', 'Example Message');
+uses(VonageTestCase::class);
 
-        $this->assertTrue($message->isEncodingDetectionEnabled());
-    }
-}
+/**
+ * When creating a message, it should not auto-detect encoding by default
+ */
+test('auto detect enabled by default', function () {
+    $message = new AutoDetect('to', 'from', 'Example Message');
+
+    $this->assertTrue($message->isEncodingDetectionEnabled());
+});

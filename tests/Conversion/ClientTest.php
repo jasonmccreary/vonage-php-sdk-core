@@ -9,8 +9,6 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Conversion;
-
 use Laminas\Diactoros\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use VonageTest\VonageTestCase;
@@ -24,139 +22,116 @@ use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Conversion\Client as ConversionClient;
 use VonageTest\Psr7AssertionTrait;
 
+uses(VonageTestCase::class);
+uses(Psr7AssertionTrait::class);
+
 use function fopen;
 
-class ClientTest extends VonageTestCase
-{
-    use Psr7AssertionTrait;
+beforeEach(function () {
+    $this->vonageClient = $this->getMockBuilder('Vonage\Client')
+        ->disableOriginalConstructor()
+        ->setMethods(['send', 'getApiUrl'])
+        ->getMock();
+    $this->vonageClient->method('getApiUrl')->willReturn('https://api.nexmo.com');
 
-    /**
-     * @var Client|MockObject
-     */
-    protected $vonageClient;
+    $this->apiResource = new APIResource();
+    $this->apiResource
+        ->setBaseUri('/conversions/')
+        ->setClient($this->vonageClient);
 
-    private $conversionClient;
+    $this->conversionClient = new ConversionClient($this->apiResource);
+    $this->conversionClient->setClient($this->vonageClient);
+});
 
-    /**
-     * @var APIResource
-     */
-    protected $apiResource;
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException
+ * @throws RequestException
+ * @throws ServerException
+ */
+test('sms with timestamp', function () {
+    $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
+        $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
+        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+        $this->assertEquals('POST', $request->getMethod());
+        $this->assertRequestQueryContains('message-id', 'ABC123', $request);
+        $this->assertRequestQueryContains('delivered', '1', $request);
+        $this->assertRequestQueryContains('timestamp', '123456', $request);
 
-    /**
-     * @var ConversionClient
-     */
-    protected $accountClient;
+        return getResponse();
+    });
 
-    public function setUp(): void
-    {
-        $this->vonageClient = $this->getMockBuilder('Vonage\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(['send', 'getApiUrl'])
-            ->getMock();
-        $this->vonageClient->method('getApiUrl')->willReturn('https://api.nexmo.com');
+    $this->conversionClient->sms('ABC123', true, '123456');
+});
 
-        $this->apiResource = new APIResource();
-        $this->apiResource
-            ->setBaseUri('/conversions/')
-            ->setClient($this->vonageClient);
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException
+ * @throws RequestException
+ * @throws ServerException
+ */
+test('sms without timestamp', function () {
+    $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
+        $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
+        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+        $this->assertEquals('POST', $request->getMethod());
+        $this->assertRequestQueryContains('message-id', 'ABC123', $request);
+        $this->assertRequestQueryContains('delivered', '1', $request);
+        $this->assertRequestQueryNotContains('timestamp', $request);
 
-        $this->conversionClient = new ConversionClient($this->apiResource);
-        $this->conversionClient->setClient($this->vonageClient);
-    }
+        return getResponse();
+    });
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testSmsWithTimestamp(): void
-    {
-        $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
-            $this->assertRequestQueryContains('message-id', 'ABC123', $request);
-            $this->assertRequestQueryContains('delivered', '1', $request);
-            $this->assertRequestQueryContains('timestamp', '123456', $request);
+    $this->conversionClient->sms('ABC123', true);
+});
 
-            return $this->getResponse();
-        });
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException
+ * @throws RequestException
+ * @throws ServerException
+ */
+test('voice with timestamp', function () {
+    $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
+        $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
+        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+        $this->assertEquals('POST', $request->getMethod());
+        $this->assertRequestQueryContains('message-id', 'ABC123', $request);
+        $this->assertRequestQueryContains('delivered', '1', $request);
+        $this->assertRequestQueryContains('timestamp', '123456', $request);
 
-        $this->conversionClient->sms('ABC123', true, '123456');
-    }
+        return getResponse();
+    });
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testSmsWithoutTimestamp(): void
-    {
-        $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            $this->assertEquals('/conversions/sms', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
-            $this->assertRequestQueryContains('message-id', 'ABC123', $request);
-            $this->assertRequestQueryContains('delivered', '1', $request);
-            $this->assertRequestQueryNotContains('timestamp', $request);
+    $this->conversionClient->voice('ABC123', true, '123456');
+});
 
-            return $this->getResponse();
-        });
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException
+ * @throws RequestException
+ * @throws ServerException
+ */
+test('voice without timestamp', function () {
+    $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
+        $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
+        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
+        $this->assertEquals('POST', $request->getMethod());
+        $this->assertRequestQueryContains('message-id', 'ABC123', $request);
+        $this->assertRequestQueryContains('delivered', '1', $request);
+        $this->assertRequestQueryNotContains('timestamp', $request);
 
-        $this->conversionClient->sms('ABC123', true);
-    }
+        return getResponse();
+    });
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testVoiceWithTimestamp(): void
-    {
-        $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
-            $this->assertRequestQueryContains('message-id', 'ABC123', $request);
-            $this->assertRequestQueryContains('delivered', '1', $request);
-            $this->assertRequestQueryContains('timestamp', '123456', $request);
+    $this->conversionClient->voice('ABC123', true);
+});
 
-            return $this->getResponse();
-        });
-
-        $this->conversionClient->voice('ABC123', true, '123456');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException
-     * @throws RequestException
-     * @throws ServerException
-     */
-    public function testVoiceWithoutTimestamp(): void
-    {
-        $this->vonageClient->method('send')->willReturnCallback(function (RequestInterface $request) {
-            $this->assertEquals('/conversions/voice', $request->getUri()->getPath());
-            $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-            $this->assertEquals('POST', $request->getMethod());
-            $this->assertRequestQueryContains('message-id', 'ABC123', $request);
-            $this->assertRequestQueryContains('delivered', '1', $request);
-            $this->assertRequestQueryNotContains('timestamp', $request);
-
-            return $this->getResponse();
-        });
-
-        $this->conversionClient->voice('ABC123', true);
-    }
-
-    /**
+// Helpers
+/**
      * Get the API response we'd expect for a call to the API.
      */
-    protected function getResponse(): Response
-    {
-        return new Response(fopen('data://text/plain,', 'rb'), 200);
-    }
+function getResponse(): Response
+{
+    return new Response(fopen('data://text/plain,', 'rb'), 200);
 }

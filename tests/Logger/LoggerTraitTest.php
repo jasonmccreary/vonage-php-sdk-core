@@ -1,46 +1,39 @@
 <?php
 
-namespace VonageTest\Logger;
-
 use Psr\Log\LoggerInterface;
 use Vonage\Logger\LoggerTrait;
 use VonageTest\VonageTestCase;
 
-class LoggerTraitTest extends VonageTestCase
-{
-    public function testCanSetAndGetLogger()
-    {
-        /** @var LoggerTrait $trait */
-        $trait = $this->getMockForTrait(LoggerTrait::class);
-        $logger = $this->prophesize(LoggerInterface::class)->reveal();
-        $trait->setLogger($logger);
+uses(VonageTestCase::class);
 
-        $this->assertSame($logger, $trait->getLogger());
-    }
+test('can set and get logger', function () {
+    /** @var LoggerTrait $trait */
+    $trait = $this->getMockForTrait(LoggerTrait::class);
+    $logger = $this->prophesize(LoggerInterface::class)->reveal();
+    $trait->setLogger($logger);
 
-    public function testNoLoggerReturnsNull()
-    {
-        /** @var LoggerTrait $trait */
-        $trait = $this->getMockForTrait(LoggerTrait::class);
+    $this->assertSame($logger, $trait->getLogger());
+});
 
-        $this->assertNull($trait->getLogger());
-    }
+test('no logger returns null', function () {
+    /** @var LoggerTrait $trait */
+    $trait = $this->getMockForTrait(LoggerTrait::class);
 
-    public function testCanLogMessageWithLogger()
-    {
-        /** @var LoggerTrait $trait */
-        $trait = $this->getMockForTrait(LoggerTrait::class);
-        $logger = $this->prophesize(LoggerInterface::class)->reveal();
-        $trait->setLogger($logger);
+    $this->assertNull($trait->getLogger());
+});
 
-        $this->assertNull($trait->log('debug', 'This is a message'));
-    }
+test('can log message with logger', function () {
+    /** @var LoggerTrait $trait */
+    $trait = $this->getMockForTrait(LoggerTrait::class);
+    $logger = $this->prophesize(LoggerInterface::class)->reveal();
+    $trait->setLogger($logger);
 
-    public function testLoggingAcceptsMessageWithLogger()
-    {
-        /** @var LoggerTrait $trait */
-        $trait = $this->getMockForTrait(LoggerTrait::class);
+    $this->assertNull($trait->log('debug', 'This is a message'));
+});
 
-        $this->assertNull($trait->log('debug', 'This is a message'));
-    }
-}
+test('logging accepts message with logger', function () {
+    /** @var LoggerTrait $trait */
+    $trait = $this->getMockForTrait(LoggerTrait::class);
+
+    $this->assertNull($trait->log('debug', 'This is a message'));
+});

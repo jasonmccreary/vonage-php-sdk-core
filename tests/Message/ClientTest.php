@@ -9,8 +9,6 @@
 
 declare(strict_types=1);
 
-namespace VonageTest\Message;
-
 use DateTime;
 use Exception;
 use InvalidArgumentException;
@@ -34,1038 +32,990 @@ use Vonage\Message\Text;
 use VonageTest\MessageAssertionTrait;
 use VonageTest\Psr7AssertionTrait;
 
+uses(VonageTestCase::class);
+uses(Psr7AssertionTrait::class);
+uses(MessageAssertionTrait::class);
+
 use function fopen;
 use function json_decode;
 
-class ClientTest extends VonageTestCase
-{
-    use Psr7AssertionTrait;
-    use MessageAssertionTrait;
+/**
+ * Create the Message API Client, and mock the Vonage Client
+ */
+beforeEach(function () {
+    $this->vonageClient = $this->prophesize(Client::class);
+    $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
+    $this->messageClient = new MessageClient();
 
-    protected $vonageClient;
+    /** @noinspection PhpParamsInspection */
+    $this->messageClient->setClient($this->vonageClient->reveal());
+});
 
-    /**
-     * @var MessageClient
-     */
-    protected $messageClient;
+/**
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ * @throws ServerException
+ * @throws ClientExceptionInterface
+ */
+test('can use message', function () {
+    $args = [
+        'to' => '14845551212',
+        'from' => '16105551212',
+        'text' => 'Go To Gino\'s'
+    ];
 
-    /**
-     * Create the Message API Client, and mock the Vonage Client
-     */
-    public function setUp(): void
-    {
-        $this->vonageClient = $this->prophesize(Client::class);
-        $this->vonageClient->getRestUrl()->willReturn('https://rest.nexmo.com');
-        $this->messageClient = new MessageClient();
+    $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+        $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+        $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+        return true;
+    }))->willReturn(getResponse());
 
-        /** @noinspection PhpParamsInspection */
-        $this->messageClient->setClient($this->vonageClient->reveal());
+    $message = @$this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+
+    $this->assertInstanceOf(Text::class, $message);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ * @throws ServerException
+ */
+test('throws request exception when invalid a p i response', function () {
+    $this->expectException(ClientException\Request::class);
+    $this->expectExceptionMessage('unexpected response from API');
+
+    $args = [
+        'to' => '14845551212',
+        'from' => '16105551212',
+        'text' => 'Go To Gino\'s'
+    ];
+
+    $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+        $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+        $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+
+        return true;
+    }))->willReturn(getResponse('empty'));
+
+    $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ * @throws ServerException
+ */
+test('can use arguments', function () {
+    $args = [
+        'to' => '14845551212',
+        'from' => '16105551212',
+        'text' => 'Go To Gino\'s'
+    ];
+
+    $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+        $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+        $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+        return true;
+    }))->willReturn(getResponse());
+
+    @$message = $this->messageClient->send($args);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ * @throws ServerException
+ */
+test('sent message has response', function () {
+    $response = getResponse();
+    @$this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
+    $message = $this->messageClient->send(new Text('14845551212', '16105551212', 'Not Pats?'));
+
+    $this->assertSame($response, @$message->getResponse());
+
+    $this->vonageClient->send(@$message->getRequest())->shouldHaveBeenCalled();
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ServerException
+ */
+test('throw request exception', function () {
+    $response = getResponse('fail');
+    $this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
+    $message = new Text('14845551212', '16105551212', 'Not Pats?');
+
+    try {
+        $this->messageClient->send($message);
+
+        self::fail('did not throw exception');
+    } catch (ClientException\Request $e) {
+        $this->assertSame($message, $e->getEntity());
+        $this->assertEquals('2', $e->getCode());
+        $this->assertEquals('Missing from param', $e->getMessage());
     }
+});
 
-    /**
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ServerException
-     * @throws ClientExceptionInterface
-     */
-    public function testCanUseMessage(): void
-    {
-        $args = [
-            'to' => '14845551212',
-            'from' => '16105551212',
-            'text' => 'Go To Gino\'s'
-        ];
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('throw server exception', function () {
+    $response = getResponse('fail-server');
+    $this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
+    $message = new Text('14845551212', '16105551212', 'Not Pats?');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
-            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
-            return true;
-        }))->willReturn($this->getResponse());
+    try {
+        $this->messageClient->send($message);
 
-        $message = @$this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
-
-        $this->assertInstanceOf(Text::class, $message);
+        self::fail('did not throw exception');
+    } catch (ServerException $e) {
+        $this->assertEquals('5', $e->getCode());
+        $this->assertEquals('Server Error', $e->getMessage());
     }
+});
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ServerException
-     */
-    public function testThrowsRequestExceptionWhenInvalidAPIResponse(): void
-    {
-        $this->expectException(ClientException\Request::class);
-        $this->expectExceptionMessage('unexpected response from API');
-
-        $args = [
-            'to' => '14845551212',
-            'from' => '16105551212',
-            'text' => 'Go To Gino\'s'
-        ];
-
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
-            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
-
-            return true;
-        }))->willReturn($this->getResponse('empty'));
-
-        $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ServerException
-     */
-    public function testCanUseArguments(): void
-    {
-        $args = [
-            'to' => '14845551212',
-            'from' => '16105551212',
-            'text' => 'Go To Gino\'s'
-        ];
-
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
-            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
-            return true;
-        }))->willReturn($this->getResponse());
-
-        @$message = $this->messageClient->send($args);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ServerException
-     */
-    public function testSentMessageHasResponse(): void
-    {
-        $response = $this->getResponse();
-        @$this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
-        $message = $this->messageClient->send(new Text('14845551212', '16105551212', 'Not Pats?'));
-
-        $this->assertSame($response, @$message->getResponse());
-
-        $this->vonageClient->send(@$message->getRequest())->shouldHaveBeenCalled();
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ServerException
-     */
-    public function testThrowRequestException(): void
-    {
-        $response = $this->getResponse('fail');
-        $this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
-        $message = new Text('14845551212', '16105551212', 'Not Pats?');
-
-        try {
-            $this->messageClient->send($message);
-
-            self::fail('did not throw exception');
-        } catch (ClientException\Request $e) {
-            $this->assertSame($message, $e->getEntity());
-            $this->assertEquals('2', $e->getCode());
-            $this->assertEquals('Missing from param', $e->getMessage());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testThrowServerException(): void
-    {
-        $response = $this->getResponse('fail-server');
-        $this->vonageClient->send(Argument::type(RequestInterface::class))->willReturn($response);
-        $message = new Text('14845551212', '16105551212', 'Not Pats?');
-
-        try {
-            $this->messageClient->send($message);
-
-            self::fail('did not throw exception');
-        } catch (ServerException $e) {
-            $this->assertEquals('5', $e->getCode());
-            $this->assertEquals('Server Error', $e->getMessage());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     */
-    public function testThrowConcurrentRequestsException(): void
-    {
-        try {
-            $message = new Message('02000000D912945A');
-            $response = $this->getResponse('empty', 429);
-
-            $this->vonageClient->send(Argument::that(function (Request $request) {
-                $this->assertRequestQueryContains('id', '02000000D912945A', $request);
-                return true;
-            }))->willReturn($response);
-
-            $this->messageClient->search($message);
-
-            self::fail('did not throw exception');
-        } catch (ClientException\Request $e) {
-            $this->assertEquals('429', $e->getCode());
-            $this->assertEquals('too many concurrent requests', $e->getMessage());
-        }
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testCanGetMessageWithMessageObject(): void
-    {
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ */
+test('throw concurrent requests exception', function () {
+    try {
         $message = new Message('02000000D912945A');
-        $response = $this->getResponse('get-outbound');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $messages = $this->messageClient->get($message);
-
-        // The response was already read, so have to rewind
-        $response->getBody()->rewind();
-        $body = json_decode($response->getBody()->getContents(), true);
-
-        $this->assertCount($body['count'], $messages);
-        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testCanGetInboundMessage(): void
-    {
-        $message = new Message('0B00000053FFB40F');
-        $response = $this->getResponse('get-inbound');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $messages = $this->messageClient->get($message);
-
-        // The response was already read, so need to rewind
-        $response->getBody()->rewind();
-        $body = json_decode($response->getBody()->getContents(), true);
-
-        $this->assertCount($body['count'], $messages);
-        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
-        $this->assertInstanceOf(InboundMessage::class, $messages[0]);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testGetThrowsExceptionOnBadMessageType(): void
-    {
-        $this->expectException(ClientException\Request::class);
-        $this->expectExceptionMessage('unexpected response from API');
-
-        $message = new Message('0B00000053FFB40F');
-        $response = $this->getResponse('get-invalid-type');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
-            return true;
-        }))->willReturn($response);
-
-        $this->messageClient->get($message);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testGetReturnsEmptyArrayWithNoResults(): void
-    {
-        $message = new Message('02000000D912945A');
-        $response = $this->getResponse('get-no-results');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $messages = $this->messageClient->get($message);
-
-        $this->assertCount(0, $messages);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testCanGetMessageWithStringID(): void
-    {
-        $messageID = '02000000D912945A';
-        $response = $this->getResponse('get-outbound');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $messages = $this->messageClient->get($messageID);
-
-        // The response was already read, so need to rewind
-        $response->getBody()->rewind();
-        $body = json_decode($response->getBody()->getContents(), true);
-
-        $this->assertCount($body['count'], $messages);
-        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testCanGetMessageWithArrayOfIDs(): void
-    {
-        $messageIDs = ['02000000D912945A'];
-        $response = $this->getResponse('get-outbound');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $messages = $this->messageClient->get($messageIDs);
-
-        // The response was already read, so need to rewind
-        $response->getBody()->rewind();
-        $body = json_decode($response->getBody()->getContents(), true);
-
-        $this->assertCount($body['count'], $messages);
-        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testCanGetMessageWithQuery(): void
-    {
-        $query = new Query(new DateTime('2016-05-19'), '14845551212');
-        $response = $this->getResponse('get-outbound');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('date', '2016-05-19', $request);
-            $this->assertRequestQueryContains('to', '14845551212', $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $messages = $this->messageClient->get($query);
-
-        // The response was already read, so need to rewind
-        $response->getBody()->rewind();
-        $body = json_decode($response->getBody()->getContents(), true);
-
-        $this->assertCount($body['count'], $messages);
-        $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testGetThrowsExceptionWhenNot200ButHasErrorLabel(): void
-    {
-        $this->expectException(ClientException\Request::class);
-        $this->expectExceptionMessage('authentication failed');
-
-        $message = new Message('02000000D912945A');
-        $response = $this->getResponse('auth-failure', 401);
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $this->messageClient->get($message);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testGetThrowsExceptionWhenNot200AndHasNoCode(): void
-    {
-        $this->expectException(ClientException\Request::class);
-        $this->expectExceptionMessage('error status from API');
-
-        $message = new Message('02000000D912945A');
-        $response = $this->getResponse('empty', 500);
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $this->messageClient->get($message);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testGetThrowsExceptionWhenInvalidResponseReturned(): void
-    {
-        $this->expectException(ClientException\Request::class);
-        $this->expectExceptionMessage('unexpected response from API');
-
-        $message = new Message('02000000D912945A');
-        $response = $this->getResponse('empty');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $this->messageClient->get($message);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testGetThrowsInvalidArgumentExceptionWithBadQuery(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(
-            'query must be an instance of Query, MessageInterface, string ID, or array of IDs.'
-        );
-
-        $message = new stdClass();
-        $message->ids = ['02000000D912945A'];
-        $response = $this->getResponse('empty');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $this->messageClient->get($message);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws Exception
-     */
-    public function testCanSearchByMessage(): void
-    {
-        $message = new Message('02000000D912945A');
-        $response = $this->getResponse('search-outbound');
+        $response = getResponse('empty', 429);
 
         $this->vonageClient->send(Argument::that(function (Request $request) {
             $this->assertRequestQueryContains('id', '02000000D912945A', $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $searchedMessage = $this->messageClient->search($message);
-
-        $response->getBody()->rewind();
-        $successData = json_decode($response->getBody()->getContents(), true);
-
-        $this->assertEquals($successData['message-id'], $searchedMessage->getMessageId());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testCanSearchBySingleOutboundId(): void
-    {
-        $response = $this->getResponse('search-outbound');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $message = $this->messageClient->search('02000000D912945A');
-
-        $this->assertInstanceOf(Message::class, $message);
-        $this->assertSame($response, @$message->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testCanSearchBySingleInboundId(): void
-    {
-        $response = $this->getResponse('search-inbound');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $message = $this->messageClient->search('02000000DA7C52E7');
-
-        $this->assertInstanceOf(InboundMessage::class, $message);
-        $this->assertSame($response, @$message->getResponse());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testSearchThrowsExceptionOnEmptySearchSet(): void
-    {
-        $this->expectException(ClientException\Request::class);
-        $this->expectExceptionMessage('no message found for `02000000DA7C52E7`');
-        $response = $this->getResponse('search-empty');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $this->messageClient->search('02000000DA7C52E7');
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testSearchThrowExceptionOnNon200(): void
-    {
-        $this->expectException(ClientException\Request::class);
-        $this->expectExceptionMessage('authentication failed');
-
-        $message = new Message('02000000D912945A');
-        $response = $this->getResponse('auth-failure', 401);
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
-
             return true;
         }))->willReturn($response);
 
         $this->messageClient->search($message);
+
+        self::fail('did not throw exception');
+    } catch (ClientException\Request $e) {
+        $this->assertEquals('429', $e->getCode());
+        $this->assertEquals('too many concurrent requests', $e->getMessage());
+    }
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('can get message with message object', function () {
+    $message = new Message('02000000D912945A');
+    $response = getResponse('get-outbound');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $messages = $this->messageClient->get($message);
+
+    // The response was already read, so have to rewind
+    $response->getBody()->rewind();
+    $body = json_decode($response->getBody()->getContents(), true);
+
+    $this->assertCount($body['count'], $messages);
+    $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('can get inbound message', function () {
+    $message = new Message('0B00000053FFB40F');
+    $response = getResponse('get-inbound');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $messages = $this->messageClient->get($message);
+
+    // The response was already read, so need to rewind
+    $response->getBody()->rewind();
+    $body = json_decode($response->getBody()->getContents(), true);
+
+    $this->assertCount($body['count'], $messages);
+    $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+    $this->assertInstanceOf(InboundMessage::class, $messages[0]);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('get throws exception on bad message type', function () {
+    $this->expectException(ClientException\Request::class);
+    $this->expectExceptionMessage('unexpected response from API');
+
+    $message = new Message('0B00000053FFB40F');
+    $response = getResponse('get-invalid-type');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('ids', ['0B00000053FFB40F'], $request);
+        return true;
+    }))->willReturn($response);
+
+    $this->messageClient->get($message);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('get returns empty array with no results', function () {
+    $message = new Message('02000000D912945A');
+    $response = getResponse('get-no-results');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $messages = $this->messageClient->get($message);
+
+    $this->assertCount(0, $messages);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('can get message with string i d', function () {
+    $messageID = '02000000D912945A';
+    $response = getResponse('get-outbound');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $messages = $this->messageClient->get($messageID);
+
+    // The response was already read, so need to rewind
+    $response->getBody()->rewind();
+    $body = json_decode($response->getBody()->getContents(), true);
+
+    $this->assertCount($body['count'], $messages);
+    $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('can get message with array of i ds', function () {
+    $messageIDs = ['02000000D912945A'];
+    $response = getResponse('get-outbound');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $messages = $this->messageClient->get($messageIDs);
+
+    // The response was already read, so need to rewind
+    $response->getBody()->rewind();
+    $body = json_decode($response->getBody()->getContents(), true);
+
+    $this->assertCount($body['count'], $messages);
+    $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('can get message with query', function () {
+    $query = new Query(new DateTime('2016-05-19'), '14845551212');
+    $response = getResponse('get-outbound');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('date', '2016-05-19', $request);
+        $this->assertRequestQueryContains('to', '14845551212', $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $messages = $this->messageClient->get($query);
+
+    // The response was already read, so need to rewind
+    $response->getBody()->rewind();
+    $body = json_decode($response->getBody()->getContents(), true);
+
+    $this->assertCount($body['count'], $messages);
+    $this->assertSame($body['items'][0]['message-id'], $messages[0]->getMessageId());
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('get throws exception when not200 but has error label', function () {
+    $this->expectException(ClientException\Request::class);
+    $this->expectExceptionMessage('authentication failed');
+
+    $message = new Message('02000000D912945A');
+    $response = getResponse('auth-failure', 401);
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $this->messageClient->get($message);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('get throws exception when not200 and has no code', function () {
+    $this->expectException(ClientException\Request::class);
+    $this->expectExceptionMessage('error status from API');
+
+    $message = new Message('02000000D912945A');
+    $response = getResponse('empty', 500);
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $this->messageClient->get($message);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('get throws exception when invalid response returned', function () {
+    $this->expectException(ClientException\Request::class);
+    $this->expectExceptionMessage('unexpected response from API');
+
+    $message = new Message('02000000D912945A');
+    $response = getResponse('empty');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $this->messageClient->get($message);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('get throws invalid argument exception with bad query', function () {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage(
+        'query must be an instance of Query, MessageInterface, string ID, or array of IDs.'
+    );
+
+    $message = new stdClass();
+    $message->ids = ['02000000D912945A'];
+    $response = getResponse('empty');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('ids', ['02000000D912945A'], $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $this->messageClient->get($message);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ * @throws Exception
+ */
+test('can search by message', function () {
+    $message = new Message('02000000D912945A');
+    $response = getResponse('search-outbound');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $searchedMessage = $this->messageClient->search($message);
+
+    $response->getBody()->rewind();
+    $successData = json_decode($response->getBody()->getContents(), true);
+
+    $this->assertEquals($successData['message-id'], $searchedMessage->getMessageId());
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('can search by single outbound id', function () {
+    $response = getResponse('search-outbound');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $message = $this->messageClient->search('02000000D912945A');
+
+    $this->assertInstanceOf(Message::class, $message);
+    $this->assertSame($response, @$message->getResponse());
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('can search by single inbound id', function () {
+    $response = getResponse('search-inbound');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $message = $this->messageClient->search('02000000DA7C52E7');
+
+    $this->assertInstanceOf(InboundMessage::class, $message);
+    $this->assertSame($response, @$message->getResponse());
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('search throws exception on empty search set', function () {
+    $this->expectException(ClientException\Request::class);
+    $this->expectExceptionMessage('no message found for `02000000DA7C52E7`');
+    $response = getResponse('search-empty');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('id', '02000000DA7C52E7', $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $this->messageClient->search('02000000DA7C52E7');
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('search throw exception on non200', function () {
+    $this->expectException(ClientException\Request::class);
+    $this->expectExceptionMessage('authentication failed');
+
+    $message = new Message('02000000D912945A');
+    $response = getResponse('auth-failure', 401);
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $this->messageClient->search($message);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('search throw exception on invalid type', function () {
+    $this->expectException(ClientException\Request::class);
+    $this->expectExceptionMessage('unexpected response from API');
+
+    $message = new Message('02000000D912945A');
+    $response = getResponse('search-invalid-type');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $this->messageClient->search($message);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('search throws generic exception on non200', function () {
+    $this->expectException(ClientException\Request::class);
+    $this->expectExceptionMessage('error status from API');
+
+    $message = new Message('02000000D912945A');
+    $response = getResponse('empty', 500);
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $this->messageClient->search($message);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('throws exception when search result mismatches query', function () {
+    $this->expectException(ClientException\Exception::class);
+    $this->expectExceptionMessage('searched for message with type `Vonage\Message\Message` ' .
+        'but message of type `Vonage\Message\InboundMessage`');
+
+    $message = new Message('02000000D912945A');
+    $response = getResponse('search-inbound');
+
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+
+        return true;
+    }))->willReturn($response);
+
+    $this->messageClient->search($message);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ * @throws ServerException
+ */
+test('rate limit retries', function () {
+    $start = microtime(true);
+    $rate = getResponse('ratelimit');
+    $rate2 = getResponse('ratelimit');
+    $success = getResponse('success');
+
+    $args = [
+        'to' => '14845551345',
+        'from' => '1105551334',
+        'text' => 'test message'
+    ];
+
+    $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+        $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+        $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+
+        return true;
+    }))->willReturn($rate, $rate2, $success);
+
+    $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+    $end = microtime(true);
+
+    $this->assertEquals($success, @$message->getResponse());
+    $this->assertGreaterThanOrEqual(2, $end - $start);
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ * @throws ServerException
+ * @throws Exception
+ */
+test('rate limit retries with default', function () {
+    $rate = getResponse('ratelimit-notime');
+    $rate2 = getResponse('ratelimit-notime'); // Have to duplicate to avoid rewind issues
+    $success = getResponse('success');
+
+    $args = [
+        'to' => '14845551345',
+        'from' => '1105551334',
+        'text' => 'test message'
+    ];
+
+    $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+        $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+        $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+
+        return true;
+    }))->willReturn($rate, $rate2, $success);
+
+    $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+
+    $success->getBody()->rewind();
+    $successData = json_decode($success->getBody()->getContents(), true);
+
+    $this->assertEquals($successData['messages'][0]['message-id'], $message->getMessageId());
+});
+
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ * @throws ServerException
+ */
+test('a p i rate limit retries', function () {
+    $start = microtime(true);
+    $rate = getResponse('mt-limit');
+    $rate2 = getResponse('mt-limit');
+    $success = getResponse('success');
+
+    $args = [
+        'to' => '14845551345',
+        'from' => '1105551334',
+        'text' => 'test message'
+    ];
+
+    $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+        $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+        $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+
+        return true;
+    }))->willReturn($rate, $rate2, $success);
+
+    $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
+    $end = microtime(true);
+
+    $this->assertEquals($success, @$message->getResponse());
+    $this->assertGreaterThanOrEqual(2, $end - $start);
+});
+
+/**
+ *
+ * @param $date
+ * @param $to
+ * @param $responseFile
+ * @param $expectedResponse
+ * @param $expectedHttpCode
+ * @param $expectedException
+ *
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('can search rejections', function (
+    $date,
+    $to,
+    $responseFile,
+    $expectedResponse,
+    $expectedHttpCode,
+    $expectedException
+) {
+    $query = new Query($date, $to);
+
+    $apiResponse = getResponse($responseFile, $expectedHttpCode);
+
+    $this->vonageClient->send(Argument::that(function (Request $request) use ($to, $date) {
+        $this->assertRequestQueryContains('to', $to, $request);
+        $this->assertRequestQueryContains('date', $date->format('Y-m-d'), $request);
+
+        return true;
+    }))->willReturn($apiResponse);
+
+// If we're expecting this to throw an exception, listen for it in advance
+    if ($expectedException !== null) {
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedResponse);
     }
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testSearchThrowExceptionOnInvalidType(): void
-    {
-        $this->expectException(ClientException\Request::class);
-        $this->expectExceptionMessage('unexpected response from API');
+    // Make the request and assert that our responses match
+    $rejectionsResponse = $this->messageClient->searchRejections($query);
 
-        $message = new Message('02000000D912945A');
-        $response = $this->getResponse('search-invalid-type');
+    $this->assertListOfMessagesEqual($expectedResponse, $rejectionsResponse);
+})->with('searchRejectionsProvider');
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('shortcode with object', function () {
+    $message = new TwoFactor('14155550100', ['link' => 'https://example.com'], ['status-report-req' => 1]);
 
-            return true;
-        }))->willReturn($response);
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        $this->assertRequestJsonBodyContains('to', '14155550100', $request);
+        $this->assertRequestJsonBodyContains('link', 'https://example.com', $request);
+        $this->assertRequestJsonBodyContains('status-report-req', 1, $request);
 
-        $this->messageClient->search($message);
-    }
+        return true;
+    }))->willReturn(getResponse('success-2fa'));
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testSearchThrowsGenericExceptionOnNon200(): void
-    {
-        $this->expectException(ClientException\Request::class);
-        $this->expectExceptionMessage('error status from API');
+    $response = $this->messageClient->sendShortcode($message);
 
-        $message = new Message('02000000D912945A');
-        $response = $this->getResponse('empty', 500);
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $this->messageClient->search($message);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testThrowsExceptionWhenSearchResultMismatchesQuery(): void
-    {
-        $this->expectException(ClientException\Exception::class);
-        $this->expectExceptionMessage('searched for message with type `Vonage\Message\Message` ' .
-            'but message of type `Vonage\Message\InboundMessage`');
-
-        $message = new Message('02000000D912945A');
-        $response = $this->getResponse('search-inbound');
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestQueryContains('id', '02000000D912945A', $request);
-
-            return true;
-        }))->willReturn($response);
-
-        $this->messageClient->search($message);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ServerException
-     */
-    public function testRateLimitRetries(): void
-    {
-        $start = microtime(true);
-        $rate = $this->getResponse('ratelimit');
-        $rate2 = $this->getResponse('ratelimit');
-        $success = $this->getResponse('success');
-
-        $args = [
-            'to' => '14845551345',
-            'from' => '1105551334',
-            'text' => 'test message'
-        ];
-
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
-            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
-
-            return true;
-        }))->willReturn($rate, $rate2, $success);
-
-        $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
-        $end = microtime(true);
-
-        $this->assertEquals($success, @$message->getResponse());
-        $this->assertGreaterThanOrEqual(2, $end - $start);
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ServerException
-     * @throws Exception
-     */
-    public function testRateLimitRetriesWithDefault(): void
-    {
-        $rate = $this->getResponse('ratelimit-notime');
-        $rate2 = $this->getResponse('ratelimit-notime'); // Have to duplicate to avoid rewind issues
-        $success = $this->getResponse('success');
-
-        $args = [
-            'to' => '14845551345',
-            'from' => '1105551334',
-            'text' => 'test message'
-        ];
-
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
-            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
-
-            return true;
-        }))->willReturn($rate, $rate2, $success);
-
-        $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
-
-        $success->getBody()->rewind();
-        $successData = json_decode($success->getBody()->getContents(), true);
-
-        $this->assertEquals($successData['messages'][0]['message-id'], $message->getMessageId());
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ServerException
-     */
-    public function testAPIRateLimitRetries(): void
-    {
-        $start = microtime(true);
-        $rate = $this->getResponse('mt-limit');
-        $rate2 = $this->getResponse('mt-limit');
-        $success = $this->getResponse('success');
-
-        $args = [
-            'to' => '14845551345',
-            'from' => '1105551334',
-            'text' => 'test message'
-        ];
-
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
-            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
-
-            return true;
-        }))->willReturn($rate, $rate2, $success);
-
-        $message = $this->messageClient->send(new Text($args['to'], $args['from'], $args['text']));
-        $end = microtime(true);
-
-        $this->assertEquals($success, @$message->getResponse());
-        $this->assertGreaterThanOrEqual(2, $end - $start);
-    }
-
-    /**
-     * @dataProvider searchRejectionsProvider
-     *
-     * @param $date
-     * @param $to
-     * @param $responseFile
-     * @param $expectedResponse
-     * @param $expectedHttpCode
-     * @param $expectedException
-     *
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testCanSearchRejections(
-        $date,
-        $to,
-        $responseFile,
-        $expectedResponse,
-        $expectedHttpCode,
-        $expectedException
-    ): void {
-        $query = new Query($date, $to);
-
-        $apiResponse = $this->getResponse($responseFile, $expectedHttpCode);
-
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($to, $date) {
-            $this->assertRequestQueryContains('to', $to, $request);
-            $this->assertRequestQueryContains('date', $date->format('Y-m-d'), $request);
-
-            return true;
-        }))->willReturn($apiResponse);
-
-    // If we're expecting this to throw an exception, listen for it in advance
-        if ($expectedException !== null) {
-            $this->expectException($expectedException);
-            $this->expectExceptionMessage($expectedResponse);
-        }
-
-        // Make the request and assert that our responses match
-        $rejectionsResponse = $this->messageClient->searchRejections($query);
-
-        $this->assertListOfMessagesEqual($expectedResponse, $rejectionsResponse);
-    }
-
-    public function searchRejectionsProvider(): array
-    {
-        $r = [];
-
-        $r['no rejections found'] = [new DateTime(), '123456', 'search-rejections-empty', [], 200, null];
-
-        // Build up our expected message object
-        $message = new Message('0C0000005BA0B864');
-        @$message->setResponse($this->getResponse('search-rejections'));
-        $message->setIndex(0);
-        $inboundMessage = new InboundMessage('0C0000005BA0B864');
-        @$inboundMessage->setResponse($this->getResponse('search-rejections-inbound'));
-        $inboundMessage->setIndex(0);
-
-        $r['rejection found'] = [new DateTime(), '123456', 'search-rejections', [$message], 200, null];
-        $r['inbound rejection found'] = [
-            new DateTime(),
-            '123456',
-            'search-rejections-inbound',
-            [$inboundMessage],
-            200,
-            null
-        ];
-
-        $r['error-code provided (validation)'] = [
-            new DateTime(),
-            '123456',
-            'search-rejections-error-provided-validation',
-            'Validation error: You forgot to do something',
-            400,
-            ClientException\Request::class
-        ];
-
-        $r['error-code provided (server error)'] = [
-            new DateTime(),
-            '123456',
-            'search-rejections-error-provided-server-error',
-            'Gremlins! There are gremlins in the system!',
-            500,
-            ClientException\Request::class
-        ];
-
-        $r['error-code not provided'] = [
-            new DateTime(),
-            '123456',
-            'empty',
-            'error status from API',
-            500,
-            ClientException\Request::class
-        ];
-
-        $r['missing items key in response on 200'] = [
-            new DateTime(),
-            '123456',
-            'empty',
-            'unexpected response from API',
-            200,
-            ClientException\Exception::class
-        ];
-
-        $r['invalid message type in response'] = [
-            new DateTime(),
-            '123456',
-            'search-rejections-invalid-type',
-            'unexpected response from API',
-            200,
-            ClientException\Request::class
-        ];
-
-        return $r;
-    }
-
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testShortcodeWithObject(): void
-    {
-        $message = new TwoFactor('14155550100', ['link' => 'https://example.com'], ['status-report-req' => 1]);
-
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            $this->assertRequestJsonBodyContains('to', '14155550100', $request);
-            $this->assertRequestJsonBodyContains('link', 'https://example.com', $request);
-            $this->assertRequestJsonBodyContains('status-report-req', 1, $request);
-
-            return true;
-        }))->willReturn($this->getResponse('success-2fa'));
-
-        $response = $this->messageClient->sendShortcode($message);
-
-        $this->assertEquals([
-            'message-count' => '1',
-            'messages' => [
-                [
-                    'status' => '0',
-                    'message-id' => '00000123',
-                    'to' => '14155550100',
-                    'client-ref' => 'client-ref',
-                    'remaining-balance' => '1.10',
-                    'message-price' => '0.05',
-                    'network' => '23410'
-                ]
+    $this->assertEquals([
+        'message-count' => '1',
+        'messages' => [
+            [
+                'status' => '0',
+                'message-id' => '00000123',
+                'to' => '14155550100',
+                'client-ref' => 'client-ref',
+                'remaining-balance' => '1.10',
+                'message-price' => '0.05',
+                'network' => '23410'
             ]
-        ], $response);
-    }
+        ]
+    ], $response);
+});
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testShortcodeError(): void
-    {
-        $args = [
-            'to' => '14155550100',
-            'custom' => ['link' => 'https://example.com'],
-            'options' => ['status-report-req' => 1],
-            'type' => '2fa'
-        ];
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('shortcode error', function () {
+    $args = [
+        'to' => '14155550100',
+        'custom' => ['link' => 'https://example.com'],
+        'options' => ['status-report-req' => 1],
+        'type' => '2fa'
+    ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) {
-            return true;
-        }))->willReturn($this->getResponse('error-2fa'));
+    $this->vonageClient->send(Argument::that(function (Request $request) {
+        return true;
+    }))->willReturn(getResponse('error-2fa'));
 
-        $this->expectException(ClientException\Request::class);
-        $this->expectExceptionMessage('Invalid Account for Campaign');
+    $this->expectException(ClientException\Request::class);
+    $this->expectExceptionMessage('Invalid Account for Campaign');
 
-        $this->messageClient->sendShortcode($args);
-    }
+    $this->messageClient->sendShortcode($args);
+});
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     */
-    public function testShortcodeWithArray(): void
-    {
-        $args = [
-            'to' => '14155550100',
-            'custom' => ['link' => 'https://example.com'],
-            'options' => ['status-report-req' => 1],
-            'type' => '2fa'
-        ];
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ */
+test('shortcode with array', function () {
+    $args = [
+        'to' => '14155550100',
+        'custom' => ['link' => 'https://example.com'],
+        'options' => ['status-report-req' => 1],
+        'type' => '2fa'
+    ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
-            $this->assertRequestJsonBodyContains('link', $args['custom']['link'], $request);
-            $this->assertRequestJsonBodyContains('status-report-req', $args['options']['status-report-req'], $request);
+    $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+        $this->assertRequestJsonBodyContains('link', $args['custom']['link'], $request);
+        $this->assertRequestJsonBodyContains('status-report-req', $args['options']['status-report-req'], $request);
 
-            return true;
-        }))->willReturn($this->getResponse('success-2fa'));
+        return true;
+    }))->willReturn(getResponse('success-2fa'));
 
-        $response = $this->messageClient->sendShortcode($args);
+    $response = $this->messageClient->sendShortcode($args);
 
-        $this->assertEquals([
-            'message-count' => '1',
-            'messages' => [
-                [
-                    'status' => '0',
-                    'message-id' => '00000123',
-                    'to' => '14155550100',
-                    'client-ref' => 'client-ref',
-                    'remaining-balance' => '1.10',
-                    'message-price' => '0.05',
-                    'network' => '23410'
-                ]
+    $this->assertEquals([
+        'message-count' => '1',
+        'messages' => [
+            [
+                'status' => '0',
+                'message-id' => '00000123',
+                'to' => '14155550100',
+                'client-ref' => 'client-ref',
+                'remaining-balance' => '1.10',
+                'message-price' => '0.05',
+                'network' => '23410'
             ]
-        ], $response);
-    }
+        ]
+    ], $response);
+});
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ServerException
-     */
-    public function testCreateMessageThrowsExceptionOnBadData(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('message must implement `Vonage\Message\MessageInterface` or be an array`');
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ * @throws ServerException
+ */
+test('create message throws exception on bad data', function () {
+    $this->expectException(RuntimeException::class);
+    $this->expectExceptionMessage('message must implement `Vonage\Message\MessageInterface` or be an array`');
 
-        /** @noinspection PhpParamsInspection */
-        @$this->messageClient->send('Bob');
-    }
+    /** @noinspection PhpParamsInspection */
+    @$this->messageClient->send('Bob');
+});
 
-    /**
-     * @throws ClientExceptionInterface
-     * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ServerException
-     */
-    public function testCreateMessageThrowsExceptionOnMissingData(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('missing expected key `from`');
+/**
+ * @throws ClientExceptionInterface
+ * @throws ClientException\Exception
+ * @throws ClientException\Request
+ * @throws ServerException
+ */
+test('create message throws exception on missing data', function () {
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('missing expected key `from`');
 
-        @$this->messageClient->send(['to' => '15555555555']);
-    }
+    @$this->messageClient->send(['to' => '15555555555']);
+});
 
-    public function testMagicMethodIsCalledProperly(): void
-    {
-        $args = [
-            'to' => '14845551212',
-            'from' => '16105551212',
-            'text' => 'Go To Gino\'s'
-        ];
+test('magic method is called properly', function () {
+    $args = [
+        'to' => '14845551212',
+        'from' => '16105551212',
+        'text' => 'Go To Gino\'s'
+    ];
 
-        $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
-            $this->assertRequestJsonBodyContains('to', $args['to'], $request);
-            $this->assertRequestJsonBodyContains('from', $args['from'], $request);
-            $this->assertRequestJsonBodyContains('text', $args['text'], $request);
+    $this->vonageClient->send(Argument::that(function (Request $request) use ($args) {
+        $this->assertRequestJsonBodyContains('to', $args['to'], $request);
+        $this->assertRequestJsonBodyContains('from', $args['from'], $request);
+        $this->assertRequestJsonBodyContains('text', $args['text'], $request);
 
-            return true;
-        }))->willReturn($this->getResponse());
+        return true;
+    }))->willReturn(getResponse());
 
-        $message = $this->messageClient->sendText($args['to'], $args['from'], $args['text']);
-        $this->assertInstanceOf(Text::class, $message);
-    }
+    $message = $this->messageClient->sendText($args['to'], $args['from'], $args['text']);
+    $this->assertInstanceOf(Text::class, $message);
+});
 
-    public function testCreateMessageThrowsExceptionOnNonSendMethod(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('failsendText` is not a valid method on `Vonage\Message\Client`');
+test('create message throws exception on non send method', function () {
+    $this->expectException(RuntimeException::class);
+    $this->expectExceptionMessage('failsendText` is not a valid method on `Vonage\Message\Client`');
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->messageClient->failsendText('14845551212', '16105551212', 'Test');
-    }
+    /** @noinspection PhpUndefinedMethodInspection */
+    $this->messageClient->failsendText('14845551212', '16105551212', 'Test');
+});
 
-    public function testCreateMessageThrowsExceptionOnNonSendMethodTakeTwo(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('failText` is not a valid method on `Vonage\Message\Client`');
+test('create message throws exception on non send method take two', function () {
+    $this->expectException(RuntimeException::class);
+    $this->expectExceptionMessage('failText` is not a valid method on `Vonage\Message\Client`');
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->messageClient->failText('14845551212', '16105551212', 'Test');
-    }
+    /** @noinspection PhpUndefinedMethodInspection */
+    $this->messageClient->failText('14845551212', '16105551212', 'Test');
+});
 
-    public function testCreateMessageThrowsExceptionOnInvalidMessageType(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('sendGarbage` is not a valid method on `Vonage\Message\Client`');
+test('create message throws exception on invalid message type', function () {
+    $this->expectException(RuntimeException::class);
+    $this->expectExceptionMessage('sendGarbage` is not a valid method on `Vonage\Message\Client`');
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->messageClient->sendGarbage('14845551212', '16105551212', 'Test');
-    }
+    /** @noinspection PhpUndefinedMethodInspection */
+    $this->messageClient->sendGarbage('14845551212', '16105551212', 'Test');
+});
 
-    /**
+// Datasets
+dataset('searchRejectionsProvider', function () {
+    $r = [];
+
+    $r['no rejections found'] = [new DateTime(), '123456', 'search-rejections-empty', [], 200, null];
+
+    // Build up our expected message object
+    $message = new Message('0C0000005BA0B864');
+    @$message->setResponse(getResponse('search-rejections'));
+    $message->setIndex(0);
+    $inboundMessage = new InboundMessage('0C0000005BA0B864');
+    @$inboundMessage->setResponse(getResponse('search-rejections-inbound'));
+    $inboundMessage->setIndex(0);
+
+    $r['rejection found'] = [new DateTime(), '123456', 'search-rejections', [$message], 200, null];
+    $r['inbound rejection found'] = [
+        new DateTime(),
+        '123456',
+        'search-rejections-inbound',
+        [$inboundMessage],
+        200,
+        null
+    ];
+
+    $r['error-code provided (validation)'] = [
+        new DateTime(),
+        '123456',
+        'search-rejections-error-provided-validation',
+        'Validation error: You forgot to do something',
+        400,
+        ClientException\Request::class
+    ];
+
+    $r['error-code provided (server error)'] = [
+        new DateTime(),
+        '123456',
+        'search-rejections-error-provided-server-error',
+        'Gremlins! There are gremlins in the system!',
+        500,
+        ClientException\Request::class
+    ];
+
+    $r['error-code not provided'] = [
+        new DateTime(),
+        '123456',
+        'empty',
+        'error status from API',
+        500,
+        ClientException\Request::class
+    ];
+
+    $r['missing items key in response on 200'] = [
+        new DateTime(),
+        '123456',
+        'empty',
+        'unexpected response from API',
+        200,
+        ClientException\Exception::class
+    ];
+
+    $r['invalid message type in response'] = [
+        new DateTime(),
+        '123456',
+        'search-rejections-invalid-type',
+        'unexpected response from API',
+        200,
+        ClientException\Request::class
+    ];
+
+    return $r;
+});
+
+// Helpers
+/**
      * Get the API response we'd expect for a call to the API. Message API currently returns 200 all the time, so only
      * change between success / fail is body of the message.
      */
-    protected function getResponse(string $type = 'success', int $status = 200): Response
-    {
-        return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
-    }
+function getResponse(string $type = 'success', int $status = 200): Response
+{
+    return new Response(fopen(__DIR__ . '/responses/' . $type . '.json', 'rb'), $status);
 }
