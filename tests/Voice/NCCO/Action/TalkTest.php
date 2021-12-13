@@ -37,7 +37,7 @@ test('json serialize looks correct', function () {
     $action->setLoop(1);
     @$action->setVoiceName('kimberly');
 
-    $this->assertSame($expected, $action->jsonSerialize());
+    expect($action->jsonSerialize())->toBe($expected);
 });
 
 test('can set language', function () {
@@ -51,10 +51,10 @@ test('can set language', function () {
     $action = new Talk($expected['text']);
     $action->setLanguage($expected['language']);
 
-    $this->assertSame($expected['language'], $action->getLanguage());
-    $this->assertSame(0, $action->getLanguageStyle());
+    expect($action->getLanguage())->toBe($expected['language']);
+    expect($action->getLanguageStyle())->toBe(0);
 
-    $this->assertSame($expected, $action->toNCCOArray());
+    expect($action->toNCCOArray())->toBe($expected);
 });
 
 test('can set language style', function () {
@@ -68,10 +68,10 @@ test('can set language style', function () {
     $action = new Talk($expected['text']);
     $action->setLanguage($expected['language'], (int) $expected['style']);
 
-    $this->assertSame($expected['language'], $action->getLanguage());
-    $this->assertSame((int) $expected['style'], $action->getLanguageStyle());
+    expect($action->getLanguage())->toBe($expected['language']);
+    expect($action->getLanguageStyle())->toBe((int) $expected['style']);
 
-    $this->assertSame($expected, $action->toNCCOArray());
+    expect($action->toNCCOArray())->toBe($expected);
 });
 
 test('factory sets language', function () {
@@ -84,10 +84,10 @@ test('factory sets language', function () {
 
     $action = Talk::factory($expected['text'], $expected);
 
-    $this->assertSame($expected['language'], $action->getLanguage());
-    $this->assertSame(0, $action->getLanguageStyle());
+    expect($action->getLanguage())->toBe($expected['language']);
+    expect($action->getLanguageStyle())->toBe(0);
 
-    $this->assertSame($expected, $action->toNCCOArray());
+    expect($action->toNCCOArray())->toBe($expected);
 });
 
 test('factory sets language and style', function () {
@@ -100,8 +100,8 @@ test('factory sets language and style', function () {
 
     $action = Talk::factory($expected['text'], $expected);
 
-    $this->assertSame($expected['language'], $action->getLanguage());
-    $this->assertSame((int) $expected['style'], $action->getLanguageStyle());
+    expect($action->getLanguage())->toBe($expected['language']);
+    expect($action->getLanguageStyle())->toBe((int) $expected['style']);
 
-    $this->assertSame($expected, $action->toNCCOArray());
+    expect($action->toNCCOArray())->toBe($expected);
 });

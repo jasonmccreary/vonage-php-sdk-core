@@ -17,8 +17,8 @@ uses(VonageTestCase::class);
 test('default endpoint is created properly', function () {
     $endpoint = new SIP($this->uri);
 
-    $this->assertSame($this->uri, $endpoint->getId());
-    $this->assertEmpty($endpoint->getHeaders());
+    expect($endpoint->getId())->toBe($this->uri);
+    expect($endpoint->getHeaders())->toBeEmpty();
 });
 
 test('factory creates app endpoint', function () {
@@ -29,8 +29,8 @@ test('factory creates app endpoint', function () {
 
     $endpoint = SIP::factory($this->uri, $headers);
 
-    $this->assertSame($this->uri, $endpoint->getId());
-    $this->assertSame($headers, $endpoint->getHeaders());
+    expect($endpoint->getId())->toBe($this->uri);
+    expect($endpoint->getHeaders())->toBe($headers);
 });
 
 test('to array has correct structure', function () {
@@ -63,5 +63,5 @@ test('serializes to j s o n correctly', function () {
 });
 
 test('header can be individually added', function () {
-    $this->assertSame(['key' => 'value'], (new SIP($this->uri))->addHeader('key', 'value')->getHeaders());
+    expect((new SIP($this->uri))->addHeader('key', 'value')->getHeaders())->toBe(['key' => 'value']);
 });

@@ -33,10 +33,10 @@ test('list all secrets', function () {
 
     $response = $this->client->list('abcd123');
 
-    $this->assertCount(2, $response);
+    expect($response)->toHaveCount(2);
     foreach ($response as $i => $secret) {
-        $this->assertInstanceOf(Secret::class, $secret);
-        $this->assertSame($i, $secret->getId());
+        expect($secret)->toBeInstanceOf(Secret::class);
+        expect($secret->getId())->toBe($i);
     }
 });
 
@@ -48,7 +48,7 @@ test('get secret', function () {
 
     $secret = $this->client->get('abcd123', '105abf14-aa00-45a3-9d27-dd19c5920f2c');
 
-    $this->assertSame('105abf14-aa00-45a3-9d27-dd19c5920f2c', $secret->getId());
+    expect($secret->getId())->toBe('105abf14-aa00-45a3-9d27-dd19c5920f2c');
     $this->assertSame('2020-09-08T21:54:14Z', $secret->getCreatedAt()->format('Y-m-d\TH:i:s\Z'));
 });
 
@@ -69,6 +69,6 @@ test('create secret', function () {
 
     $secret = $this->client->create('abcd123', '105abf14-aa00-45a3-9d27-dd19c5920f2c');
 
-    $this->assertSame('527ffe03-dfba-46c4-9b40-da5cbefb22c4', $secret->getId());
+    expect($secret->getId())->toBe('527ffe03-dfba-46c4-9b40-da5cbefb22c4');
     $this->assertSame('2020-09-08T21:54:14Z', $secret->getCreatedAt()->format('Y-m-d\TH:i:s\Z'));
 });

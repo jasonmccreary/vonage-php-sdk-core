@@ -19,7 +19,7 @@ test('null values not present', function () {
     $request = new Request('14443332121', 'http://example.com');
     $params = $request->getParams();
 
-    $this->assertCount(2, $params);
+    expect($params)->toHaveCount(2);
     $this->assertArrayHasKey('number', $params);
     $this->assertArrayHasKey('callback', $params);
 });
@@ -29,7 +29,7 @@ test('number matches params', function () {
     $params = $request->getParams();
 
     $this->assertArrayHasKey('number', $params);
-    $this->assertEquals('14443332121', $params['number']);
+    expect($params['number'])->toEqual('14443332121');
 });
 
 test('callback matches params', function () {
@@ -37,7 +37,7 @@ test('callback matches params', function () {
     $params = $request->getParams();
 
     $this->assertArrayHasKey('callback', $params);
-    $this->assertEquals('http://example.com', $params['callback']);
+    expect($params['callback'])->toEqual('http://example.com');
 });
 
 test('features matches params', function () {
@@ -49,13 +49,13 @@ test('features matches params', function () {
     $params = $request->getParams();
 
     $this->assertArrayHasKey('features', $params);
-    $this->assertIsString($params['features']);
+    expect($params['features'])->toBeString();
 
     $array = explode(',', $params['features']);
 
-    $this->assertCount(2, $array);
-    $this->assertContains(Request::FEATURE_CARRIER, $array);
-    $this->assertContains(Request::FEATURE_PORTED, $array);
+    expect($array)->toHaveCount(2);
+    expect($array)->toContain(Request::FEATURE_CARRIER);
+    expect($array)->toContain(Request::FEATURE_PORTED);
 });
 
 test('callback timeout matches params', function () {
@@ -68,7 +68,7 @@ test('callback timeout matches params', function () {
     $params = $request->getParams();
 
     $this->assertArrayHasKey('callback_timeout', $params);
-    $this->assertEquals(100, $params['callback_timeout']);
+    expect($params['callback_timeout'])->toEqual(100);
 });
 
 test('callback method matches params', function () {
@@ -82,7 +82,7 @@ test('callback method matches params', function () {
     $params = $request->getParams();
 
     $this->assertArrayHasKey('callback_method', $params);
-    $this->assertEquals('POST', $params['callback_method']);
+    expect($params['callback_method'])->toEqual('POST');
 });
 
 test('ref matches params', function () {
@@ -97,5 +97,5 @@ test('ref matches params', function () {
     $params = $request->getParams();
 
     $this->assertArrayHasKey('client_ref', $params);
-    $this->assertEquals('ref', $params['client_ref']);
+    expect($params['client_ref'])->toEqual('ref');
 });

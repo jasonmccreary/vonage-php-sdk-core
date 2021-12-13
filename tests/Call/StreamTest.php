@@ -41,7 +41,7 @@ beforeEach(function () {
 });
 
 test('has id', function () {
-    $this->assertSame($this->id, $this->entity->getId());
+    expect($this->entity->getId())->toBe($this->id);
 });
 
 test('set url', function () {
@@ -49,7 +49,7 @@ test('set url', function () {
     $this->entity->setUrl($url);
     $data = $this->entity->jsonSerialize();
 
-    $this->assertSame([$url], $data['stream_url']);
+    expect($data['stream_url'])->toBe([$url]);
 });
 
 test('set url array', function () {
@@ -57,7 +57,7 @@ test('set url array', function () {
     $this->entity->setUrl($url);
     $data = $this->entity->jsonSerialize();
 
-    $this->assertSame($url, $data['stream_url']);
+    expect($data['stream_url'])->toBe($url);
 });
 
 test('set loop', function () {
@@ -65,7 +65,7 @@ test('set loop', function () {
     $this->entity->setLoop($loop);
     $data = $this->entity->jsonSerialize();
 
-    $this->assertSame($loop, $data['loop']);
+    expect($data['loop'])->toBe($loop);
 });
 
 /**
@@ -89,16 +89,16 @@ test('put makes request', function () {
         $body = json_decode($request->getBody()->getContents(), true);
         $request->getBody()->rewind();
 
-        $this->assertEquals($expected, $body);
+        expect($body)->toEqual($expected);
 
         return true;
     }))->willReturn(getResponse('stream', 200));
 
     $event = @$this->entity->put();
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-    $this->assertSame('Stream started', $event['message']);
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('Stream started');
 });
 
 /**
@@ -122,16 +122,16 @@ test('put can replace', function () {
         $body = json_decode($request->getBody()->getContents(), true);
         $request->getBody()->rewind();
 
-        $this->assertEquals($expected, $body);
+        expect($body)->toEqual($expected);
 
         return true;
     }))->willReturn(getResponse('stream', 200));
 
     $event = @$this->entity->put($stream);
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-    $this->assertSame('Stream started', $event['message']);
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('Stream started');
 });
 
 /**
@@ -146,7 +146,7 @@ test('invoke proxies put with argument', function () {
     $this->vonageClient->send(Argument::any())->willReturn(getResponse('stream', 200));
     $test = $object();
 
-    $this->assertSame($this->entity, $test);
+    expect($test)->toBe($this->entity);
 
     $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
 
@@ -155,9 +155,9 @@ test('invoke proxies put with argument', function () {
 
     $event = @$object($stream);
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-    $this->assertSame('Stream started', $event['message']);
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('Stream started');
 
     $this->vonageClient->send(Argument::any())->shouldHaveBeenCalled();
 });
@@ -181,9 +181,9 @@ test('delete makes request', function () {
 
     $event = @$this->entity->delete();
 
-    $this->assertInstanceOf(Event::class, $event);
-    $this->assertSame('ssf61863-4a51-ef6b-11e1-w6edebcf93bb', $event['uuid']);
-    $this->assertSame('Stream stopped', $event['message']);
+    expect($event)->toBeInstanceOf(Event::class);
+    expect($event['uuid'])->toBe('ssf61863-4a51-ef6b-11e1-w6edebcf93bb');
+    expect($event['message'])->toBe('Stream stopped');
 });
 
 // Helpers

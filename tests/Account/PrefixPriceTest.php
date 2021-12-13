@@ -19,9 +19,9 @@ uses(VonageTestCase::class);
  * @param $prefixPrice
  */
 test('from array', function ($prefixPrice) {
-    $this->assertEquals("ZW", $prefixPrice->getCountryCode());
-    $this->assertEquals("Zimbabwe", $prefixPrice->getCountryName());
-    $this->assertEquals("263", $prefixPrice->getDialingPrefix());
+    expect($prefixPrice->getCountryCode())->toEqual("ZW");
+    expect($prefixPrice->getCountryName())->toEqual("Zimbabwe");
+    expect($prefixPrice->getDialingPrefix())->toEqual("263");
 })->with('prefixPriceProvider');
 
 /**
@@ -29,10 +29,10 @@ test('from array', function ($prefixPrice) {
  * @param $prefixPrice
  */
 test('getters', function ($prefixPrice) {
-    $this->assertEquals("ZW", $prefixPrice->getCountryCode());
-    $this->assertEquals("Zimbabwe", $prefixPrice->getCountryName());
-    $this->assertEquals("Zimbabwe", $prefixPrice->getCountryDisplayName());
-    $this->assertEquals("263", $prefixPrice->getDialingPrefix());
+    expect($prefixPrice->getCountryCode())->toEqual("ZW");
+    expect($prefixPrice->getCountryName())->toEqual("Zimbabwe");
+    expect($prefixPrice->getCountryDisplayName())->toEqual("Zimbabwe");
+    expect($prefixPrice->getDialingPrefix())->toEqual("263");
 })->with('prefixPriceProvider');
 
 /**
@@ -40,10 +40,10 @@ test('getters', function ($prefixPrice) {
  * @param $prefixPrice
  */
 test('array access', function ($prefixPrice) {
-    $this->assertEquals("ZW", @$prefixPrice['country_code']);
-    $this->assertEquals("Zimbabwe", @$prefixPrice['country_name']);
-    $this->assertEquals("Zimbabwe", @$prefixPrice['country_display_name']);
-    $this->assertEquals("263", @$prefixPrice['dialing_prefix']);
+    expect(@$prefixPrice['country_code'])->toEqual("ZW");
+    expect(@$prefixPrice['country_name'])->toEqual("Zimbabwe");
+    expect(@$prefixPrice['country_display_name'])->toEqual("Zimbabwe");
+    expect(@$prefixPrice['dialing_prefix'])->toEqual("263");
 })->with('prefixPriceProvider');
 
 /**
@@ -51,7 +51,7 @@ test('array access', function ($prefixPrice) {
  * @param $prefixPrice
  */
 test('uses custom price for known network', function ($prefixPrice) {
-    $this->assertEquals("0.123", $prefixPrice->getPriceForNetwork('21039'));
+    expect($prefixPrice->getPriceForNetwork('21039'))->toEqual("0.123");
 })->with('prefixPriceProvider');
 
 /**

@@ -26,7 +26,7 @@ uses(VonageTestCase::class);
 test('type', function ($klass, $expectedType) {
     $m = new $klass('14155550100');
 
-    $this->assertEquals($expectedType, $m->getType());
+    expect($m->getType())->toEqual($expectedType);
 })->with('typeProvider');
 
 /**
@@ -38,7 +38,7 @@ test('type', function ($klass, $expectedType) {
  */
 test('create message from array', function ($expected, $type) {
     $message = Shortcode::createMessageFromArray(['type' => $type, 'to' => '14155550100']);
-    $this->assertInstanceOf($expected, $message);
+    expect($message)->toBeInstanceOf($expected);
 })->with('typeProvider');
 
 test('get request data', function () {

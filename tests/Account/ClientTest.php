@@ -46,9 +46,9 @@ beforeEach(function () {
  */
 test('top up', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/top-up', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/top-up');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestFormBodyContains('trx', 'ABC123', $request);
 
         return true;
@@ -66,9 +66,9 @@ test('top up fails with4xx', function () {
     $this->expectExceptionMessage('authentication failed');
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/top-up', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/top-up');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestFormBodyContains('trx', 'ABC123', $request);
 
         return true;
@@ -90,9 +90,9 @@ test('top up fails due to bad request', function () {
     $this->expectExceptionMessage('Bad Request');
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/top-up', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/top-up');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestFormBodyContains('trx', 'ABC123', $request);
 
         return true;
@@ -114,9 +114,9 @@ test('top up fails due to bad request returns500', function () {
     $this->expectExceptionMessage('Bad Request');
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/top-up', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/top-up');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestFormBodyContains('trx', 'ABC123', $request);
 
         return true;
@@ -132,9 +132,9 @@ test('top up fails due to bad request returns500', function () {
  */
 test('get balance', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/get-balance');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('get-balance'));
@@ -157,9 +157,9 @@ test('get balance with no results', function () {
     $this->expectExceptionMessage('No results found');
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/get-balance', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/get-balance');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
 
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('empty'));
@@ -174,9 +174,9 @@ test('get balance with no results', function () {
  */
 test('get config', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/settings', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/settings');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
 
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('get-config'));
@@ -199,9 +199,9 @@ test('get config blank response', function () {
     $this->expectExceptionMessage('Response was empty');
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/settings', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/settings');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
 
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('empty'));
@@ -216,9 +216,9 @@ test('get config blank response', function () {
  */
 test('update config', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/settings', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/settings');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestFormBodyContains('moCallBackUrl', 'https://example.com/other', $request);
 
         return true;
@@ -240,9 +240,9 @@ test('update config throws non200', function () {
     $this->expectExceptionMessage('authentication failed');
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/settings', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/settings');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestFormBodyContains('moCallBackUrl', 'https://example.com/other', $request);
 
         return true;
@@ -261,9 +261,9 @@ test('update config returns blank response', function () {
     $this->expectExceptionMessage('Response was empty');
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/settings', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/settings');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         $this->assertRequestFormBodyContains('moCallBackUrl', 'https://example.com/other', $request);
 
         return true;
@@ -280,9 +280,9 @@ test('update config returns blank response', function () {
  */
 test('get sms pricing', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/get-pricing/outbound/sms', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/get-pricing/outbound/sms');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('country', 'US', $request);
 
         return true;
@@ -290,7 +290,7 @@ test('get sms pricing', function () {
 
     $smsPrice = $this->accountClient->getSmsPrice('US');
 
-    $this->assertInstanceOf(Network::class, @$smsPrice['networks']['311310']);
+    expect(@$smsPrice['networks']['311310'])->toBeInstanceOf(Network::class);
 });
 
 /**
@@ -304,9 +304,9 @@ test('get sms pricing returns empty set', function () {
     $this->expectExceptionMessage('No results found');
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/get-pricing/outbound/sms', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/get-pricing/outbound/sms');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('country', 'XX', $request);
 
         return true;
@@ -323,9 +323,9 @@ test('get sms pricing returns empty set', function () {
  */
 test('get voice pricing', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/get-pricing/outbound/voice', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/get-pricing/outbound/voice');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('country', 'US', $request);
 
         return true;
@@ -333,7 +333,7 @@ test('get voice pricing', function () {
 
     $voicePrice = $this->accountClient->getVoicePrice('US');
 
-    $this->assertInstanceOf(Network::class, @$voicePrice['networks']['311310']);
+    expect(@$voicePrice['networks']['311310'])->toBeInstanceOf(Network::class);
 });
 
 test('get prefix pricing', function () {
@@ -343,9 +343,9 @@ test('get prefix pricing', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
         static $hasRun = false;
 
-        $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/get-prefix-pricing/outbound');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('prefix', '263', $request);
 
         if ($hasRun) {
@@ -357,22 +357,22 @@ test('get prefix pricing', function () {
     }))->shouldBeCalledTimes(2)->willReturn($first, $noResults);
 
     $prefixPrice = $this->accountClient->getPrefixPricing('263');
-    $this->assertInstanceOf(PrefixPrice::class, @$prefixPrice[0]);
-    $this->assertInstanceOf(Network::class, @$prefixPrice[0]['networks']['64804']);
+    expect(@$prefixPrice[0])->toBeInstanceOf(PrefixPrice::class);
+    expect(@$prefixPrice[0]['networks']['64804'])->toBeInstanceOf(Network::class);
 });
 
 test('get prefix pricing no results', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/get-prefix-pricing/outbound');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('prefix', '263', $request);
 
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('prefix-pricing-no-results'));
 
     $prefixPrice = $this->accountClient->getPrefixPricing('263');
-    $this->assertEmpty($prefixPrice);
+    expect($prefixPrice)->toBeEmpty();
 });
 
 test('get prefix pricing generates4xx error', function () {
@@ -380,9 +380,9 @@ test('get prefix pricing generates4xx error', function () {
     $this->expectExceptionMessage('authentication failed');
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/get-prefix-pricing/outbound');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('prefix', '263', $request);
 
         return true;
@@ -396,9 +396,9 @@ test('get prefix pricing generates5xx error', function () {
     $this->expectExceptionMessage('unknown error');
 
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/account/get-prefix-pricing/outbound', $request->getUri()->getPath());
-        $this->assertEquals('rest.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/account/get-prefix-pricing/outbound');
+        expect($request->getUri()->getHost())->toEqual('rest.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         $this->assertRequestQueryContains('prefix', '263', $request);
 
         return true;
@@ -414,9 +414,9 @@ test('get prefix pricing generates5xx error', function () {
  */
 test('list secrets', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/accounts/abcd1234/secrets', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/accounts/abcd1234/secrets');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('secret-management/list'));
 
@@ -464,8 +464,8 @@ test('get secret', function () {
             '/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800',
             $request->getUri()->getPath()
         );
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('GET', $request->getMethod());
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('GET');
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('secret-management/get'));
 
@@ -511,9 +511,9 @@ test('get secrets request error', function () {
  */
 test('create secret', function () {
     $this->vonageClient->send(Argument::that(function (RequestInterface $request) {
-        $this->assertEquals('/accounts/abcd1234/secrets', $request->getUri()->getPath());
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('POST', $request->getMethod());
+        expect($request->getUri()->getPath())->toEqual('/accounts/abcd1234/secrets');
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('POST');
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('secret-management/create'));
 
@@ -592,8 +592,8 @@ test('delete secret', function () {
             '/accounts/abcd1234/secrets/ad6dc56f-07b5-46e1-a527-85530e625800',
             $request->getUri()->getPath()
         );
-        $this->assertEquals('api.nexmo.com', $request->getUri()->getHost());
-        $this->assertEquals('DELETE', $request->getMethod());
+        expect($request->getUri()->getHost())->toEqual('api.nexmo.com');
+        expect($request->getMethod())->toEqual('DELETE');
         return true;
     }))->shouldBeCalledTimes(1)->willReturn(getResponse('secret-management/delete'));
 

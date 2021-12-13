@@ -19,13 +19,13 @@ beforeEach(function () {
 });
 
 test('simple values', function () {
-    $this->assertEquals($this->data['call-id'], $this->callback->getId());
-    $this->assertEquals($this->data['status'], $this->callback->getStatus());
-    $this->assertEquals($this->data['call-price'], $this->callback->getPrice());
-    $this->assertEquals($this->data['call-rate'], $this->callback->getRate());
-    $this->assertEquals($this->data['call-duration'], $this->callback->getDuration());
-    $this->assertEquals($this->data['to'], $this->callback->getTo());
-    $this->assertEquals($this->data['network-code'], $this->callback->getNetwork());
+    expect($this->callback->getId())->toEqual($this->data['call-id']);
+    expect($this->callback->getStatus())->toEqual($this->data['status']);
+    expect($this->callback->getPrice())->toEqual($this->data['call-price']);
+    expect($this->callback->getRate())->toEqual($this->data['call-rate']);
+    expect($this->callback->getDuration())->toEqual($this->data['call-duration']);
+    expect($this->callback->getTo())->toEqual($this->data['to']);
+    expect($this->callback->getNetwork())->toEqual($this->data['network-code']);
 });
 
 test('start and end optional', function () {
@@ -33,12 +33,12 @@ test('start and end optional', function () {
 
     $this->callback = new Callback($this->data);
 
-    $this->assertNull($this->callback->getStart());
-    $this->assertNull($this->callback->getEnd());
+    expect($this->callback->getStart())->toBeNull();
+    expect($this->callback->getEnd())->toBeNull();
 });
 
 test('date values', function () {
-    $this->assertEquals(new DateTime('2014-01-01 10:30:15'), $this->callback->getCreated());
-    $this->assertEquals(new DateTime('2014-01-01 10:30:25'), $this->callback->getStart());
-    $this->assertEquals(new DateTime('2014-01-01 10:30:35'), $this->callback->getEnd());
+    expect($this->callback->getCreated())->toEqual(new DateTime('2014-01-01 10:30:15'));
+    expect($this->callback->getStart())->toEqual(new DateTime('2014-01-01 10:30:25'));
+    expect($this->callback->getEnd())->toEqual(new DateTime('2014-01-01 10:30:35'));
 });

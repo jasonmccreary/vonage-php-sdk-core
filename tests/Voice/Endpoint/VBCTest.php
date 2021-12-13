@@ -15,7 +15,7 @@ use Vonage\Voice\Endpoint\VBC;
 uses(VonageTestCase::class);
 
 test('sets extension at creation', function () {
-    $this->assertSame('123', (new VBC('123'))->getId());
+    expect((new VBC('123'))->getId())->toBe('123');
 });
 
 test('factory creates v b c endpoint', function () {

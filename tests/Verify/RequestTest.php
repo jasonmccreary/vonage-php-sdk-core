@@ -17,10 +17,10 @@ test('can set code length', function () {
     $request = new Request(14845551212, 'Vonage');
 
     $request->setCodeLength(4);
-    $this->assertSame(4, $request->getCodeLength());
+    expect($request->getCodeLength())->toBe(4);
 
     $request->setCodeLength(6);
-    $this->assertSame(6, $request->getCodeLength());
+    expect($request->getCodeLength())->toBe(6);
 });
 
 // Datasets

@@ -16,38 +16,38 @@ uses(VonageTestCase::class);
 
 test('can set unicode type', function () {
     $sms = (new SMS('447700900000', '16105551212', 'Test Message'));
-    $this->assertSame('unicode', $sms->getType());
+    expect($sms->getType())->toBe('unicode');
     $sms->setType('text');
-    $this->assertSame('text', $sms->getType());
+    expect($sms->getType())->toBe('text');
 });
 
 test('can set unicode type in constructor', function () {
     $sms = (new SMS('447700900000', '16105551212', 'Test Message', 'text'));
-    $this->assertSame('text', $sms->getType());
+    expect($sms->getType())->toBe('text');
 });
 
 test('delivery callback can be set', function () {
     $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
         ->setDeliveryReceiptCallback('https://test.domain/webhooks/dlr');
 
-    $this->assertSame('https://test.domain/webhooks/dlr', $sms->getDeliveryReceiptCallback());
-    $this->assertTrue($sms->getRequestDeliveryReceipt());
+    expect($sms->getDeliveryReceiptCallback())->toBe('https://test.domain/webhooks/dlr');
+    expect($sms->getRequestDeliveryReceipt())->toBeTrue();
 
     $data = $sms->toArray();
 
-    $this->assertSame('https://test.domain/webhooks/dlr', $data['callback']);
-    $this->assertSame(1, $data['status-report-req']);
+    expect($data['callback'])->toBe('https://test.domain/webhooks/dlr');
+    expect($data['status-report-req'])->toBe(1);
 });
 
 test('message class can be set', function () {
     $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
         ->setMessageClass(0);
 
-    $this->assertSame(0, $sms->getMessageClass());
+    expect($sms->getMessageClass())->toBe(0);
 
     $data = $sms->toArray();
 
-    $this->assertSame(0, $data['message-class']);
+    expect($data['message-class'])->toBe(0);
 });
 
 test('invalid message class cannot be set', function () {
@@ -62,11 +62,11 @@ test('t t l can be set', function () {
     $sms = (new SMS('447700900000', '16105551212', 'Test Message'))
         ->setTtl(40000);
 
-    $this->assertSame(40000, $sms->getTtl());
+    expect($sms->getTtl())->toBe(40000);
 
     $data = $sms->toArray();
 
-    $this->assertSame(40000, $data['ttl']);
+    expect($data['ttl'])->toBe(40000);
 });
 
 test('cannot set invalid t t l', function () {
@@ -99,8 +99,8 @@ test('can set entity id', function () {
         'status-report-req' => 1,
     ];
 
-    $this->assertSame($expected, $sms->toArray());
-    $this->assertSame($expected['entity-id'], $sms->getEntityId());
+    expect($sms->toArray())->toBe($expected);
+    expect($sms->getEntityId())->toBe($expected['entity-id']);
 });
 
 test('can set content id', function () {
@@ -117,8 +117,8 @@ test('can set content id', function () {
         'status-report-req' => 1,
     ];
 
-    $this->assertSame($expected, $sms->toArray());
-    $this->assertSame($expected['content-id'], $sms->getContentId());
+    expect($sms->toArray())->toBe($expected);
+    expect($sms->getContentId())->toBe($expected['content-id']);
 });
 
 test('d l t info appears in request', function () {
@@ -136,7 +136,7 @@ test('d l t info appears in request', function () {
         'status-report-req' => 1,
     ];
 
-    $this->assertSame($expected, $sms->toArray());
+    expect($sms->toArray())->toBe($expected);
 });
 
 test('d l t info does not appears when not set', function () {
@@ -151,5 +151,5 @@ test('d l t info does not appears when not set', function () {
         'status-report-req' => 1,
     ];
 
-    $this->assertSame($expected, $sms->toArray());
+    expect($sms->toArray())->toBe($expected);
 });

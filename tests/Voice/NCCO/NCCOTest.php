@@ -87,6 +87,6 @@ test('can create n c c o from array', function () {
 
     $json = json_decode(json_encode($ncco), true);
 
-    $this->assertCount(7, $json);
-    $this->assertEquals($data[0], $json[0]);
+    expect($json)->toHaveCount(7);
+    expect($json[0])->toEqual($data[0]);
 });

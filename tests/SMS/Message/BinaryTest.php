@@ -22,10 +22,10 @@ test('can create binary message', function () {
         '0605040B8423F0'
     ))->toArray();
 
-    $this->assertSame('447700900000', $data['to']);
-    $this->assertSame('16105551212', $data['from']);
-    $this->assertSame('EA0601AE02056A0045C60C037761702E6F7A656B692E6875000801034F7A656B69000101', $data['body']);
-    $this->assertSame('0605040B8423F0', $data['udh']);
+    expect($data['to'])->toBe('447700900000');
+    expect($data['from'])->toBe('16105551212');
+    expect($data['body'])->toBe('EA0601AE02056A0045C60C037761702E6F7A656B692E6875000801034F7A656B69000101');
+    expect($data['udh'])->toBe('0605040B8423F0');
 });
 
 test('can create binary message with protocol i d', function () {
@@ -37,9 +37,9 @@ test('can create binary message with protocol i d', function () {
         45
     ))->toArray();
 
-    $this->assertSame('447700900000', $data['to']);
-    $this->assertSame('16105551212', $data['from']);
-    $this->assertSame('EA0601AE02056A0045C60C037761702E6F7A656B692E6875000801034F7A656B69000101', $data['body']);
-    $this->assertSame('0605040B8423F0', $data['udh']);
-    $this->assertSame(45, $data['protocol-id']);
+    expect($data['to'])->toBe('447700900000');
+    expect($data['from'])->toBe('16105551212');
+    expect($data['body'])->toBe('EA0601AE02056A0045C60C037761702E6F7A656B692E6875000801034F7A656B69000101');
+    expect($data['udh'])->toBe('0605040B8423F0');
+    expect($data['protocol-id'])->toBe(45);
 });

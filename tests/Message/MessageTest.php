@@ -37,11 +37,11 @@ test('request sets data', function () {
     $request = new Request('http://example.com?' . http_build_query($data));
     @$this->message->setRequest($request);
 
-    $this->assertSame($request, @$this->message->getRequest());
+    expect(@$this->message->getRequest())->toBe($request);
 
     $requestData = @$this->message->getRequestData();
 
-    $this->assertEquals($data, $requestData);
+    expect($requestData)->toEqual($data);
 });
 
 /**
@@ -55,8 +55,8 @@ test('response sets data', function () {
 
     @$this->message->setResponse($response);
 
-    $this->assertSame($response, @$this->message->getResponse());
-    $this->assertEquals($data, @$this->message->getResponseData());
+    expect(@$this->message->getResponse())->toBe($response);
+    expect(@$this->message->getResponseData())->toEqual($data);
 });
 
 /**
@@ -65,7 +65,7 @@ test('response sets data', function () {
  * @throws Exception
  */
 test('can create with id', function () {
-    $this->assertEquals('00000123', (new Message('00000123'))->getMessageId());
+    expect((new Message('00000123'))->getMessageId())->toEqual('00000123');
 });
 
 /**
@@ -79,11 +79,11 @@ test('can create with id', function () {
 test('does not autodetect by default', function ($msg) {
     $message = new Text('to', 'from', $msg);
 
-    $this->assertFalse($message->isEncodingDetectionEnabled());
+    expect($message->isEncodingDetectionEnabled())->toBeFalse();
 
     $d = $message->getRequestData(false);
 
-    $this->assertEquals('text', $d['type']);
+    expect($d['type'])->toEqual('text');
 })->with('messageEncodingProvider');
 
 /**
@@ -99,11 +99,11 @@ test('does autodetect when enabled', function ($msg, $encoding) {
     $message = new Text('to', 'from', $msg);
     $message->enableEncodingDetection();
 
-    $this->assertTrue($message->isEncodingDetectionEnabled());
+    expect($message->isEncodingDetectionEnabled())->toBeTrue();
 
     $d = $message->getRequestData(false);
 
-    $this->assertEquals($d['type'], $encoding);
+    expect($encoding)->toEqual($d['type']);
 })->with('messageEncodingProvider');
 
 // Datasets

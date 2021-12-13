@@ -36,8 +36,8 @@ afterEach(function () {
 test('required params', function () {
     $params = @$this->message->getRequestData();
 
-    $this->assertEquals($this->to, $params['to']);
-    $this->assertEquals($this->from, $params['from']);
+    expect($params['to'])->toEqual($this->to);
+    expect($params['from'])->toEqual($this->from);
 });
 
 /**
@@ -74,7 +74,7 @@ test('optional params', function ($setter, $param, $values) {
         $params = @$this->message->getRequestData();
 
         $this->assertArrayHasKey($param, $params);
-        $this->assertEquals($expected, $params[$param]);
+        expect($params[$param])->toEqual($expected);
     }
 })->with('optionalParams');
 

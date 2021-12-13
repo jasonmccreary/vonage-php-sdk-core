@@ -17,10 +17,10 @@ uses(VonageTestCase::class);
 test('default endpoint is created properly', function () {
     $endpoint = new Phone($this->number);
 
-    $this->assertSame($this->number, $endpoint->getId());
-    $this->assertNull($endpoint->getDtmfAnswer());
-    $this->assertNull($endpoint->getRingbackTone());
-    $this->assertNull($endpoint->getUrl());
+    expect($endpoint->getId())->toBe($this->number);
+    expect($endpoint->getDtmfAnswer())->toBeNull();
+    expect($endpoint->getRingbackTone())->toBeNull();
+    expect($endpoint->getUrl())->toBeNull();
 });
 
 test('factory creates phone endpoint', function () {
@@ -32,9 +32,9 @@ test('factory creates phone endpoint', function () {
         ]
     ]);
 
-    $this->assertSame($this->number, $endpoint->getId());
-    $this->assertSame($this->url, $endpoint->getUrl());
-    $this->assertSame($this->ringbackTone, $endpoint->getRingbackTone());
+    expect($endpoint->getId())->toBe($this->number);
+    expect($endpoint->getUrl())->toBe($this->url);
+    expect($endpoint->getRingbackTone())->toBe($this->ringbackTone);
 });
 
 test('factory handles legacy ringback argument', function () {
@@ -46,9 +46,9 @@ test('factory handles legacy ringback argument', function () {
         ]
     ]);
 
-    $this->assertSame($this->number, $endpoint->getId());
-    $this->assertSame($this->url, $endpoint->getUrl());
-    $this->assertSame($this->ringbackTone, $endpoint->getRingbackTone());
+    expect($endpoint->getId())->toBe($this->number);
+    expect($endpoint->getUrl())->toBe($this->url);
+    expect($endpoint->getRingbackTone())->toBe($this->ringbackTone);
 });
 
 test('to array has correct structure', function () {
@@ -57,7 +57,7 @@ test('to array has correct structure', function () {
         'number' => $this->number
     ];
 
-    $this->assertSame($expected, (new Phone($this->number))->toArray());
+    expect((new Phone($this->number))->toArray())->toBe($expected);
 });
 
 test('ringback not returned if u r l not set', function () {
@@ -100,5 +100,5 @@ test('serializes to j s o n correctly', function () {
     $endpoint = new Phone($this->number);
     $endpoint->setDtmfAnswer($this->dtmfAnswer);
 
-    $this->assertSame($expected, $endpoint->jsonSerialize());
+    expect($endpoint->jsonSerialize())->toBe($expected);
 });

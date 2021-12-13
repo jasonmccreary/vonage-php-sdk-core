@@ -22,7 +22,7 @@ test('query has start date', function () {
     $filter->setDateStart(new DateTimeImmutable('2020-01-01', new DateTimeZone('Z')));
     $query = $filter->getQuery();
 
-    $this->assertSame('2020-01-01T00:00:00Z', $query['date_start']);
+    expect($query['date_start'])->toBe('2020-01-01T00:00:00Z');
 });
 
 /**
@@ -33,7 +33,7 @@ test('query has end date', function () {
         ->setDateEnd(new DateTimeImmutable('2020-01-01', new DateTimeZone('Z')))
         ->getQuery();
 
-    $this->assertSame('2020-01-01T00:00:00Z', $query['date_end']);
+    expect($query['date_end'])->toBe('2020-01-01T00:00:00Z');
 });
 
 test('query has conversation u u i d', function () {
@@ -41,7 +41,7 @@ test('query has conversation u u i d', function () {
         ->setConversationUUID('CON-c39bc0bb-7ebc-405f-801b-f6b9a0d92860')
         ->getQuery();
 
-    $this->assertSame('CON-c39bc0bb-7ebc-405f-801b-f6b9a0d92860', $query['conversation_uuid']);
+    expect($query['conversation_uuid'])->toBe('CON-c39bc0bb-7ebc-405f-801b-f6b9a0d92860');
 });
 
 test('can set record index', function () {
@@ -49,7 +49,7 @@ test('can set record index', function () {
         ->setRecordIndex(100)
         ->getQuery();
 
-    $this->assertSame(100, $query['record_index']);
+    expect($query['record_index'])->toBe(100);
 });
 
 test('can set page size', function () {
@@ -57,7 +57,7 @@ test('can set page size', function () {
         ->setPageSize(100)
         ->getQuery();
 
-    $this->assertSame(100, $query['page_size']);
+    expect($query['page_size'])->toBe(100);
 });
 
 test('can set order', function () {
@@ -65,7 +65,7 @@ test('can set order', function () {
         ->setOrder(VoiceFilter::ORDER_ASC)
         ->getQuery();
 
-    $this->assertSame(VoiceFilter::ORDER_ASC, $query['order']);
+    expect($query['order'])->toBe(VoiceFilter::ORDER_ASC);
 });
 
 test('filter throw exception on bad order', function () {
@@ -80,7 +80,7 @@ test('start date timezone is switched to u t c', function () {
     $filter->setDateStart(new DateTimeImmutable('2020-01-01', new DateTimeZone('America/New_York')));
 
     $startDate = $filter->getDateStart();
-    $this->assertSame('Z', $startDate->getTimezone()->getName());
+    expect($startDate->getTimezone()->getName())->toBe('Z');
 });
 
 test('end date timezone is switched to u t c', function () {
@@ -88,5 +88,5 @@ test('end date timezone is switched to u t c', function () {
     $filter->setDateEnd(new DateTimeImmutable('2020-01-01', new DateTimeZone('America/New_York')));
 
     $startDate = $filter->getDateEnd();
-    $this->assertSame('Z', $startDate->getTimezone()->getName());
+    expect($startDate->getTimezone()->getName())->toBe('Z');
 });

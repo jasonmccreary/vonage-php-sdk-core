@@ -98,7 +98,7 @@ test('basic credentials form', function () {
     $client->send($request);
     $request = $this->http->getRequests()[0];
 
-    $this->assertEmpty($request->getUri()->getQuery());
+    expect($request->getUri()->getQuery())->toBeEmpty();
     $this->assertRequestFormBodyContains('api_key', $this->api_key, $request);
     $this->assertRequestFormBodyContains('api_secret', $this->api_secret, $request);
 });
@@ -113,7 +113,7 @@ test('credential container defaults basic', function () {
     $client->send($request);
     $request = $this->http->getRequests()[0];
 
-    $this->assertEmpty($request->getUri()->getQuery());
+    expect($request->getUri()->getQuery())->toBeEmpty();
     $this->assertRequestJsonBodyContains('api_key', $this->api_key, $request);
     $this->assertRequestJsonBodyContains('api_secret', $this->api_secret, $request);
 });
@@ -128,11 +128,11 @@ test('credential container uses keypair for voice', function () {
     $client->send($request);
     $request = $this->http->getRequests()[0];
 
-    $this->assertEmpty($request->getUri()->getQuery());
+    expect($request->getUri()->getQuery())->toBeEmpty();
 
     $auth = $request->getHeaderLine('Authorization');
 
-    $this->assertStringStartsWith('Bearer ', $auth);
+    expect($auth)->toStartWith('Bearer ');
     self::markTestIncomplete('Has correct format, but not tested as output of JWT generation');
 });
 
@@ -146,11 +146,11 @@ test('credential container uses keypair for files', function () {
     $client->send($request);
     $request = $this->http->getRequests()[0];
 
-    $this->assertEmpty($request->getUri()->getQuery());
+    expect($request->getUri()->getQuery())->toBeEmpty();
 
     $auth = $request->getHeaderLine('Authorization');
 
-    $this->assertStringStartsWith('Bearer ', $auth);
+    expect($auth)->toStartWith('Bearer ');
     self::markTestIncomplete('Has correct format, but not tested as output of JWT generation');
 });
 
@@ -164,7 +164,7 @@ test('basic credentials json', function () {
     $client->send($request);
     $request = $this->http->getRequests()[0];
 
-    $this->assertEmpty($request->getUri()->getQuery());
+    expect($request->getUri()->getQuery())->toBeEmpty();
     $this->assertRequestJsonBodyContains('api_key', $this->api_key, $request);
     $this->assertRequestJsonBodyContains('api_secret', $this->api_secret, $request);
 });
@@ -184,11 +184,11 @@ test('keypair credentials', function () {
     $client->send($request);
     $request = $this->http->getRequests()[0];
 
-    $this->assertEmpty($request->getUri()->getQuery());
+    expect($request->getUri()->getQuery())->toBeEmpty();
 
     $auth = $request->getHeaderLine('Authorization');
 
-    $this->assertStringStartsWith('Bearer ', $auth);
+    expect($auth)->toStartWith('Bearer ');
     self::markTestIncomplete('Has correct format, but not tested as output of JWT generation');
 });
 
@@ -208,13 +208,13 @@ test('setting base url', function () {
     $client->send(new Request('https://rest.nexmo.com/just/path', 'POST'));
     $request = $this->http->getRequests()[0];
 
-    $this->assertSame('proxy.example.com', $request->getUri()->getHost());
-    $this->assertSame('/just/path', $request->getUri()->getPath());
+    expect($request->getUri()->getHost())->toBe('proxy.example.com');
+    expect($request->getUri()->getPath())->toBe('/just/path');
 
     $request = $this->http->getRequests()[1];
 
-    $this->assertSame('example.com', $request->getUri()->getHost());
-    $this->assertSame('/rest/just/path', $request->getUri()->getPath());
+    expect($request->getUri()->getHost())->toBe('example.com');
+    expect($request->getUri()->getPath())->toBe('/rest/just/path');
 });
 
 test('specific http client', function () {
@@ -222,11 +222,11 @@ test('specific http client', function () {
     $replace = new HttpClient();
     $client = new Client(new Basic('key', 'secret'), [], $construct);
 
-    $this->assertSame($construct, $client->getHttpClient());
+    expect($client->getHttpClient())->toBe($construct);
 
     $client->setHttpClient($replace);
 
-    $this->assertSame($replace, $client->getHttpClient());
+    expect($client->getHttpClient())->toBe($replace);
     $this->assertNotSame($construct, $client->getHttpClient());
 });
 
@@ -261,7 +261,7 @@ test('sign body data', function () {
     $this->assertValidSignature($data, $this->signature_secret);
 
     //signing should not change query string
-    $this->assertEmpty($signed->getUri()->getQuery());
+    expect($signed->getUri()->getQuery())->toBeEmpty();
 });
 
 /**
@@ -280,7 +280,7 @@ test('sign json data', function () {
     $this->assertValidSignature($data, $this->signature_secret);
 
     //signing should not change query string
-    $this->assertEmpty($signed->getUri()->getQuery());
+    expect($signed->getUri()->getQuery())->toBeEmpty();
 });
 
 /**
@@ -293,7 +293,7 @@ test('body signature does not change query', function () {
     $client->send($request);
     $request = $this->http->getRequests()[0];
 
-    $this->assertEmpty($request->getUri()->getQuery());
+    expect($request->getUri()->getQuery())->toBeEmpty();
 });
 
 /**
@@ -335,10 +335,10 @@ test('send proxies client', function () {
     //api client should simply pass back the http response
     $test = $client->send($request);
 
-    $this->assertSame($response, $test);
+    expect($test)->toBe($response);
 
     //api client should not change the boy of the request
-    $this->assertSame($request->getBody()->getContents(), $this->http->getRequests()[0]->getBody()->getContents());
+    expect($this->http->getRequests()[0]->getBody()->getContents())->toBe($request->getBody()->getContents());
 });
 
 /**
@@ -355,7 +355,7 @@ test('namespace factory', function () {
     $client = new Client(new Basic('key', 'secret'));
     $client->setFactory($factory->reveal());
 
-    $this->assertSame($api, $client->sms());
+    expect($client->sms())->toBe($api);
 });
 
 /**
@@ -387,7 +387,7 @@ test('user agent string app not provided', function () {
         $php
     ]);
 
-    $this->assertEquals($expected, $agent);
+    expect($agent)->toEqual($expected);
 });
 
 /**
@@ -426,7 +426,7 @@ test('user agent string app provided', function () {
         'TestApp/9.4.5'
     ]);
 
-    $this->assertEquals($expected, $agent);
+    expect($agent)->toEqual($expected);
 });
 
 test('serialization proxies verify', function () {
@@ -445,8 +445,8 @@ test('serialization proxies verify', function () {
     $verify->serialize($verification)->willReturn('string data')->shouldBeCalled();
     $verify->unserialize($verification)->willReturn($verification)->shouldBeCalled();
 
-    $this->assertEquals('string data', $client->serialize($verification));
-    $this->assertEquals($verification, $client->unserialize(serialize($verification)));
+    expect($client->serialize($verification))->toEqual('string data');
+    expect($client->unserialize(serialize($verification)))->toEqual($verification);
 });
 
 /**
@@ -541,7 +541,7 @@ test('generic delete method', function ($url, $params) {
 
 test('logger is null when not set', function () {
     $client = new Client($this->basic_credentials, [], $this->http);
-    $this->assertNull($client->getLogger());
+    expect($client->getLogger())->toBeNull();
 });
 
 test('can get logger when one is set', function () {
@@ -681,5 +681,5 @@ function assertValidSignature($array, $secret): void
     //params should be correctly signed
     $signature = new Signature($array, $secret, 'md5hash');
 
-    self::assertTrue($signature->check($array));
+    expect($signature->check($array))->toBeTrue();
 }

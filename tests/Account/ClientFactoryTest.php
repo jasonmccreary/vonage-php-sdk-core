@@ -30,8 +30,8 @@ test('u r is are correct', function () {
     $factory = new ClientFactory();
     $client = $factory($this->mapFactory);
 
-    $this->assertSame('/accounts', $client->getSecretsAPI()->getBaseUri());
-    $this->assertSame('https://api.nexmo.com', $client->getSecretsAPI()->getBaseUrl());
-    $this->assertSame('/account', $client->getAccountAPI()->getBaseUri());
-    $this->assertSame('https://rest.nexmo.com', $client->getAccountAPI()->getBaseUrl());
+    expect($client->getSecretsAPI()->getBaseUri())->toBe('/accounts');
+    expect($client->getSecretsAPI()->getBaseUrl())->toBe('https://api.nexmo.com');
+    expect($client->getAccountAPI()->getBaseUri())->toBe('/account');
+    expect($client->getAccountAPI()->getBaseUrl())->toBe('https://rest.nexmo.com');
 });

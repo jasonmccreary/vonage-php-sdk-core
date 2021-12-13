@@ -15,14 +15,14 @@ use Vonage\Voice\Endpoint\Websocket;
 uses(VonageTestCase::class);
 
 test('sets u r l at creation', function () {
-    $this->assertSame($this->uri, (new Websocket($this->uri))->getId());
+    expect((new Websocket($this->uri))->getId())->toBe($this->uri);
 });
 
 test('can add header', function () {
     $endpoint = (new Websocket($this->uri))->addHeader('key', 'value');
 
-    $this->assertSame($this->uri, $endpoint->getId());
-    $this->assertSame(['key' => 'value'], $endpoint->getHeaders());
+    expect($endpoint->getId())->toBe($this->uri);
+    expect($endpoint->getHeaders())->toBe(['key' => 'value']);
 });
 
 test('factory creates websocket endpoint', function () {
@@ -35,9 +35,9 @@ test('factory creates additional options', function () {
         'content-type' => Websocket::TYPE_16000
     ]);
 
-    $this->assertSame($this->uri, $endpoint->getId());
-    $this->assertSame(['key' => 'value'], $endpoint->getHeaders());
-    $this->assertSame(Websocket::TYPE_16000, $endpoint->getContentType());
+    expect($endpoint->getId())->toBe($this->uri);
+    expect($endpoint->getHeaders())->toBe(['key' => 'value']);
+    expect($endpoint->getContentType())->toBe(Websocket::TYPE_16000);
 });
 
 test('to array has correct structure', function () {

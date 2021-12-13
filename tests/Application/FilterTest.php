@@ -23,9 +23,9 @@ uses(VonageTestCase::class);
 test('ranges', function ($start, $end, $expected) {
     $filter = new Filter($start, $end);
 
-    $this->assertIsArray($filter->getQuery());
+    expect($filter->getQuery())->toBeArray();
     $this->assertArrayHasKey('date', $filter->getQuery());
-    $this->assertEquals($expected, $filter->getQuery()['date']);
+    expect($filter->getQuery()['date'])->toEqual($expected);
 })->with('ranges');
 
 // Datasets

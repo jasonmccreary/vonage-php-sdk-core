@@ -20,12 +20,12 @@ beforeEach(function () {
 });
 
 test('methods match data', function () {
-    $this->assertEquals($this->data['request_id'], $this->response->getId());
-    $this->assertEquals($this->data['number'], $this->response->getNumber());
-    $this->assertEquals($this->data['request_price'], $this->response->getPrice());
-    $this->assertEquals($this->data['remaining_balance'], $this->response->getBalance());
-    $this->assertEquals($this->data['callback_total_parts'], $this->response->getCallbackTotal());
-    $this->assertEquals($this->data['status'], $this->response->getStatus());
+    expect($this->response->getId())->toEqual($this->data['request_id']);
+    expect($this->response->getNumber())->toEqual($this->data['number']);
+    expect($this->response->getPrice())->toEqual($this->data['request_price']);
+    expect($this->response->getBalance())->toEqual($this->data['remaining_balance']);
+    expect($this->response->getCallbackTotal())->toEqual($this->data['callback_total_parts']);
+    expect($this->response->getStatus())->toEqual($this->data['status']);
 });
 
 /**

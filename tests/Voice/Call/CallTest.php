@@ -24,9 +24,9 @@ test('construct params', function () {
     $this->assertArrayHasKey('to', $params);
     $this->assertArrayHasKey('from', $params);
     $this->assertArrayHasKey('answer_url', $params);
-    $this->assertEquals($this->to, $params['to']);
-    $this->assertEquals($this->from, $params['from']);
-    $this->assertEquals($this->url, $params['answer_url']);
+    expect($params['to'])->toEqual($this->to);
+    expect($params['from'])->toEqual($this->from);
+    expect($params['answer_url'])->toEqual($this->url);
 });
 
 test('from optional', function () {
@@ -39,22 +39,22 @@ test('machine', function () {
 
     $this->assertArrayHasKey('machine_detection', $params);
     $this->assertArrayNotHasKey('machine_timeout', $params);
-    $this->assertEquals('hangup', $params['machine_detection']);
+    expect($params['machine_detection'])->toEqual('hangup');
 
     $this->call->setMachineDetection(true, 100);
     $params = $this->call->getParams();
 
     $this->assertArrayHasKey('machine_detection', $params);
     $this->assertArrayHasKey('machine_timeout', $params);
-    $this->assertEquals('hangup', $params['machine_detection']);
-    $this->assertEquals(100, $params['machine_timeout']);
+    expect($params['machine_detection'])->toEqual('hangup');
+    expect($params['machine_timeout'])->toEqual(100);
 
     $this->call->setMachineDetection(false);
     $params = $this->call->getParams();
 
     $this->assertArrayHasKey('machine_detection', $params);
     $this->assertArrayNotHasKey('machine_timeout', $params);
-    $this->assertEquals('true', $params['machine_detection']);
+    expect($params['machine_detection'])->toEqual('true');
 });
 
 test('callback', function (string $method, string $param, string $param_method) {
@@ -62,22 +62,22 @@ test('callback', function (string $method, string $param, string $param_method) 
     $params = $this->call->getParams();
 
     $this->assertArrayHasKey($param, $params);
-    $this->assertEquals('http://example.com', $params[$param]);
+    expect($params[$param])->toEqual('http://example.com');
     $this->assertArrayNotHasKey($param_method, $params);
 
     $this->call->$method('http://example.com', 'POST');
     $params = $this->call->getParams();
 
     $this->assertArrayHasKey($param, $params);
-    $this->assertEquals('http://example.com', $params[$param]);
+    expect($params[$param])->toEqual('http://example.com');
     $this->assertArrayHasKey($param_method, $params);
-    $this->assertEquals('POST', $params[$param_method]);
+    expect($params[$param_method])->toEqual('POST');
 
     $this->call->$method('http://example.com');
     $params = $this->call->getParams();
 
     $this->assertArrayHasKey($param, $params);
-    $this->assertEquals('http://example.com', $params[$param]);
+    expect($params[$param])->toEqual('http://example.com');
     $this->assertArrayNotHasKey($param_method, $params);
 })->with('getCallbacks');
 

@@ -44,13 +44,13 @@ test('array is lazy', function ($payload, $id) {
     $this->vonageClient->send(Argument::any())->willReturn(getResponse('conversation'));
 
     $conversation = $this->collection[$payload];
-    $this->assertInstanceOf(Conversation::class, $conversation);
+    expect($conversation)->toBeInstanceOf(Conversation::class);
 
     $this->vonageClient->send(Argument::any())->shouldNotHaveBeenCalled();
-    $this->assertEquals($id, $conversation->getId());
+    expect($conversation->getId())->toEqual($id);
 
     if ($payload instanceof Conversation) {
-        $this->assertSame($payload, $conversation);
+        expect($conversation)->toBe($payload);
     }
 
     // Once we call get() the rest of the data should be populated
@@ -80,7 +80,7 @@ test('get is not lazy', function ($payload, $id) {
     $conversation = $this->collection->get($payload);
 
     if ($payload instanceof Conversation) {
-        $this->assertSame($payload, $conversation);
+        expect($conversation)->toBe($payload);
     }
 })->with('getConversation');
 
@@ -99,8 +99,8 @@ test('create post conversation', function ($payload, $method) {
 
     $conversation = $this->collection->$method($payload);
 
-    $this->assertInstanceOf(Conversation::class, $conversation);
-    $this->assertEquals('CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab', $conversation->getId());
+    expect($conversation)->toBeInstanceOf(Conversation::class);
+    expect($conversation->getId())->toEqual('CON-aaaaaaaa-bbbb-cccc-dddd-0123456789ab');
 })->with('postConversation');
 
 /**
@@ -121,7 +121,7 @@ test('create post conversation error from v api', function ($payload, $method) {
 
         self::fail('Expected to throw request exception');
     } catch (ClientException\Request $e) {
-        $this->assertEquals('the token was rejected', $e->getMessage());
+        expect($e->getMessage())->toEqual('the token was rejected');
     }
 })->with('postConversation');
 
@@ -145,7 +145,7 @@ test('create post call error from proxy', function ($payload, $method) {
 
         self::fail('Expected to throw request exception');
     } catch (ClientException\Request $e) {
-        $this->assertEquals('Unsupported Media Type', $e->getMessage());
+        expect($e->getMessage())->toEqual('Unsupported Media Type');
     }
 })->with('postConversation');
 
@@ -169,7 +169,7 @@ test('create post call error unknown format', function ($payload, $method) {
 
         self::fail('Expected to throw request exception');
     } catch (ClientException\Request $e) {
-        $this->assertEquals("Unexpected error", $e->getMessage());
+        expect($e->getMessage())->toEqual("Unexpected error");
     }
 })->with('postConversation');
 

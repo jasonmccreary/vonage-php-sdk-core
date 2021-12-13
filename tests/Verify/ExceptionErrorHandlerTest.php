@@ -26,7 +26,7 @@ test('server exception throw on error', function () {
 
 test('no exception throw on valid response', function () {
     $handler = new ExceptionErrorHandler();
-    $this->assertNull($handler->__invoke(getResponse('start'), new Request()));
+    expect($handler->__invoke(getResponse('start'), new Request()))->toBeNull();
 });
 
 // Helpers

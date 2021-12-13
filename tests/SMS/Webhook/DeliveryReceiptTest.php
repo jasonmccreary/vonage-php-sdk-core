@@ -23,16 +23,16 @@ test('can create from get server request', function () {
     $request = getServerRequest('dlr-get');
     $dlr = Factory::createFromRequest($request);
 
-    $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
-    $this->assertSame((int)$expected['err-code'], $dlr->getErrCode());
-    $this->assertSame($expected['messageId'], $dlr->getMessageId());
-    $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
-    $this->assertSame($expected['price'], $dlr->getPrice());
-    $this->assertSame($expected['scts'], $dlr->getScts());
-    $this->assertSame($expected['status'], $dlr->getStatus());
-    $this->assertSame($expected['to'], $dlr->getTo());
-    $this->assertSame($expected['api-key'], $dlr->getApiKey());
-    $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+    expect($dlr->getMsisdn())->toBe($expected['msisdn']);
+    expect($dlr->getErrCode())->toBe((int)$expected['err-code']);
+    expect($dlr->getMessageId())->toBe($expected['messageId']);
+    expect($dlr->getNetworkCode())->toBe($expected['network-code']);
+    expect($dlr->getPrice())->toBe($expected['price']);
+    expect($dlr->getScts())->toBe($expected['scts']);
+    expect($dlr->getStatus())->toBe($expected['status']);
+    expect($dlr->getTo())->toBe($expected['to']);
+    expect($dlr->getApiKey())->toBe($expected['api-key']);
+    expect($dlr->getMessageTimestamp()->format('Y-m-d H:i:s'))->toBe($expected['message-timestamp']);
 });
 
 test('can create from j s o n post server request', function () {
@@ -40,16 +40,16 @@ test('can create from j s o n post server request', function () {
     $request = getServerRequest('dlr-post-json');
     $dlr = Factory::createFromRequest($request);
 
-    $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
-    $this->assertSame((int)$expected['err-code'], $dlr->getErrCode());
-    $this->assertSame($expected['messageId'], $dlr->getMessageId());
-    $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
-    $this->assertSame($expected['price'], $dlr->getPrice());
-    $this->assertSame($expected['scts'], $dlr->getScts());
-    $this->assertSame($expected['status'], $dlr->getStatus());
-    $this->assertSame($expected['to'], $dlr->getTo());
-    $this->assertSame($expected['api-key'], $dlr->getApiKey());
-    $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+    expect($dlr->getMsisdn())->toBe($expected['msisdn']);
+    expect($dlr->getErrCode())->toBe((int)$expected['err-code']);
+    expect($dlr->getMessageId())->toBe($expected['messageId']);
+    expect($dlr->getNetworkCode())->toBe($expected['network-code']);
+    expect($dlr->getPrice())->toBe($expected['price']);
+    expect($dlr->getScts())->toBe($expected['scts']);
+    expect($dlr->getStatus())->toBe($expected['status']);
+    expect($dlr->getTo())->toBe($expected['to']);
+    expect($dlr->getApiKey())->toBe($expected['api-key']);
+    expect($dlr->getMessageTimestamp()->format('Y-m-d H:i:s'))->toBe($expected['message-timestamp']);
 });
 
 test('can create from form post server request', function () {
@@ -57,16 +57,16 @@ test('can create from form post server request', function () {
     $request = getServerRequest('dlr-post');
     $dlr = Factory::createFromRequest($request);
 
-    $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
-    $this->assertSame((int)$expected['err-code'], $dlr->getErrCode());
-    $this->assertSame($expected['messageId'], $dlr->getMessageId());
-    $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
-    $this->assertSame($expected['price'], $dlr->getPrice());
-    $this->assertSame($expected['scts'], $dlr->getScts());
-    $this->assertSame($expected['status'], $dlr->getStatus());
-    $this->assertSame($expected['to'], $dlr->getTo());
-    $this->assertSame($expected['api-key'], $dlr->getApiKey());
-    $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+    expect($dlr->getMsisdn())->toBe($expected['msisdn']);
+    expect($dlr->getErrCode())->toBe((int)$expected['err-code']);
+    expect($dlr->getMessageId())->toBe($expected['messageId']);
+    expect($dlr->getNetworkCode())->toBe($expected['network-code']);
+    expect($dlr->getPrice())->toBe($expected['price']);
+    expect($dlr->getScts())->toBe($expected['scts']);
+    expect($dlr->getStatus())->toBe($expected['status']);
+    expect($dlr->getTo())->toBe($expected['to']);
+    expect($dlr->getApiKey())->toBe($expected['api-key']);
+    expect($dlr->getMessageTimestamp()->format('Y-m-d H:i:s'))->toBe($expected['message-timestamp']);
 });
 
 /**
@@ -76,16 +76,16 @@ test('can create from raw array', function () {
     $expected = getQueryStringFromRequest('dlr-get');
     $dlr = new DeliveryReceipt($expected);
 
-    $this->assertSame($expected['msisdn'], $dlr->getMsisdn());
-    $this->assertSame((int)$expected['err-code'], $dlr->getErrCode());
-    $this->assertSame($expected['messageId'], $dlr->getMessageId());
-    $this->assertSame($expected['network-code'], $dlr->getNetworkCode());
-    $this->assertSame($expected['price'], $dlr->getPrice());
-    $this->assertSame($expected['scts'], $dlr->getScts());
-    $this->assertSame($expected['status'], $dlr->getStatus());
-    $this->assertSame($expected['to'], $dlr->getTo());
-    $this->assertSame($expected['api-key'], $dlr->getApiKey());
-    $this->assertSame($expected['message-timestamp'], $dlr->getMessageTimestamp()->format('Y-m-d H:i:s'));
+    expect($dlr->getMsisdn())->toBe($expected['msisdn']);
+    expect($dlr->getErrCode())->toBe((int)$expected['err-code']);
+    expect($dlr->getMessageId())->toBe($expected['messageId']);
+    expect($dlr->getNetworkCode())->toBe($expected['network-code']);
+    expect($dlr->getPrice())->toBe($expected['price']);
+    expect($dlr->getScts())->toBe($expected['scts']);
+    expect($dlr->getStatus())->toBe($expected['status']);
+    expect($dlr->getTo())->toBe($expected['to']);
+    expect($dlr->getApiKey())->toBe($expected['api-key']);
+    expect($dlr->getMessageTimestamp()->format('Y-m-d H:i:s'))->toBe($expected['message-timestamp']);
 });
 
 /**

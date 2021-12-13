@@ -31,16 +31,16 @@ afterEach(function () {
 test('can access last message as array', function () {
     @$this->message->setResponse(getResponse('search-outbound'));
 
-    $this->assertEquals('ACCEPTD', @$this->message['status']);
-    $this->assertEquals('02000000D912945A', @$this->message['message-id']);
-    $this->assertEquals('14845551212', @$this->message['to']);
-    $this->assertEquals('16105553980', @$this->message['from']);
-    $this->assertEquals('test with signature', @$this->message['body']);
-    $this->assertEquals('0.00570000', @$this->message['price']);
-    $this->assertEquals('2016-05-19 17:44:06', @$this->message['date-received']);
-    $this->assertEquals('1', @$this->message['error-code']);
-    $this->assertEquals('Unknown', @$this->message['error-code-label']);
-    $this->assertEquals('MT', @$this->message['type']);
+    expect(@$this->message['status'])->toEqual('ACCEPTD');
+    expect(@$this->message['message-id'])->toEqual('02000000D912945A');
+    expect(@$this->message['to'])->toEqual('14845551212');
+    expect(@$this->message['from'])->toEqual('16105553980');
+    expect(@$this->message['body'])->toEqual('test with signature');
+    expect(@$this->message['price'])->toEqual('0.00570000');
+    expect(@$this->message['date-received'])->toEqual('2016-05-19 17:44:06');
+    expect(@$this->message['error-code'])->toEqual('1');
+    expect(@$this->message['error-code-label'])->toEqual('Unknown');
+    expect(@$this->message['type'])->toEqual('MT');
 });
 
 /**
@@ -53,15 +53,15 @@ test('can access last message as object', function () {
 
     @$this->message->setResponse(getResponse('search-outbound'));
 
-    $this->assertEquals('ACCEPTD', $this->message->getDeliveryStatus());
-    $this->assertEquals('02000000D912945A', $this->message->getMessageId());
-    $this->assertEquals('14845551212', $this->message->getTo());
-    $this->assertEquals('16105553980', $this->message->getFrom());
-    $this->assertEquals('test with signature', $this->message->getBody());
-    $this->assertEquals('0.00570000', $this->message->getPrice());
-    $this->assertEquals($date, $this->message->getDateReceived());
-    $this->assertEquals('1', $this->message->getDeliveryError());
-    $this->assertEquals('Unknown', $this->message->getDeliveryLabel());
+    expect($this->message->getDeliveryStatus())->toEqual('ACCEPTD');
+    expect($this->message->getMessageId())->toEqual('02000000D912945A');
+    expect($this->message->getTo())->toEqual('14845551212');
+    expect($this->message->getFrom())->toEqual('16105553980');
+    expect($this->message->getBody())->toEqual('test with signature');
+    expect($this->message->getPrice())->toEqual('0.00570000');
+    expect($this->message->getDateReceived())->toEqual($date);
+    expect($this->message->getDeliveryError())->toEqual('1');
+    expect($this->message->getDeliveryLabel())->toEqual('Unknown');
 });
 
 // Helpers

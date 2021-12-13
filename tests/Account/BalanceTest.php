@@ -20,20 +20,20 @@ beforeEach(function () {
 });
 
 test('object access', function () {
-    $this->assertEquals("12.99", $this->balance->getBalance());
-    $this->assertEquals(false, $this->balance->getAutoReload());
+    expect($this->balance->getBalance())->toEqual("12.99");
+    expect($this->balance->getAutoReload())->toEqual(false);
 });
 
 test('array access', function () {
-    $this->assertEquals("12.99", @$this->balance['balance']);
-    $this->assertEquals(false, @$this->balance['auto_reload']);
+    expect(@$this->balance['balance'])->toEqual("12.99");
+    expect(@$this->balance['auto_reload'])->toEqual(false);
 });
 
 test('json serialize', function () {
     $data = $this->balance->jsonSerialize();
 
-    $this->assertSame('12.99', $data['balance']);
-    $this->assertFalse($data['auto_reload']);
+    expect($data['balance'])->toBe('12.99');
+    expect($data['auto_reload'])->toBeFalse();
 });
 
 test('json unserialize', function () {
@@ -42,13 +42,13 @@ test('json unserialize', function () {
     $balance = new Balance('1.99', true);
     $balance->fromArray($data);
 
-    $this->assertSame($data['value'], @$balance['balance']);
-    $this->assertSame($data['autoReload'], @$balance['auto_reload']);
+    expect(@$balance['balance'])->toBe($data['value']);
+    expect(@$balance['auto_reload'])->toBe($data['autoReload']);
 });
 
 test('acts like array', function () {
-    $this->assertSame('12.99', @$this->balance['balance']);
-    $this->assertTrue(@isset($this->balance['balance']));
+    expect(@$this->balance['balance'])->toBe('12.99');
+    expect(@isset($this->balance['balance']))->toBeTrue();
 });
 
 test('cannot remove array key', function () {
@@ -66,5 +66,5 @@ test('cannot directly set array key', function () {
 });
 
 test('make sure data is publicly visible', function () {
-    $this->assertSame('12.99', @$this->balance->data['balance']);
+    expect(@$this->balance->data['balance'])->toBe('12.99');
 });

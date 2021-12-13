@@ -27,13 +27,13 @@ test('success', function () {
 
     $this->message = new Message(json_decode($json, true)); //response already has decoded
 
-    $this->assertEquals(0, $this->message->getStatus());
-    $this->assertEquals('00000123', $this->message->getId());
-    $this->assertEquals('44123456789', $this->message->getTo());
-    $this->assertEquals('1.10', $this->message->getBalance());
-    $this->assertEquals('0.05', $this->message->getPrice());
-    $this->assertEquals('23410', $this->message->getNetwork());
-    $this->assertEmpty($this->message->getErrorMessage());
+    expect($this->message->getStatus())->toEqual(0);
+    expect($this->message->getId())->toEqual('00000123');
+    expect($this->message->getTo())->toEqual('44123456789');
+    expect($this->message->getBalance())->toEqual('1.10');
+    expect($this->message->getPrice())->toEqual('0.05');
+    expect($this->message->getNetwork())->toEqual('23410');
+    expect($this->message->getErrorMessage())->toBeEmpty();
 });
 
 test('fail', function () {
@@ -44,8 +44,8 @@ test('fail', function () {
 
     $this->message = new Message(json_decode($json, true)); //response already has decoded
 
-    $this->assertEquals(2, $this->message->getStatus());
-    $this->assertEquals('Missing from param', $this->message->getErrorMessage());
+    expect($this->message->getStatus())->toEqual(2);
+    expect($this->message->getErrorMessage())->toEqual('Missing from param');
 
     foreach (['getId', 'getTo', 'getBalance', 'getPrice', 'getNetwork'] as $getter) {
         try {

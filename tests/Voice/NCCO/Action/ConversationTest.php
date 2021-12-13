@@ -27,12 +27,12 @@ test('can set music on hold', function () {
     $action->setMusicOnHoldUrl('https://test.domain/hold.mp3');
     $data = $action->toNCCOArray();
 
-    $this->assertSame(['https://test.domain/hold.mp3'], $data['musicOnHoldUrl']);
+    expect($data['musicOnHoldUrl'])->toBe(['https://test.domain/hold.mp3']);
 
     $secondAction = Conversation::factory('my-conversation', ['musicOnHoldUrl' => 'https://test.domain/hold2.mp3']);
     $newData = $secondAction->toNCCOArray();
 
-    $this->assertSame(['https://test.domain/hold2.mp3'], $newData['musicOnHoldUrl']);
+    expect($newData['musicOnHoldUrl'])->toBe(['https://test.domain/hold2.mp3']);
 });
 
 test('can add individual speakers', function () {
@@ -71,8 +71,8 @@ test('can set record event url', function () {
         ->setEventWebhook(new Webhook('https://test.domain/events'))
         ->toNCCOArray();
 
-    $this->assertSame(['https://test.domain/events'], $data['eventUrl']);
-    $this->assertSame('POST', $data['eventMethod']);
+    expect($data['eventUrl'])->toBe(['https://test.domain/events']);
+    expect($data['eventMethod'])->toBe('POST');
 });
 
 test('webhook set in factory', function () {
@@ -85,9 +85,9 @@ test('webhook set in factory', function () {
 
     $action = Conversation::factory($expected['name'], $expected);
 
-    $this->assertInstanceOf(Webhook::class, $action->getEventWebhook());
-    $this->assertSame($expected['eventUrl'][0], $action->getEventWebhook()->getUrl());
-    $this->assertSame($expected['eventMethod'], $action->getEventWebhook()->getMethod());
+    expect($action->getEventWebhook())->toBeInstanceOf(Webhook::class);
+    expect($action->getEventWebhook()->getUrl())->toBe($expected['eventUrl'][0]);
+    expect($action->getEventWebhook()->getMethod())->toBe($expected['eventMethod']);
 });
 
 test('webhook set in factory without method', function () {
@@ -99,9 +99,9 @@ test('webhook set in factory without method', function () {
 
     $action = Conversation::factory($expected['name'], $expected);
 
-    $this->assertInstanceOf(Webhook::class, $action->getEventWebhook());
-    $this->assertSame($expected['eventUrl'][0], $action->getEventWebhook()->getUrl());
-    $this->assertSame('POST', $action->getEventWebhook()->getMethod());
+    expect($action->getEventWebhook())->toBeInstanceOf(Webhook::class);
+    expect($action->getEventWebhook()->getUrl())->toBe($expected['eventUrl'][0]);
+    expect($action->getEventWebhook()->getMethod())->toBe('POST');
 });
 
 test('webhook set in factory with string event url', function () {
@@ -113,7 +113,7 @@ test('webhook set in factory with string event url', function () {
 
     $action = Conversation::factory($expected['name'], $expected);
 
-    $this->assertInstanceOf(Webhook::class, $action->getEventWebhook());
-    $this->assertSame($expected['eventUrl'], $action->getEventWebhook()->getUrl());
-    $this->assertSame('POST', $action->getEventWebhook()->getMethod());
+    expect($action->getEventWebhook())->toBeInstanceOf(Webhook::class);
+    expect($action->getEventWebhook()->getUrl())->toBe($expected['eventUrl']);
+    expect($action->getEventWebhook()->getMethod())->toBe('POST');
 });

@@ -27,14 +27,14 @@ beforeEach(function () {
 test('construct with id', function () {
     $app = new Application('1a20a124-1775-412b-b623-e6985f4aace0');
 
-    $this->assertEquals('1a20a124-1775-412b-b623-e6985f4aace0', $app->getId());
+    expect($app->getId())->toEqual('1a20a124-1775-412b-b623-e6985f4aace0');
 });
 
 /**
  * @throws ClientException
  */
 test('name is set', function () {
-    $this->assertEquals('test', @app()->getRequestData()['name']);
+    expect(@app()->getRequestData()['name'])->toEqual('test');
 });
 
 /**
@@ -49,21 +49,21 @@ test('voice webhook params', function () {
 
     $this->assertArrayHasKey('event_url', $capabilities['voice']['webhooks']);
     $this->assertArrayHasKey('answer_url', $capabilities['voice']['webhooks']);
-    $this->assertEquals('http://example.com/event', $capabilities['voice']['webhooks']['event_url']['address']);
-    $this->assertEquals('http://example.com/answer', $capabilities['voice']['webhooks']['answer_url']['address']);
+    expect($capabilities['voice']['webhooks']['event_url']['address'])->toEqual('http://example.com/event');
+    expect($capabilities['voice']['webhooks']['answer_url']['address'])->toEqual('http://example.com/answer');
 });
 
 test('response sets properties', function () {
     @app()->setResponse(getResponse());
 
-    $this->assertEquals('My Application', app()->getName());
+    expect(app()->getName())->toEqual('My Application');
     $this->assertEquals(
         "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCA\nKOxjsU4pf/sMFi9N0jqcSLcjxu33G\nd/vynKnlw9SENi" .
         "+UZR44GdjGdmfm1\ntL1eA7IBh2HNnkYXnAwYzKJoa4eO3\n0kYWekeIZawIwe/g9faFgkev+1xsO\nOUNhPx2LhuLmgwWSRS4L5W851" .
         "Xe3f\nUQIDAQAB\n-----END PUBLIC KEY-----\n",
         app()->getPublicKey()
     );
-    $this->assertEquals('private_key', app()->getPrivateKey());
+    expect(app()->getPrivateKey())->toEqual('private_key');
 });
 
 /**
@@ -74,13 +74,13 @@ test('response sets voice configs', function () {
 
     $webhook = app()->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
     $method = app()->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER)->getMethod();
-    $this->assertEquals('https://example.com/webhooks/answer', $webhook);
-    $this->assertEquals('GET', $method);
+    expect($webhook)->toEqual('https://example.com/webhooks/answer');
+    expect($method)->toEqual('GET');
 
     $webhook = app()->getVoiceConfig()->getWebhook(VoiceConfig::EVENT);
     $method = app()->getVoiceConfig()->getWebhook(VoiceConfig::EVENT)->getMethod();
-    $this->assertEquals('https://example.com/webhooks/event', $webhook);
-    $this->assertEquals('POST', $method);
+    expect($webhook)->toEqual('https://example.com/webhooks/event');
+    expect($method)->toEqual('POST');
 });
 
 /**
@@ -91,13 +91,13 @@ test('response sets messages configs', function () {
 
     $webhook = app()->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND);
     $method = app()->getMessagesConfig()->getWebhook(MessagesConfig::INBOUND)->getMethod();
-    $this->assertEquals('https://example.com/webhooks/inbound', $webhook);
-    $this->assertEquals('POST', $method);
+    expect($webhook)->toEqual('https://example.com/webhooks/inbound');
+    expect($method)->toEqual('POST');
 
     $webhook = app()->getMessagesConfig()->getWebhook(MessagesConfig::STATUS);
     $method = app()->getMessagesConfig()->getWebhook(MessagesConfig::STATUS)->getMethod();
-    $this->assertEquals('https://example.com/webhooks/status', $webhook);
-    $this->assertEquals('POST', $method);
+    expect($webhook)->toEqual('https://example.com/webhooks/status');
+    expect($method)->toEqual('POST');
 });
 
 /**
@@ -108,13 +108,13 @@ test('response sets rtc configs', function () {
 
     $webhook = app()->getRtcConfig()->getWebhook(RtcConfig::EVENT);
     $method = app()->getRtcConfig()->getWebhook(RtcConfig::EVENT)->getMethod();
-    $this->assertEquals('https://example.com/webhooks/event', $webhook);
-    $this->assertEquals('POST', $method);
+    expect($webhook)->toEqual('https://example.com/webhooks/event');
+    expect($method)->toEqual('POST');
 });
 
 test('response sets vbc configs', function () {
     @app()->setResponse(getResponse());
-    $this->assertEquals(true, app()->getVbcConfig()->isEnabled());
+    expect(app()->getVbcConfig()->isEnabled())->toEqual(true);
 });
 
 /**
@@ -122,13 +122,13 @@ test('response sets vbc configs', function () {
  */
 test('can get dirty values', function () {
     @app()->setResponse(getResponse());
-    $this->assertEquals('My Application', app()->getName());
+    expect(app()->getName())->toEqual('My Application');
 
     app()->setName('new');
-    $this->assertEquals('new', app()->getName());
+    expect(app()->getName())->toEqual('new');
 
     $webhook = app()->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-    $this->assertEquals('https://example.com/webhooks/answer', $webhook);
+    expect($webhook)->toEqual('https://example.com/webhooks/answer');
 
     @app()->getVoiceConfig()->setWebhook(VoiceConfig::ANSWER, 'http://example.com');
     $webhook = app()->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
@@ -147,7 +147,7 @@ test('config can be copied', function () {
     $otherapp->setVoiceConfig(app()->getVoiceConfig());
 
     $webhook = $otherapp->getVoiceConfig()->getWebhook(VoiceConfig::ANSWER);
-    $this->assertEquals('https://example.com/webhooks/answer', $webhook);
+    expect($webhook)->toEqual('https://example.com/webhooks/answer');
 });
 
 // Helpers

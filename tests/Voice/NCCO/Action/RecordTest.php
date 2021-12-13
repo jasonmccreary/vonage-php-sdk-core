@@ -20,8 +20,8 @@ test('webhook method can be set in factory', function () {
         'eventMethod' => 'GET'
     ]);
 
-    $this->assertSame('GET', $action->getEventWebhook()->getMethod());
-    $this->assertSame('GET', $action->toNCCOArray()['eventMethod']);
+    expect($action->getEventWebhook()->getMethod())->toBe('GET');
+    expect($action->toNCCOArray()['eventMethod'])->toBe('GET');
 });
 
 test('json serialize looks correct', function () {
@@ -36,18 +36,18 @@ test('json serialize looks correct', function () {
 test('setting channel back to one resets values', function () {
     $action = new Record();
 
-    $this->assertNull($action->getSplit());
-    $this->assertNull($action->getChannels());
+    expect($action->getSplit())->toBeNull();
+    expect($action->getChannels())->toBeNull();
 
     $action->setChannels(2);
 
-    $this->assertSame(Record::SPLIT, $action->getSplit());
-    $this->assertSame(2, $action->getChannels());
+    expect($action->getSplit())->toBe(Record::SPLIT);
+    expect($action->getChannels())->toBe(2);
 
     $action->setChannels(1);
 
-    $this->assertNull($action->getSplit());
-    $this->assertNull($action->getChannels());
+    expect($action->getSplit())->toBeNull();
+    expect($action->getChannels())->toBeNull();
 });
 
 test('cannot set too many channels', function () {

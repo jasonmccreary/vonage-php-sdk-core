@@ -20,8 +20,8 @@ uses(VonageTestCase::class);
  * @param $inputData
  */
 test('array access', function ($advanced, $inputData) {
-    $this->assertEquals($inputData['valid_number'], @$advanced['valid_number']);
-    $this->assertEquals($inputData['reachable'], @$advanced['reachable']);
+    expect(@$advanced['valid_number'])->toEqual($inputData['valid_number']);
+    expect(@$advanced['reachable'])->toEqual($inputData['reachable']);
 })->with('advancedTestProvider');
 
 /**
@@ -30,8 +30,8 @@ test('array access', function ($advanced, $inputData) {
  * @param $inputData
  */
 test('object access', function ($advanced, $inputData) {
-    $this->assertEquals($inputData['valid_number'], $advanced->getValidNumber());
-    $this->assertEquals($inputData['reachable'], $advanced->getReachable());
+    expect($advanced->getValidNumber())->toEqual($inputData['valid_number']);
+    expect($advanced->getReachable())->toEqual($inputData['reachable']);
 })->with('advancedTestProvider');
 
 // Datasets
