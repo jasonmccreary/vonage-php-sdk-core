@@ -10,7 +10,6 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Vonage\Client\Exception\Exception as ClientException;
@@ -19,8 +18,6 @@ use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Verify\Check;
 use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\Verification;
-
-
 
 /**
  * Create a basic verification object

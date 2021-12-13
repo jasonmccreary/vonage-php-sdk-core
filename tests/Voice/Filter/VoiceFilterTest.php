@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Voice\Filter\VoiceFilter;
-
 
 /**
  * @throws Exception

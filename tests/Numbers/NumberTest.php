@@ -9,12 +9,9 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Application\Application;
 use Vonage\Client\Exception\Exception as ClientException;
 use Vonage\Numbers\Number;
-
-
 
 beforeEach(function () {
     $this->number = new Number();

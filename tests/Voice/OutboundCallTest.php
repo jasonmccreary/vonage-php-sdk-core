@@ -9,10 +9,8 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\OutboundCall;
-
 
 test('machine detection throws exception on bad value', function () {
     $this->expectException(InvalidArgumentException::class);

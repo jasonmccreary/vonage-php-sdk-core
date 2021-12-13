@@ -1,8 +1,6 @@
 <?php
 
-use VonageTest\VonageTestCase;
 use Vonage\Verify\Request;
-
 
 test('invalid data', function (string $expectedMessage, string $brand, string $method, $data) {
     $this->expectException(InvalidArgumentException::class);

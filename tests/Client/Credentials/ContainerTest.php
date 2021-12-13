@@ -9,12 +9,10 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Basic;
 use Vonage\Client\Credentials\Container;
 use Vonage\Client\Credentials\Keypair;
 use Vonage\Client\Credentials\SignatureSecret;
-
 
 beforeEach(function () {
     $this->basic = new Basic('key', 'secret');

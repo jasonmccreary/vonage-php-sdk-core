@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\Binary;
-
 
 test('can create binary message', function () {
     $data = (new Binary(

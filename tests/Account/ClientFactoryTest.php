@@ -9,12 +9,10 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Account\ClientFactory;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 use Vonage\Client\Factory\MapFactory;
-
 
 beforeEach(function () {
     $this->vonageClient = $this->prophesize(Client::class);

@@ -10,10 +10,7 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Vonage\Message\Message;
-
-
 
 /**
  * Test that split messages allow access to all the underlying messages. The response from sending a message is the

@@ -11,11 +11,8 @@ declare(strict_types=1);
 
 use Laminas\Diactoros\Request\Serializer;
 use Laminas\Diactoros\ServerRequest;
-use VonageTest\VonageTestCase;
 use Vonage\SMS\Webhook\DeliveryReceipt;
 use Vonage\SMS\Webhook\Factory;
-
-
 
 test('can create from get server request', function () {
     $expected = getQueryStringFromRequest('dlr-get');

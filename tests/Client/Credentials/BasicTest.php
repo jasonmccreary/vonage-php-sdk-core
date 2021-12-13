@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Client\Credentials\Basic;
-
 
 test('as array', function () {
     $credentials = new Basic($this->key, $this->secret);

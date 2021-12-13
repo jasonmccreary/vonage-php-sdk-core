@@ -10,7 +10,6 @@
 declare(strict_types=1);
 
 use Helmich\JsonAssert\JsonAssertions;
-use VonageTest\VonageTestCase;
 use Vonage\Call\Earmuff;
 
 uses(JsonAssertions::class);

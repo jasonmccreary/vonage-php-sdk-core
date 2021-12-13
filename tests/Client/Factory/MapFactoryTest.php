@@ -9,10 +9,8 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Client;
 use Vonage\Client\Factory\MapFactory;
-
 
 beforeEach(function () {
     $this->client = new Client(new Client\Credentials\Basic('key', 'secret'));

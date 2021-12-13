@@ -9,10 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Network\Number\Callback;
-
-
 
 test('methods match data', function () {
     expect($this->callback->getId())->toEqual($this->data['request_id']);

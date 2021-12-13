@@ -1,9 +1,7 @@
 <?php
 
 use Vonage\Numbers\Number;
-use VonageTest\VonageTestCase;
 use Vonage\Numbers\Filter\AvailableNumbers;
-
 
 test('can set valid number type', function (string $type) {
     $filter = new AvailableNumbers();

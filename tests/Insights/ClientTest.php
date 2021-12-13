@@ -10,12 +10,10 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Vonage\Client;
-use Vonage\Client\APIResource;
 use Vonage\Client\Exception\Request as RequestException;
 use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Insights\Advanced;

@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;

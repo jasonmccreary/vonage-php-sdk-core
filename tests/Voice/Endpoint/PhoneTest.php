@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\Phone;
-
 
 test('default endpoint is created properly', function () {
     $endpoint = new Phone($this->number);

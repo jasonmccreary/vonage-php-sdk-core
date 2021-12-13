@@ -10,14 +10,12 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Vonage\Application\Application;
 use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
 
 use Vonage\Client\Exception\Exception as ClientException;
-
 
 beforeEach(function () {
     app() = (new Application())->setName('test');

@@ -10,7 +10,6 @@
 declare(strict_types=1);
 
 use Laminas\Diactoros\Response;
-use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
@@ -18,9 +17,6 @@ use Vonage\Client;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Conversations\Collection;
 use Vonage\Conversations\Conversation;
-use VonageTest\Psr7AssertionTrait;
-
-
 
 beforeEach(function () {
     $this->vonageClient = $this->prophesize(Client::class);

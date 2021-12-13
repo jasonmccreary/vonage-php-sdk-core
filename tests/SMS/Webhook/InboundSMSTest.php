@@ -11,11 +11,8 @@ declare(strict_types=1);
 
 use Laminas\Diactoros\Request\Serializer;
 use Laminas\Diactoros\ServerRequest;
-use VonageTest\VonageTestCase;
 use Vonage\SMS\Webhook\Factory;
 use Vonage\SMS\Webhook\InboundSMS;
-
-
 
 test('can create from form post server request', function () {
     $expected = getQueryStringFromRequest('inbound');

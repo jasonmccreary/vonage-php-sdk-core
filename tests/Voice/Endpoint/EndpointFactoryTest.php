@@ -9,14 +9,12 @@
 
 declare(strict_types=1);
 
-use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\App;
 use Vonage\Voice\Endpoint\EndpointFactory;
 use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\Endpoint\SIP;
 use Vonage\Voice\Endpoint\VBC;
 use Vonage\Voice\Endpoint\Websocket;
-
 
 test('can create app endpoint', function () {
     $this->assertInstanceOf(App::class, (new EndpointFactory())->create([

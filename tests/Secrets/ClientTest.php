@@ -3,12 +3,9 @@
 use Prophecy\Argument;
 use Vonage\Secrets\Client;
 use Vonage\Secrets\Secret;
-use VonageTest\HTTPTestTrait;
 use Vonage\Client\APIResource;
-use VonageTest\VonageTestCase;
 use Vonage\Client as VonageClient;
 use Psr\Http\Message\RequestInterface;
-
 
 beforeEach(function () {
     $this->vonage = $this->prophesize(VonageClient::class);
