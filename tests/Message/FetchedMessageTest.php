@@ -9,15 +9,12 @@
 
 declare(strict_types=1);
 
-use DateTime;
-use Exception;
 use Laminas\Diactoros\Response;
 use VonageTest\VonageTestCase;
 use Vonage\Message\Message;
 
 uses(VonageTestCase::class);
 
-use function fopen;
 
 /**
  * Test that split messages allow access to all the underlying messages. The response from sending a message is the

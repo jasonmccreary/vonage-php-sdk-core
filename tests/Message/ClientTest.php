@@ -9,17 +9,12 @@
 
 declare(strict_types=1);
 
-use DateTime;
-use Exception;
-use InvalidArgumentException;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
-use RuntimeException;
-use stdClass;
 use Vonage\Client;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Server as ServerException;
@@ -36,8 +31,6 @@ uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 uses(MessageAssertionTrait::class);
 
-use function fopen;
-use function json_decode;
 
 /**
  * Create the Message API Client, and mock the Vonage Client

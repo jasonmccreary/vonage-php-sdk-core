@@ -14,7 +14,6 @@ use Vonage\Network\Number\Callback;
 
 uses(VonageTestCase::class);
 
-use function array_merge;
 
 test('methods match data', function () {
     $this->assertEquals($this->data['request_id'], $this->callback->getId());

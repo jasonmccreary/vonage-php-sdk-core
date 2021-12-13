@@ -10,12 +10,10 @@
 declare(strict_types=1);
 
 use VonageTest\VonageTestCase;
-use RuntimeException;
 use Vonage\Response\Message;
 
 uses(VonageTestCase::class);
 
-use function json_decode;
 
 test('success', function () {
     $json = '{

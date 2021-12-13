@@ -9,8 +9,6 @@
 
 declare(strict_types=1);
 
-use DateTime;
-use Exception;
 use Laminas\Diactoros\Response;
 use VonageTest\VonageTestCase;
 use Prophecy\Argument;
@@ -24,11 +22,6 @@ use Vonage\Verify\Verification;
 
 uses(VonageTestCase::class);
 
-use function fopen;
-use function get_class;
-use function is_null;
-use function serialize;
-use function unserialize;
 
 /**
  * Create a basic verification object

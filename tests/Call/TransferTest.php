@@ -16,9 +16,6 @@ use Vonage\Call\Transfer;
 uses(VonageTestCase::class);
 uses(JsonAssertions::class);
 
-use function file_get_contents;
-use function json_decode;
-use function json_encode;
 
 test('structure with array', function () {
     $urls = ['http://example.com', 'http://alternate.example.com'];

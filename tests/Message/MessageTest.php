@@ -9,7 +9,6 @@
 
 declare(strict_types=1);
 
-use Exception;
 use Laminas\Diactoros\Request;
 use Laminas\Diactoros\Response;
 use VonageTest\VonageTestCase;
@@ -19,9 +18,6 @@ use Vonage\Message\Text;
 
 uses(VonageTestCase::class);
 
-use function fopen;
-use function http_build_query;
-use function json_encode;
 
 beforeEach(function () {
     $this->message = new Message($this->to, $this->from, [

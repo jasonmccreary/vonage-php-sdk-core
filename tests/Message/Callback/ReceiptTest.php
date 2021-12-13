@@ -9,13 +9,11 @@
 
 declare(strict_types=1);
 
-use DateTime;
 use VonageTest\VonageTestCase;
 use Vonage\Message\Callback\Receipt;
 
 uses(VonageTestCase::class);
 
-use function array_merge;
 
 beforeEach(function () {
     $this->receipt = new Receipt($this->data);

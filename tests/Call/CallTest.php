@@ -30,10 +30,6 @@ use VonageTest\Psr7AssertionTrait;
 uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
-use function file_get_contents;
-use function fopen;
-use function json_decode;
-use function json_encode;
 
 beforeEach(function () {
     $this->id = '3fd4d839-493e-4485-b2a5-ace527aacff3';

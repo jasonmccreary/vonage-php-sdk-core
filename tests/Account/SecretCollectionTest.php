@@ -16,7 +16,6 @@ use Vonage\InvalidResponseException;
 
 uses(VonageTestCase::class);
 
-use function array_map;
 
 /**
  * @throws InvalidResponseException

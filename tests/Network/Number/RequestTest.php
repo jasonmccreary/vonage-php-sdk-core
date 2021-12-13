@@ -14,7 +14,6 @@ use Vonage\Network\Number\Request;
 
 uses(VonageTestCase::class);
 
-use function explode;
 
 test('null values not present', function () {
     $request = new Request('14443332121', 'http://example.com');

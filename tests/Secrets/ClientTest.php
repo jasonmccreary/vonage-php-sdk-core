@@ -1,6 +1,5 @@
 <?php
 
-use DateTimeInterface;
 use Prophecy\Argument;
 use Vonage\Secrets\Client;
 use Vonage\Secrets\Secret;

@@ -9,10 +9,6 @@
 
 declare(strict_types=1);
 
-use DateTimeImmutable;
-use DateTimeZone;
-use Exception;
-use InvalidArgumentException;
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Filter\VoiceFilter;
 

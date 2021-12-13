@@ -1,6 +1,5 @@
 <?php
 
-use InvalidArgumentException;
 use VonageTest\VonageTestCase;
 use Vonage\Verify\Request;
 
