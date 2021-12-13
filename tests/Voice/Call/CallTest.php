@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Call\Call;
 
-uses(VonageTestCase::class);
 
 beforeEach(function () {
     $this->call = new Call($this->url, $this->to, $this->from);

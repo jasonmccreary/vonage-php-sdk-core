@@ -13,7 +13,6 @@ use Laminas\Diactoros\Response;
 use VonageTest\VonageTestCase;
 use Vonage\Message\Message;
 
-uses(VonageTestCase::class);
 
 
 /**

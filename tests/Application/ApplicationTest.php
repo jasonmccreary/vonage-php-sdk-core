@@ -16,7 +16,6 @@ use Vonage\Application\MessagesConfig;
 use Vonage\Application\RtcConfig;
 use Vonage\Application\VoiceConfig;
 
-uses(VonageTestCase::class);
 use Vonage\Client\Exception\Exception as ClientException;
 
 

@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Message\AutoDetect;
 
-uses(VonageTestCase::class);
 
 /**
  * When creating a message, it should not auto-detect encoding by default

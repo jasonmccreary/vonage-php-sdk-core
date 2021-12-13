@@ -13,7 +13,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\OutboundCall;
 
-uses(VonageTestCase::class);
 
 test('machine detection throws exception on bad value', function () {
     $this->expectException(InvalidArgumentException::class);

@@ -13,7 +13,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Client;
 use Vonage\Client\APIResource;
 
-uses(VonageTestCase::class);
 
 test('overriding base url uses client api url', function () {
     /** @var mixed $mockClient */

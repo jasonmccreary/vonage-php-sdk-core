@@ -21,7 +21,6 @@ use Vonage\Voice\Webhook\Notification;
 use Vonage\Voice\Webhook\Record;
 use Vonage\Voice\Webhook\Transfer;
 
-uses(VonageTestCase::class);
 
 
 /**

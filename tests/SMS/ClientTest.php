@@ -23,7 +23,6 @@ use Vonage\SMS\ExceptionErrorHandler;
 use Vonage\SMS\Message\SMS;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
 

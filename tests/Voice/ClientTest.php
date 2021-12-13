@@ -27,7 +27,6 @@ use Vonage\Voice\NCCO\NCCO;
 use Vonage\Voice\OutboundCall;
 use Vonage\Voice\Webhook;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
 

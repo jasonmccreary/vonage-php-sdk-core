@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Voice\Message\Message;
 
-uses(VonageTestCase::class);
 
 beforeEach(function () {
     $this->message = new Message($this->text, $this->to, $this->from);

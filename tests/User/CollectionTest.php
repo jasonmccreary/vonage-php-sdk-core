@@ -20,8 +20,6 @@ use VonageTest\Psr7AssertionTrait;
 use Vonage\User\Collection;
 use Vonage\User\User;
 
-uses(VonageTestCase::class);
-uses(Psr7AssertionTrait::class);
 
 
 beforeEach(function () {

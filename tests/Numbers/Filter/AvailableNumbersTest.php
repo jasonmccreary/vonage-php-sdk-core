@@ -4,7 +4,6 @@ use Vonage\Numbers\Number;
 use VonageTest\VonageTestCase;
 use Vonage\Numbers\Filter\AvailableNumbers;
 
-uses(VonageTestCase::class);
 
 test('can set valid number type', function (string $type) {
     $filter = new AvailableNumbers();

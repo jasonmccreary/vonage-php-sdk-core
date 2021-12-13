@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Account\Balance;
 
-uses(VonageTestCase::class);
 use Vonage\Client\Exception\Exception as ClientException;
 
 beforeEach(function () {

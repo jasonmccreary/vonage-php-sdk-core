@@ -15,7 +15,6 @@ use Vonage\Voice\Endpoint\Phone;
 use Vonage\Voice\NCCO\Action\Connect;
 use Vonage\Voice\Webhook;
 
-uses(VonageTestCase::class);
 
 beforeEach(function () {
     $this->endpoint = new Phone('15551231234');

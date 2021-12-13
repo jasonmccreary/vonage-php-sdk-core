@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\SMS\Message\SMS;
 
-uses(VonageTestCase::class);
 
 test('can set unicode type', function () {
     $sms = (new SMS('447700900000', '16105551212', 'Test Message'));

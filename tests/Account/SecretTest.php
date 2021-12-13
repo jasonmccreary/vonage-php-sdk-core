@@ -13,7 +13,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Account\Secret;
 use Vonage\InvalidResponseException;
 
-uses(VonageTestCase::class);
 
 /**
  * @throws InvalidResponseException

@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Record;
 
-uses(VonageTestCase::class);
 
 test('webhook method can be set in factory', function () {
     $action = Record::factory([

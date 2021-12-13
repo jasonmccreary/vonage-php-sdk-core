@@ -13,7 +13,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\Action\Conversation;
 use Vonage\Voice\Webhook;
 
-uses(VonageTestCase::class);
 
 test('simple setup', function () {
     $this->assertSame([

@@ -9,8 +9,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Client as VonageClient;
 use Psr\Http\Message\RequestInterface;
 
-uses(VonageTestCase::class);
-uses(HTTPTestTrait::class);
 
 beforeEach(function () {
     $this->vonage = $this->prophesize(VonageClient::class);

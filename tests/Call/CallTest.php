@@ -27,7 +27,6 @@ use Vonage\Client\Exception\Server as ServerException;
 use Vonage\Conversations\Conversation;
 use VonageTest\Psr7AssertionTrait;
 
-uses(VonageTestCase::class);
 uses(Psr7AssertionTrait::class);
 
 

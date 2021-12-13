@@ -15,7 +15,6 @@ use VonageTest\VonageTestCase;
 use Vonage\SMS\Webhook\Factory;
 use Vonage\SMS\Webhook\InboundSMS;
 
-uses(VonageTestCase::class);
 
 
 test('can create from form post server request', function () {

@@ -16,7 +16,6 @@ use Vonage\Message\Shortcode\Alert;
 use Vonage\Message\Shortcode\Marketing;
 use Vonage\Message\Shortcode\TwoFactor;
 
-uses(VonageTestCase::class);
 
 /**
  *

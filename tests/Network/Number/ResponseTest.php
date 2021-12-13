@@ -13,7 +13,6 @@ use VonageTest\VonageTestCase;
 use Vonage\Network\Number\Callback;
 use Vonage\Network\Number\Response;
 
-uses(VonageTestCase::class);
 
 beforeEach(function () {
     $this->response = new Response($this->data);

@@ -20,7 +20,6 @@ use Vonage\Verify\Check;
 use Vonage\Verify\Client as VerifyClient;
 use Vonage\Verify\Verification;
 
-uses(VonageTestCase::class);
 
 
 /**

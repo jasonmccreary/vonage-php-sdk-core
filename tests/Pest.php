@@ -1,5 +1,14 @@
 <?php
 
+uses(\VonageTest\VonageTestCase::class)->in('tests', 'Account', 'Application', 'Call', 'Client', 'Conversation', 'Conversion', 'Fixture', 'Insights', 'Logger', 'Message', 'Network', 'Numbers', 'Redact', 'Response', 'SMS', 'Secrets', 'Traits', 'User', 'Verify', 'Voice', 'responses');
+uses(\VonageTest\Psr7AssertionTrait::class)->in('Conversation', 'Conversion', 'Redact', 'User');
+uses(\Helmich\JsonAssert\JsonAssertions::class)->in('');
+uses(\VonageTest\Fixture\ResponseTrait::class)->in('');
+uses(\VonageTest\MessageAssertionTrait::class)->in('');
+uses(\VonageTest\HTTPTestTrait::class)->in('Secrets');
+uses(\Vonage\Entity\Psr7Trait::class)->in('');
+uses(\Psr7AssertionTrait::class)->in('');
+
 /*
 |--------------------------------------------------------------------------
 | Test Case

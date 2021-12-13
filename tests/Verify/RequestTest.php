@@ -3,7 +3,6 @@
 use VonageTest\VonageTestCase;
 use Vonage\Verify\Request;
 
-uses(VonageTestCase::class);
 
 test('invalid data', function (string $expectedMessage, string $brand, string $method, $data) {
     $this->expectException(InvalidArgumentException::class);

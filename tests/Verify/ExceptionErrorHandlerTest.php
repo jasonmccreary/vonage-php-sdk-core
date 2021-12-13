@@ -14,7 +14,6 @@ use Laminas\Diactoros\Response;
 use Vonage\Client\Exception\Request as ExceptionRequest;
 use Vonage\Verify\ExceptionErrorHandler;
 
-uses(VonageTestCase::class);
 uses(Psr7Trait::class);
 
 test('server exception throw on error', function () {

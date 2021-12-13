@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Response\Message;
 
-uses(VonageTestCase::class);
 
 
 test('success', function () {

@@ -12,7 +12,6 @@ declare(strict_types=1);
 use VonageTest\VonageTestCase;
 use Vonage\Voice\NCCO\NCCOFactory;
 
-uses(VonageTestCase::class);
 
 test('throws exception with bad action', function () {
     $this->expectException(InvalidArgumentException::class);
